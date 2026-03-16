@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformation 3D Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <style>
+        /* Custom styles for 3D perspective and canvas layering */
+        .canvas-container {
+            perspective: 1200px; /* Strong perspective for 3D pop */
+            transform-style: preserve-3d;
+        }
+        canvas {
+            image-rendering: auto;
+        }
+        .math-font {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+        }
+        
+        /* Modal Backdrop */
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+            background-color: rgba(15, 23, 42, 0.6);
+        }
+
+        /* Custom scrollbar for control panel if it gets too long */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans selection:bg-blue-200">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+        <h1 class="text-2xl font-bold text-indigo-700 flex items-center gap-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>
+            Transformation 3D Explorer
+        </h1>
+        <button onclick="openHelp()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            How it Works
+        </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 flex flex-col lg:flex-row gap-8 items-start">
+        
+        <!-- Interactive Canvas Area -->
+        <div class="w-full lg:w-2/3 flex flex-col items-center">
+            
+            <div class="bg-white p-4 rounded-2xl shadow-lg border border-slate-200 w-full max-w-[640px]">
+                <!-- Canvas Stack -->
+                <div class="canvas-container relative w-full aspect-square bg-white rounded-xl overflow-hidden border-2 border-slate-200 shadow-inner cursor-grab active:cursor-grabbing" id="canvasWrapper">
+                    <canvas id="gridCanvas" class="absolute inset-0 w-full h-full" width="600" height="600"></canvas>
+                    <canvas id="curveCanvas" class="absolute inset-0 w-full h-full pointer-events-none drop-shadow-md" width="600" height="600"></canvas>
+                </div>
+                <p class="text-center text-sm text-slate-500 mt-3 font-medium flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"></path></svg>
+                    Click and drag the graph to translate it!
+                </p>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="w-full lg:w-1/3 bg-white rounded-2xl shadow-lg border border-slate-200 flex flex-col overflow-hidden custom-scrollbar">
+            
+            <!-- Live Equation Display -->
+            <div class="bg-slate-800 text-white p-6 text-center">
+                <h3 class="text-sm uppercase tracking-wider text-slate-400 mb-2 font-semibold" id="equationLabel">Current Equation</h3>
+                <div class="text-3xl font-bold tracking-wide min-h-[48px] flex items-center justify-center" id="equationDisplay">
+                    <!-- KaTeX Equation -->
+                </div>
+            </div>
+
+            <div class="p-6 space-y-8">
+                
+                <!-- Base Curve Selection (Explore Only) -->
+                <div id="graphSelectionPanel">
+                    <h3 class="text-lg font-bold text-slate-800 mb-3 border-b pb-2">1. Base Shape</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setGraphType('parabola')" id="btnParabola" class="py-2 px-1 text-sm font-semibold rounded bg-indigo-100 text-indigo-700 border border-indigo-200 transition-colors">Parabola</button>
+                        <button onclick="setGraphType('hyperbola')" id="btnHyperbola" class="py-2 px-1 text-sm font-semibold rounded bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 transition-colors">Hyperbola</button>
+                        <button onclick="setGraphType('circle')" id="btnCircle" class="py-2 px-1 text-sm font-semibold rounded bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 transition-colors">Circle</button>
+                    </div>
+                </div>
+
+                <!-- Challenge Target Display (Challenge Only) -->
+                <div id="challengeTargetPanel" class="hidden">
+                    <h3 class="text-lg font-bold text-amber-600 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Target Equation
+                    </h3>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+                        <p class="text-sm text-amber-800 mb-2">Drag and flip the blue curve to match this equation:</p>
+                        <div class="text-2xl font-bold text-amber-900 math-font" id="targetEquationDisplay"></div>
+                    </div>
+                </div>
+
+                <!-- Reflection Controls -->
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-3 border-b pb-2">2. 3D Reflections</h3>
+                    <div class="space-y-3">
+                        <button onclick="triggerReflection('x')" class="w-full relative overflow-hidden group bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold py-3 px-4 rounded-xl shadow-sm transition-all flex items-center justify-between">
+                            <span class="relative z-10 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                                Reflect over X-Axis
+                            </span>
+                            <span class="text-xs font-mono bg-rose-200 text-rose-800 px-2 py-1 rounded">(Upside Down)</span>
+                        </button>
+                        
+                        <button onclick="triggerReflection('y')" class="w-full relative overflow-hidden group bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-semibold py-3 px-4 rounded-xl shadow-sm transition-all flex items-center justify-between">
+                            <span class="relative z-10 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                Reflect over Y-Axis
+                            </span>
+                            <span class="text-xs font-mono bg-emerald-200 text-emerald-800 px-2 py-1 rounded">(Left / Right)</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform scale-95 transition-transform duration-300 overflow-hidden" id="modalContent">
+            <div id="modalHeader" class="p-6 pb-4 border-b">
+                <h2 id="modalTitle" class="text-2xl font-bold">Title</h2>
+            </div>
+            <div class="p-6">
+                <p id="modalBody" class="text-slate-600 text-lg leading-relaxed"></p>
+            </div>
+            <div class="bg-slate-50 p-4 flex justify-end">
+                <button onclick="closeModal()" class="px-6 py-2 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-700 transition-colors">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300" id="helpModalContent">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
+                <h2 class="text-2xl font-bold text-indigo-700">How Graph Transformations Work</h2>
+                <button onclick="closeHelp()" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-6 text-slate-700">
+                
+                <section>
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2"><span class="bg-blue-100 text-blue-800 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span> Translations (Dragging)</h3>
+                    <p class="mb-3">Dragging the shape moves it left/right or up/down. Notice how the equation changes:</p>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Vertical Shift:</strong> Adding a number at the end moves it UP. <code class="bg-slate-100 px-2 py-1 rounded">y = x² + 3</code></li>
+                        <li><strong>Horizontal Shift:</strong> Subtracting a number inside the brackets moves it RIGHT. <code class="bg-slate-100 px-2 py-1 rounded">y = (x - 4)²</code></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2"><span class="bg-rose-100 text-rose-800 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span> Reflecting over X-Axis</h3>
+                    <p class="mb-3">Clicking the red <strong>Reflect over X-Axis</strong> button grabs the horizontal grid line and flips the entire 3D plane over it.</p>
+                    <p class="bg-rose-50 p-4 rounded-lg border border-rose-100">
+                        Mathematically, this makes the entire equation negative: <code class="font-bold">y = -( ... )</code>.<br>
+                        If the shape was originally pointing up, it now points down!
+                    </p>
+                </section>
+
+                <section>
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center text-sm">3</span> Reflecting over Y-Axis</h3>
+                    <p class="mb-3">Clicking the green <strong>Reflect over Y-Axis</strong> button grabs the vertical grid line and flips the 3D plane like a book page.</p>
+                    <p class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                        Mathematically, this makes the inner <code>x</code> negative: <code class="font-bold">y = (-x)²</code>.<br>
+                        <em>Fun fact:</em> Since negative numbers become positive when squared, a parabola centered at zero looks exactly the same after a Y-reflection!
+                    </p>
+                </section>
+
+            </div>
+            <div class="bg-slate-50 p-4 flex justify-end border-t border-slate-200">
+                <button onclick="closeHelp()" class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors">Let's Play!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Constants & Canvas Setup ---
+        const WIDTH = 600;
+        const HEIGHT = 600;
+        const UNIT = 30; // pixels per mathematical unit
+        const MAX_UNITS = WIDTH / (2 * UNIT); // 10
+
+        const gridCanvas = document.getElementById('gridCanvas');
+        const curveCanvas = document.getElementById('curveCanvas');
+        const canvasWrapper = document.getElementById('canvasWrapper');
+        
+        const gridCtx = gridCanvas.getContext('2d');
+        const curveCtx = curveCanvas.getContext('2d');
+
+        // --- Application State ---
+        let state = {
+            graphType: 'parabola', // 'parabola', 'hyperbola', 'circle'
+            h: 0,
+            k: 0,
+            signX: 1, // 1 or -1 (Upside down flip)
+            signY: 1, // 1 or -1 (Left/Right flip)
+            r: 3, // radius for circle
+            isAnimating: false
+        };
+
+        // --- Core Math Formatting ---
+        function formatEquation(s, includeY = true) {
+            let eq = includeY ? "y = " : "";
+            
+            if (s.graphType === 'circle') {
+                let xTerm = s.h === 0 ? "x^2" : `(x ${s.h > 0 ? '-' : '+'} ${Math.abs(s.h)})^2`;
+                let yTerm = s.k === 0 ? "y^2" : `(y ${s.k > 0 ? '-' : '+'} ${Math.abs(s.k)})^2`;
+                return `${xTerm} + ${yTerm} = ${s.r * s.r}`;
+            } 
+            
+            if (s.graphType === 'parabola') {
+                let signXStr = s.signX === -1 ? "-" : "";
+                let inner = "";
+                if (s.signY === -1) {
+                    inner = s.h === 0 ? "(-x)" : `(-(x ${s.h > 0 ? '-' : '+'} ${Math.abs(s.h)}))`;
+                } else {
+                    inner = s.h === 0 ? "x" : `(x ${s.h > 0 ? '-' : '+'} ${Math.abs(s.h)})`;
+                }
+                let kStr = s.k === 0 ? "" : (s.k > 0 ? ` + ${s.k}` : ` - ${Math.abs(s.k)}`);
+                if (inner === "x" && signXStr === "") return `${eq}x^2${kStr}`;
+                return `${eq}${signXStr}${inner}^2${kStr}`;
+            } 
+            
+            if (s.graphType === 'hyperbola') {
+                let overallSign = s.signX * s.signY;
+                let signStr = overallSign === -1 ? "-" : "";
+                let denom = s.h === 0 ? "x" : `(x ${s.h > 0 ? '-' : '+'} ${Math.abs(s.h)})`;
+                let kStr = s.k === 0 ? "" : (s.k > 0 ? ` + ${s.k}` : ` - ${Math.abs(s.k)}`);
+                return `${eq}${signStr}\\frac{1}{${denom}}${kStr}`;
+            }
+        }
+
+        function updateEquationDisplay() {
+            let texString = formatEquation(state);
+            katex.render(texString, document.getElementById('equationDisplay'), {
+                throwOnError: false,
+                displayMode: true
+            });
+        }
+
+        // --- Coordinate Conversions ---
+        function cartesianToScreen(cx, cy) {
+            return {
+                x: WIDTH / 2 + cx * UNIT,
+                y: HEIGHT / 2 - cy * UNIT
+            };
+        }
+
+        function screenToCartesian(sx, sy) {
+            return {
+                x: (sx - WIDTH / 2) / UNIT,
+                y: -(sy - HEIGHT / 2) / UNIT
+            };
+        }
+
+        // --- Rendering Engine ---
+        function drawGrid(highlightAxis = null) {
+            gridCtx.clearRect(0, 0, WIDTH, HEIGHT);
+            
+            // Draw grid lines
+            gridCtx.lineWidth = 1;
+            for(let i = -MAX_UNITS; i <= MAX_UNITS; i++) {
+                let s = cartesianToScreen(i, i);
+                
+                // Vertical lines
+                gridCtx.strokeStyle = (i === 0) ? '#cbd5e1' : '#f1f5f9';
+                if(i === 0) gridCtx.lineWidth = 2; else gridCtx.lineWidth = 1;
+                gridCtx.beginPath();
+                gridCtx.moveTo(s.x, 0);
+                gridCtx.lineTo(s.x, HEIGHT);
+                gridCtx.stroke();
+                
+                // Horizontal lines
+                gridCtx.strokeStyle = (i === 0) ? '#cbd5e1' : '#f1f5f9';
+                if(i === 0) gridCtx.lineWidth = 2; else gridCtx.lineWidth = 1;
+                gridCtx.beginPath();
+                gridCtx.moveTo(0, s.y);
+                gridCtx.lineTo(WIDTH, s.y);
+                gridCtx.stroke();
+            }
+
+            // Draw axis numbers
+            gridCtx.fillStyle = '#94a3b8';
+            gridCtx.font = '12px sans-serif';
+            gridCtx.textAlign = 'center';
+            for(let i = -MAX_UNITS; i <= MAX_UNITS; i++) {
+                if(i === 0) continue;
+                let s = cartesianToScreen(i, 0);
+                gridCtx.fillText(i, s.x, HEIGHT/2 + 15);
+                s = cartesianToScreen(0, i);
+                gridCtx.fillText(i, WIDTH/2 - 10, s.y + 4);
+            }
+
+            // Highlight glowing axis during animation
+            if (highlightAxis === 'x') {
+                gridCtx.strokeStyle = '#ef4444'; // Bright Red
+                gridCtx.lineWidth = 4;
+                gridCtx.shadowColor = '#ef4444';
+                gridCtx.shadowBlur = 10;
+                gridCtx.beginPath();
+                gridCtx.moveTo(0, HEIGHT/2);
+                gridCtx.lineTo(WIDTH, HEIGHT/2);
+                gridCtx.stroke();
+                gridCtx.shadowBlur = 0;
+            } else if (highlightAxis === 'y') {
+                gridCtx.strokeStyle = '#ef4444'; // Bright Red
+                gridCtx.lineWidth = 4;
+                gridCtx.shadowColor = '#ef4444';
+                gridCtx.shadowBlur = 10;
+                gridCtx.beginPath();
+                gridCtx.moveTo(WIDTH/2, 0);
+                gridCtx.lineTo(WIDTH/2, HEIGHT);
+                gridCtx.stroke();
+                gridCtx.shadowBlur = 0;
+            }
+        }
+
+        function drawCurve(ctx, s, styleColor) {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            if(!s) return;
+
+            // Draw Asymptotes for Hyperbola
+            if (s.graphType === 'hyperbola') {
+                ctx.save();
+                ctx.beginPath();
+                ctx.strokeStyle = styleColor;
+                ctx.globalAlpha = 0.4;
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+
+                // Vertical asymptote: x = h
+                let asymX = cartesianToScreen(s.h, 0).x;
+                ctx.moveTo(asymX, 0);
+                ctx.lineTo(asymX, HEIGHT);
+
+                // Horizontal asymptote: y = k
+                let asymY = cartesianToScreen(0, s.k).y;
+                ctx.moveTo(0, asymY);
+                ctx.lineTo(WIDTH, asymY);
+
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            ctx.strokeStyle = styleColor;
+            ctx.lineWidth = 4;
+            ctx.setLineDash([]);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            if (s.graphType === 'circle') {
+                let center = cartesianToScreen(s.h, s.k);
+                ctx.beginPath();
+                ctx.arc(center.x, center.y, s.r * UNIT, 0, 2*Math.PI);
+                ctx.stroke();
+                
+                // Draw center point
+                ctx.fillStyle = styleColor;
+                ctx.beginPath();
+                ctx.arc(center.x, center.y, 4, 0, 2*Math.PI);
+                ctx.fill();
+                return;
+            }
+
+            ctx.beginPath();
+            let prevSy = null;
+            let step = 2; // draw every 2 pixels for smoothness
+
+            for(let sx = 0; sx <= WIDTH; sx += step) {
+                let cx = screenToCartesian(sx, 0).x;
+                let cy = null;
+
+                if (s.graphType === 'parabola') {
+                    let inner = s.signY * (cx - s.h);
+                    cy = s.signX * (inner * inner) + s.k;
+                } else if (s.graphType === 'hyperbola') {
+                    let inner = s.signY * (cx - s.h);
+                    if (Math.abs(inner) < 0.05) {
+                        prevSy = null; // Asymptote break
+                        continue;
+                    }
+                    cy = s.signX * (1 / inner) + s.k;
+                }
+
+                if (cy === null) continue;
+
+                let sy = cartesianToScreen(0, cy).y;
+
+                if (s.graphType === 'hyperbola' && prevSy !== null && Math.abs(sy - prevSy) > HEIGHT / 2) {
+                    ctx.moveTo(sx, sy); // jump across asymptote
+                } else if (prevSy === null) {
+                    ctx.moveTo(sx, sy);
+                } else {
+                    ctx.lineTo(sx, sy);
+                }
+                prevSy = sy;
+            }
+            ctx.stroke();
+
+            // Draw Vertex/Center dot for clarity
+            let vertexScreen = cartesianToScreen(s.h, s.k);
+            ctx.fillStyle = styleColor;
+            ctx.beginPath();
+            ctx.arc(vertexScreen.x, vertexScreen.y, 5, 0, 2*Math.PI);
+            ctx.fill();
+            
+            // Reset dash
+            ctx.setLineDash([]);
+        }
+
+        function renderAll() {
+            drawGrid(null);
+            drawCurve(curveCtx, state, '#4f46e5'); // Indigo-600
+            updateEquationDisplay();
+        }
+
+        // --- 3D Animation Engine ---
+        function triggerReflection(axis) {
+            if(state.isAnimating) return;
+            state.isAnimating = true;
+
+            // 1. Highlight the axis
+            drawGrid(axis);
+
+            // 2. Set Transition and Transform
+            curveCanvas.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            if(axis === 'x') {
+                curveCanvas.style.transform = 'rotateX(180deg)';
+            } else {
+                curveCanvas.style.transform = 'rotateY(180deg)';
+            }
+
+            // 3. Wait for animation, then apply math and snap back
+            setTimeout(() => {
+                // Apply mathematical changes
+                if(axis === 'x') {
+                    state.k = -state.k;
+                    state.signX = -state.signX;
+                } else {
+                    state.h = -state.h;
+                    state.signY = -state.signY;
+                }
+
+                // Snap CSS back instantly
+                curveCanvas.style.transition = 'none';
+                curveCanvas.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                
+                // Redraw with new math state (visually identical to the rotated state!)
+                drawCurve(curveCtx, state, '#4f46e5');
+                drawGrid(null); // remove highlight
+                updateEquationDisplay();
+
+                // Force reflow
+                void curveCanvas.offsetWidth;
+
+                state.isAnimating = false;
+            }, 800);
+        }
+
+        // --- Interaction (Dragging) ---
+        let dragStartMouse = null;
+        let dragStartH = 0;
+        let dragStartK = 0;
+
+        canvasWrapper.addEventListener('mousedown', startDrag);
+        canvasWrapper.addEventListener('touchstart', (e) => startDrag(e.touches[0]), {passive: false});
+
+        function startDrag(e) {
+            if(state.isAnimating) return;
+            let rect = canvasWrapper.getBoundingClientRect();
+            // Calculate scale in case canvas is shrunk by CSS
+            let scaleX = WIDTH / rect.width;
+            let scaleY = HEIGHT / rect.height;
+            
+            let mx = (e.clientX - rect.left) * scaleX;
+            let my = (e.clientY - rect.top) * scaleY;
+            
+            dragStartMouse = screenToCartesian(mx, my);
+            dragStartH = state.h;
+            dragStartK = state.k;
+            canvasWrapper.classList.add('cursor-grabbing');
+        }
+
+        window.addEventListener('mousemove', doDrag);
+        window.addEventListener('touchmove', (e) => doDrag(e.touches[0]), {passive: false});
+
+        function doDrag(e) {
+            if(!dragStartMouse || state.isAnimating) return;
+            
+            let rect = canvasWrapper.getBoundingClientRect();
+            let scaleX = WIDTH / rect.width;
+            let scaleY = HEIGHT / rect.height;
+            
+            let mx = (e.clientX - rect.left) * scaleX;
+            let my = (e.clientY - rect.top) * scaleY;
+            
+            let currentCart = screenToCartesian(mx, my);
+            
+            let dx = currentCart.x - dragStartMouse.x;
+            let dy = currentCart.y - dragStartMouse.y;
+            
+            // Snap to nearest 0.5 for smoother feel, but integer for exact matching
+            state.h = Math.round(dragStartH + dx);
+            state.k = Math.round(dragStartK + dy);
+            
+            // Boundary constraints
+            state.h = Math.max(-10, Math.min(10, state.h));
+            state.k = Math.max(-10, Math.min(10, state.k));
+            
+            renderAll();
+        }
+
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+
+        function endDrag() {
+            dragStartMouse = null;
+            canvasWrapper.classList.remove('cursor-grabbing');
+        }
+
+        function setGraphType(type) {
+            ['Parabola', 'Hyperbola', 'Circle'].forEach(t => {
+                let btn = document.getElementById(`btn${t}`);
+                btn.className = "py-2 px-1 text-sm font-semibold rounded border transition-colors bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100";
+            });
+            
+            let activeBtn = document.getElementById(`btn${type.charAt(0).toUpperCase() + type.slice(1)}`);
+            activeBtn.className = "py-2 px-1 text-sm font-semibold rounded border transition-colors bg-indigo-100 text-indigo-700 border-indigo-200";
+
+            resetState(type);
+        }
+
+        function resetState(type) {
+            state.graphType = type;
+            state.h = 0;
+            state.k = 0;
+            state.signX = 1;
+            state.signY = 1;
+            state.isAnimating = false;
+            curveCanvas.style.transition = 'none';
+            curveCanvas.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            renderAll();
+        }
+
+        // --- Modals & Effects ---
+        function showModal(title, body, type) {
+            const modal = document.getElementById('customModal');
+            const modalContent = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalHeader = document.getElementById('modalHeader');
+            const modalBody = document.getElementById('modalBody');
+
+            modalTitle.innerText = title;
+            modalBody.innerHTML = body;
+
+            if(type === 'success') {
+                modalHeader.className = "p-6 pb-4 border-b bg-emerald-50 text-emerald-700";
+            } else {
+                modalHeader.className = "p-6 pb-4 border-b bg-amber-50 text-amber-700";
+            }
+
+            modal.classList.remove('hidden');
+            // Trigger reflow
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            const modalContent = document.getElementById('modalContent');
+            modal.classList.add('opacity-0');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        function openHelp() {
+            const modal = document.getElementById('helpModal');
+            const content = document.getElementById('helpModalContent');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+        }
+
+        function closeHelp() {
+            const modal = document.getElementById('helpModal');
+            const content = document.getElementById('helpModalContent');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        // Initialize
+        window.onload = () => {
+            renderAll();
+        };
+
+    </script>
+</body>
+</html>
