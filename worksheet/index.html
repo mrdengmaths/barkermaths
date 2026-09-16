@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barker Maths — Worksheet Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        barker: {
+                            50: '#eef8ff',
+                            100: '#d9efff',
+                            200: '#bce2ff',
+                            600: '#0077c2',
+                            700: '#005b94', // Barker College Primary Navy Blue
+                            800: '#004a7a',
+                            900: '#003a61'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- MathJax 3 for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Screen only scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+
+        /* ============================================================
+           PRINT STYLES FOR A4 WORKSHEET & PDF GENERATION
+           ============================================================ */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 11pt !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            #printContainer {
+                display: block !important;
+                padding: 10mm 15mm;
+            }
+
+            .print-page-header {
+                border-bottom: 2px solid #005b94;
+                padding-bottom: 12px;
+                margin-bottom: 20px;
+            }
+
+            .print-question-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 24px;
+                padding-bottom: 12px;
+            }
+
+            .print-answer-space {
+                border: 1px dashed #94a3b8;
+                border-radius: 6px;
+                background-color: #fafafa;
+                margin-top: 10px;
+                margin-bottom: 12px;
+            }
+
+            .print-solution-section {
+                break-before: page;
+                page-break-before: always;
+                border-top: 3px double #005b94;
+                padding-top: 20px;
+            }
+
+            .print-solution-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                border: 1px solid #e2e8f0;
+                padding: 12px;
+                margin-bottom: 16px;
+                border-radius: 6px;
+            }
+        }
+
+        @media screen {
+            #printContainer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- ================= TOP HEADER (SCREEN ONLY) ================= -->
+    <header class="no-print bg-white border-b border-slate-200 px-6 py-3.5 sticky top-0 z-30 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-barker-700 text-white flex items-center justify-center font-black text-xl shadow-md">
+                B
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight text-slate-900 flex items-center gap-2">
+                    Maths Question Bank
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-barker-100 text-barker-700">Year 11 Standard</span>
+                </h1>
+                <p class="text-xs text-slate-500">Barker College • Question Selection & Worksheet Generator</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="clearSelectedTray()" class="px-3.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-red-600 bg-slate-100 hover:bg-red-50 rounded-lg transition border border-slate-200">
+                Clear Selection
+            </button>
+            <button onclick="openPrintModal()" class="px-4 py-2 text-xs font-bold text-white bg-barker-700 hover:bg-barker-800 rounded-lg shadow-sm transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Print / Export PDF
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= MAIN LAYOUT (SCREEN ONLY) ================= -->
+    <div class="no-print flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- SIDEBAR FILTERS -->
+        <aside class="w-full md:w-80 bg-white border-r border-slate-200 p-5 shrink-0 flex flex-col gap-5 overflow-y-auto">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Filter Question Bank</h2>
+                <button onclick="resetFilters()" class="text-xs font-medium text-barker-700 hover:underline">Reset</button>
+            </div>
+
+            <!-- Search -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Keyword Search</label>
+                <div class="relative">
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="e.g. solve, volume, interest..." 
+                        class="w-full pl-8 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white transition">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+            </div>
+
+            <!-- Topic Filter -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Topic</label>
+                <select id="topicFilter" onchange="onTopicChange()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white transition">
+                    <option value="ALL">All Topics</option>
+                </select>
+            </div>
+
+            <!-- Subtopic Filter -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Subtopic</label>
+                <select id="subtopicFilter" onchange="applyFilters()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white transition">
+                    <option value="ALL">All Subtopics</option>
+                </select>
+            </div>
+
+            <!-- Difficulty Filter -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Difficulty</label>
+                <select id="difficultyFilter" onchange="applyFilters()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white transition">
+                    <option value="ALL">All Difficulties</option>
+                    <option value="Easy">Easy (Foundation)</option>
+                    <option value="Medium">Medium (Development)</option>
+                    <option value="Hard">Hard (Mastery)</option>
+                </select>
+            </div>
+
+            <!-- Checkbox: MC Only -->
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <label for="mcToggle" class="text-xs font-semibold text-slate-700 cursor-pointer">Multiple Choice Only</label>
+                <input type="checkbox" id="mcToggle" onchange="applyFilters()" class="w-4 h-4 text-barker-700 border-slate-300 rounded focus:ring-barker-700 cursor-pointer">
+            </div>
+
+            <!-- Summary counter -->
+            <div class="mt-auto pt-4 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center">
+                <span>Showing: <strong id="filterCountDisplay" class="text-slate-800">0</strong> questions</span>
+                <span>Total: <strong id="totalBankCountDisplay" class="text-slate-800">0</strong></span>
+            </div>
+        </aside>
+
+        <!-- MAIN QUESTION LIST FEED -->
+        <main class="flex-1 p-6 md:p-8 overflow-y-auto pb-36">
+            <div class="max-w-4xl mx-auto space-y-4" id="questionsFeed">
+                <!-- Question cards injected via JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= BOTTOM WORKSHEET TRAY (SCREEN ONLY) ================= -->
+    <div id="worksheetTray" class="no-print fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-barker-700 px-6 py-3.5 shadow-2xl z-40">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="bg-barker-50 border border-barker-200 px-4 py-2 rounded-xl flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-barker-700 text-white font-bold flex items-center justify-center text-sm" id="trayCountBadge">
+                        0
+                    </span>
+                    <div>
+                        <div class="text-xs font-bold text-slate-800 uppercase tracking-wide">Worksheet Tray</div>
+                        <div class="text-xs text-slate-500 font-medium">
+                            <span id="trayMarksTotal">0</span> Marks Total
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Solution & Criteria toggles for print -->
+                <div class="flex items-center gap-4 text-xs font-semibold text-slate-700">
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-barker-700">
+                        <input type="checkbox" id="includeSolutionsToggle" checked class="w-4 h-4 rounded text-barker-700 border-slate-300 focus:ring-barker-700">
+                        <span>Include Solutions Page</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5 w-full md:w-auto justify-end">
+                <button onclick="addRandomFilteredQuestion()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition border border-slate-300 flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    + Add Random Question
+                </button>
+                <button onclick="openPrintModal()" class="px-5 py-2 text-xs font-bold text-white bg-barker-700 hover:bg-barker-800 rounded-lg shadow-md transition flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    Print Worksheet
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= PRINT CONTAINER (PRINT ONLY) ================= -->
+    <div id="printContainer">
+        <!-- Worksheet Header -->
+        <div class="print-page-header">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <div>
+                    <h1 style="font-size: 16pt; font-weight: 800; color: #005b94; margin: 0;">BARKER COLLEGE</h1>
+                    <h2 style="font-size: 13pt; font-weight: 700; color: #1e293b; margin: 2px 0 0 0;">Year 11 Standard Mathematics — Practice Worksheet</h2>
+                </div>
+                <div style="text-align: right; font-size: 10pt; color: #475569;">
+                    <div><strong>Total Marks:</strong> <span id="printTotalMarks">0</span></div>
+                    <div><strong>Time Allowed:</strong> <span id="printTimeAllowed">--</span> mins</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 30px; margin-top: 14px; font-size: 10.5pt; color: #334155;">
+                <div style="flex: 1;"><strong>Student Name:</strong> ___________________________________</div>
+                <div style="width: 180px;"><strong>Date / Class:</strong> ______________</div>
+            </div>
+        </div>
+
+        <!-- Print Questions List -->
+        <div id="printQuestionsList"></div>
+
+        <!-- Print Solutions Section (Optional Page Break) -->
+        <div id="printSolutionsSection" class="print-solution-section">
+            <h2 style="font-size: 14pt; font-weight: 800; color: #005b94; margin-bottom: 12px; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px;">
+                WORKED SOLUTIONS &amp; MARKING CRITERIA
+            </h2>
+            <div id="printSolutionsList"></div>
+        </div>
+    </div>
+
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // State
+        let allQuestions = [];
+        let filteredQuestions = [];
+        let selectedQuestionIds = new Set();
+
+        // Load Question Bank on startup
+        async function loadQuestions() {
+            try {
+                const response = await fetch('./questions/y11-standard.json');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                allQuestions = await response.json();
+            } catch (err) {
+                console.warn("Fetch failed (likely file:// protocol without local server). Using embedded fallback data.", err);
+                // Fallback dataset for direct file viewing
+                allQuestions = [
+                    {
+                        "id": "Y11S-ALG-001", "course": "Year 11 Standard", "topic": "Algebra", "subtopic": "Formulae & Equations",
+                        "difficulty": "Easy", "type": "Short Answer", "marks": 2, "calculator": true, "lines": 4,
+                        "question": "Solve the linear equation for $x$:\n\n$$3(2x - 5) = 21$$",
+                        "solution": "Expand or divide by 3 first:\n\n$$\\begin{aligned}\n2x - 5 &= 7 \\\\\n2x &= 12 \\\\\nx &= 6\n\\end{aligned}$$",
+                        "criteria": ["1 mark: Correctly expands brackets or divides both sides by 3 ($2x - 5 = 7$)", "1 mark: Obtains the correct solution $x = 6$"]
+                    },
+                    {
+                        "id": "Y11S-ALG-002", "course": "Year 11 Standard", "topic": "Algebra", "subtopic": "Formulae & Equations",
+                        "difficulty": "Medium", "type": "Short Answer", "marks": 2, "calculator": false, "lines": 4,
+                        "question": "Make $a$ the subject of the formula:\n\n$$v = u + at$$",
+                        "solution": "Subtract $u$ from both sides, then divide by $t$:\n\n$$\\begin{aligned}\nv - u &= at \\\\\na &= \\frac{v - u}{t}\n\\end{aligned}$$",
+                        "criteria": ["1 mark: Subtracts $u$ from both sides ($at = v - u$)", "1 mark: Obtains the correct expression $a = \\frac{v - u}{t}$"]
+                    },
+                    {
+                        "id": "Y11S-ALG-003", "course": "Year 11 Standard", "topic": "Algebra", "subtopic": "Linear Relationships",
+                        "difficulty": "Medium", "type": "Multiple Choice", "marks": 1, "calculator": true, "lines": 0,
+                        "question": "What is the gradient ($m$) of the line with equation $2x - 4y = 12$?\n\n**A.** $m = 2$\n\n**B.** $m = \\frac{1}{2}$\n\n**C.** $m = -\\frac{1}{2}$\n\n**D.** $m = -3$",
+                        "solution": "Rearrange into $y = mx + c$:\n$$-4y = -2x + 12 \\implies y = \\frac{1}{2}x - 3$$\nTherefore $m = \\frac{1}{2}$.\n\n**Correct Option: B**",
+                        "criteria": ["1 mark: Selects option B"]
+                    },
+                    {
+                        "id": "Y11S-MEA-001", "course": "Year 11 Standard", "topic": "Measurement", "subtopic": "Perimeter, Area & Volume",
+                        "difficulty": "Easy", "type": "Short Answer", "marks": 2, "calculator": true, "lines": 4,
+                        "question": "A cylindrical water tank has a radius of $r = 1.4\\text{ m}$ and a height of $h = 3.5\\text{ m}$.\n\nCalculate the volume of the tank in cubic metres, correct to $1$ decimal place.",
+                        "solution": "Use $V = \\pi r^2 h$:\n$$V = \\pi \\times (1.4)^2 \\times 3.5 \\approx 21.6\\text{ m}^3$$",
+                        "criteria": ["1 mark: Correct substitution into $V = \\pi r^2 h$", "1 mark: Obtains $21.6\\text{ m}^3$ rounded to 1 d.p."]
+                    },
+                    {
+                        "id": "Y11S-MEA-002", "course": "Year 11 Standard", "topic": "Measurement", "subtopic": "Perimeter, Area & Volume",
+                        "difficulty": "Medium", "type": "Short Answer", "marks": 3, "calculator": true, "lines": 6,
+                        "question": "Use the Trapezoidal Rule with three measurements to estimate the surface area of a pond with parallel widths $d_f = 6\\text{ m}$, $d_m = 10\\text{ m}$, and $d_l = 8\\text{ m}$, spaced equally $h = 4\\text{ m}$ apart.\n\n$$\\text{Formula: } A \\approx \\frac{h}{2} \\Big(d_f + 2d_m + d_l\\Big)$$",
+                        "solution": "$$A \\approx \\frac{4}{2}(6 + 2(10) + 8) = 2 \\times 34 = 68\\text{ m}^2$$",
+                        "criteria": ["1 mark: Identifies correct values", "1 mark: Correct substitution with $2d_m$", "1 mark: Obtains final answer $68\\text{ m}^2$"]
+                    },
+                    {
+                        "id": "Y11S-FIN-001", "course": "Year 11 Standard", "topic": "Financial Mathematics", "subtopic": "Earning & Managing Money",
+                        "difficulty": "Easy", "type": "Multiple Choice", "marks": 1, "calculator": true, "lines": 0,
+                        "question": "Chloe works $35$ normal hours at $\\$24.00$/h, plus $4$ hours overtime at time-and-a-half ($1.5\\times$).\n\nWhat are Chloe's total gross earnings?\n\n**A.** $\\$840.00$\n\n**B.** $\\$936.00$\n\n**C.** $\\$984.00$\n\n**D.** $\\$1032.00$",
+                        "solution": "Normal: $35 \\times 24 = \\$840$\nOvertime: $4 \\times (1.5 \\times 24) = 4 \\times 36 = \\$144$\nTotal: $\\$840 + \\$144 = \\$984$\n\n**Correct Option: C**",
+                        "criteria": ["1 mark: Selects option C"]
+                    },
+                    {
+                        "id": "Y11S-FIN-002", "course": "Year 11 Standard", "topic": "Financial Mathematics", "subtopic": "Investing Money",
+                        "difficulty": "Medium", "type": "Short Answer", "marks": 2, "calculator": true, "lines": 4,
+                        "question": "Oliver invests $\\$6\\,500$ at a simple interest rate of $4.5\\%$ p.a. for $3$ years.\n\n**(a)** Calculate the interest earned.\n**(b)** Calculate the total value of the investment.",
+                        "solution": "(a) $I = Prn = 6500 \\times 0.045 \\times 3 = \\$877.50$\n(b) Total $A = 6500 + 877.50 = \\$7\\,377.50$",
+                        "criteria": ["1 mark: Calculates interest $I = \\$877.50$", "1 mark: Calculates total amount $A = \\$7\\,377.50$"]
+                    },
+                    {
+                        "id": "Y11S-FIN-003", "course": "Year 11 Standard", "topic": "Financial Mathematics", "subtopic": "Investing Money",
+                        "difficulty": "Hard", "type": "Short Answer", "marks": 3, "calculator": true, "lines": 6,
+                        "question": "A sum of $\\$12\\,000$ is invested at $6\\%$ p.a. compounded quarterly for $4$ years.\n\nCalculate the final amount $A$ and the total compound interest earned to the nearest cent.",
+                        "solution": "$r = \\frac{0.06}{4} = 0.015$, $n = 4 \\times 4 = 16$\n$$A = 12000(1.015)^{16} \\approx \\$15\\,227.83$$\n$$\\text{Interest } I = 15227.83 - 12000 = \\$3\\,227.83$$",
+                        "criteria": ["1 mark: Adjusts rate ($0.015$) and periods ($16$)", "1 mark: Obtains final amount $\\$15\\,227.83$", "1 mark: Calculates interest $\\$3\\,227.83$"]
+                    },
+                    {
+                        "id": "Y11S-STA-001", "course": "Year 11 Standard", "topic": "Statistical Analysis", "subtopic": "Data Classification & Summary",
+                        "difficulty": "Easy", "type": "Multiple Choice", "marks": 1, "calculator": false, "lines": 0,
+                        "question": "Which of the following variables is **quantitative continuous**?\n\n**A.** The number of students absent from class today\n\n**B.** The finishing places in a 100m sprint (1st, 2nd, 3rd)\n\n**C.** The time taken (in seconds) to complete a puzzle\n\n**D.** Postcodes of Australian suburbs",
+                        "solution": "Time is a continuous measurement.\n\n**Correct Option: C**",
+                        "criteria": ["1 mark: Selects option C"]
+                    },
+                    {
+                        "id": "Y11S-STA-002", "course": "Year 11 Standard", "topic": "Statistical Analysis", "subtopic": "Measures of Spread",
+                        "difficulty": "Hard", "type": "Short Answer", "marks": 3, "calculator": true, "lines": 6,
+                        "question": "Consider the ordered dataset of test scores for $9$ students:\n\n$$12,\\; 15,\\; 18,\\; 19,\\; 22,\\; 25,\\; 29,\\; 31,\\; 35$$\n\n**(a)** State the median score.\n**(b)** Determine the lower quartile ($Q_1$) and upper quartile ($Q_3$).\n**(c)** Calculate the Interquartile Range (IQR).",
+                        "solution": "(a) Median $= 22$\n(b) $Q_1 = \\frac{15+18}{2} = 16.5$, $Q_3 = \\frac{29+31}{2} = 30$\n(c) $\\text{IQR} = 30 - 16.5 = 13.5$",
+                        "criteria": ["1 mark: Median $22$", "1 mark: $Q_1 = 16.5$ and $Q_3 = 30$", "1 mark: $\\text{IQR} = 13.5$"]
+                    }
+                ];
+            }
+
+            // Select first 3 questions by default for instant worksheet demo
+            allQuestions.slice(0, 3).forEach(q => selectedQuestionIds.add(q.id));
+
+            populateTopicFilters();
+            applyFilters();
+            updateTrayUI();
+        }
+
+        // Populate Topic and Subtopic Dropdowns
+        function populateTopicFilters() {
+            const topicSelect = document.getElementById('topicFilter');
+            const topics = [...new Set(allQuestions.map(q => q.topic))];
+            
+            topics.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.innerText = t;
+                topicSelect.appendChild(opt);
+            });
+        }
+
+        function onTopicChange() {
+            const selectedTopic = document.getElementById('topicFilter').value;
+            const subtopicSelect = document.getElementById('subtopicFilter');
+            subtopicSelect.innerHTML = '<option value="ALL">All Subtopics</option>';
+
+            const relevantQuestions = selectedTopic === 'ALL' 
+                ? allQuestions 
+                : allQuestions.filter(q => q.topic === selectedTopic);
+
+            const subtopics = [...new Set(relevantQuestions.map(q => q.subtopic))];
+            subtopics.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.innerText = s;
+                subtopicSelect.appendChild(opt);
+            });
+
+            applyFilters();
+        }
+
+        // Filter Questions
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+            const topic = document.getElementById('topicFilter').value;
+            const subtopic = document.getElementById('subtopicFilter').value;
+            const difficulty = document.getElementById('difficultyFilter').value;
+            const mcOnly = document.getElementById('mcToggle').checked;
+
+            filteredQuestions = allQuestions.filter(q => {
+                if (topic !== 'ALL' && q.topic !== topic) return false;
+                if (subtopic !== 'ALL' && q.subtopic !== subtopic) return false;
+                if (difficulty !== 'ALL' && q.difficulty !== difficulty) return false;
+                if (mcOnly && q.type !== 'Multiple Choice') return false;
+                if (searchTerm) {
+                    const matchQ = q.question.toLowerCase().includes(searchTerm);
+                    const matchId = q.id.toLowerCase().includes(searchTerm);
+                    const matchTopic = q.topic.toLowerCase().includes(searchTerm);
+                    if (!matchQ && !matchId && !matchTopic) return false;
+                }
+                return true;
+            });
+
+            renderQuestionsFeed();
+            document.getElementById('filterCountDisplay').innerText = filteredQuestions.length;
+            document.getElementById('totalBankCountDisplay').innerText = allQuestions.length;
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('topicFilter').value = 'ALL';
+            document.getElementById('subtopicFilter').innerHTML = '<option value="ALL">All Subtopics</option>';
+            document.getElementById('difficultyFilter').value = 'ALL';
+            document.getElementById('mcToggle').checked = false;
+            applyFilters();
+        }
+
+        // Render Question Cards
+        function renderQuestionsFeed() {
+            const container = document.getElementById('questionsFeed');
+            container.innerHTML = '';
+
+            if (filteredQuestions.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-500">
+                        <p class="font-semibold text-base mb-1">No questions match your current filters.</p>
+                        <p class="text-xs">Try resetting or broadening your criteria in the sidebar.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredQuestions.forEach(q => {
+                const isSelected = selectedQuestionIds.has(q.id);
+                
+                // Difficulty badge color
+                let diffBadge = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                if (q.difficulty === 'Medium') diffBadge = 'bg-amber-100 text-amber-800 border-amber-200';
+                if (q.difficulty === 'Hard') diffBadge = 'bg-rose-100 text-rose-800 border-rose-200';
+
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-2xl border transition-all duration-200 p-6 ${
+                    isSelected ? 'border-barker-700 ring-2 ring-barker-100 shadow-md' : 'border-slate-200 hover:border-slate-300 shadow-sm'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-4 pb-3 border-b border-slate-100 mb-4">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">${q.id}</span>
+                            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">${q.topic} › ${q.subtopic}</span>
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100">${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}</span>
+                            ${q.calculator ? '<span class="text-xs text-slate-400 font-medium" title="Calculator Allowed">🧮 Calc</span>' : ''}
+                        </div>
+
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" onchange="toggleSelectQuestion('${q.id}', this.checked)" ${isSelected ? 'checked' : ''} 
+                                class="w-5 h-5 text-barker-700 rounded border-slate-300 focus:ring-barker-700 cursor-pointer">
+                            <span class="text-xs font-bold ${isSelected ? 'text-barker-700' : 'text-slate-600'}">
+                                ${isSelected ? 'Added' : 'Add'}
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- Question Body -->
+                    <div class="text-slate-800 text-sm leading-relaxed whitespace-pre-line mb-4 math-content font-medium">
+                        ${q.question}
+                    </div>
+
+                    <!-- Solution Accordion Button -->
+                    <div class="pt-3 border-t border-slate-100">
+                        <button onclick="toggleSolutionView('sol-${q.id}')" class="text-xs font-bold text-slate-500 hover:text-barker-700 flex items-center gap-1 transition">
+                            <span>🔍 View Worked Solution & Rubric</span>
+                        </button>
+                        
+                        <div id="sol-${q.id}" class="hidden mt-3 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-2">
+                            <div class="font-bold text-slate-900 uppercase tracking-wide text-[10px]">Worked Solution:</div>
+                            <div class="whitespace-pre-line leading-relaxed font-sans">${q.solution}</div>
+                            
+                            <div class="font-bold text-slate-900 uppercase tracking-wide text-[10px] pt-2 border-t border-slate-200">Marking Criteria:</div>
+                            <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                ${q.criteria.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            // Typeset MathJax equations
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([container]).catch(err => console.error(err));
+            }
+        }
+
+        function toggleSolutionView(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        // Selection & Worksheet Tray
+        function toggleSelectQuestion(id, isSelected) {
+            if (isSelected) {
+                selectedQuestionIds.add(id);
+            } else {
+                selectedQuestionIds.delete(id);
+            }
+            renderQuestionsFeed();
+            updateTrayUI();
+        }
+
+        function clearSelectedTray() {
+            selectedQuestionIds.clear();
+            renderQuestionsFeed();
+            updateTrayUI();
+        }
+
+        function addRandomFilteredQuestion() {
+            const unselected = filteredQuestions.filter(q => !selectedQuestionIds.has(q.id));
+            if (unselected.length === 0) {
+                alert("All questions matching current filter are already in your worksheet!");
+                return;
+            }
+            const randomQ = unselected[Math.floor(Math.random() * unselected.length)];
+            selectedQuestionIds.add(randomQ.id);
+            renderQuestionsFeed();
+            updateTrayUI();
+        }
+
+        function updateTrayUI() {
+            const count = selectedQuestionIds.size;
+            document.getElementById('trayCountBadge').innerText = count;
+
+            let totalMarks = 0;
+            allQuestions.forEach(q => {
+                if (selectedQuestionIds.has(q.id)) {
+                    totalMarks += (q.marks || 1);
+                }
+            });
+
+            document.getElementById('trayMarksTotal').innerText = totalMarks;
+        }
+
+        // Print / PDF Generation
+        function openPrintModal() {
+            if (selectedQuestionIds.size === 0) {
+                alert("Please add at least 1 question to your worksheet before printing!");
+                return;
+            }
+
+            const selectedList = allQuestions.filter(q => selectedQuestionIds.has(q.id));
+            const includeSolutions = document.getElementById('includeSolutionsToggle').checked;
+
+            let totalMarks = 0;
+            selectedList.forEach(q => totalMarks += (q.marks || 1));
+
+            // Populate Print Page
+            document.getElementById('printTotalMarks').innerText = totalMarks;
+            document.getElementById('printTimeAllowed').innerText = Math.round(totalMarks * 1.5); // ~1.5 min per mark standard
+
+            // Generate Print Questions
+            const printQList = document.getElementById('printQuestionsList');
+            printQList.innerHTML = '';
+
+            selectedList.forEach((q, index) => {
+                const qBlock = document.createElement('div');
+                qBlock.className = 'print-question-card';
+
+                // Answer space box height
+                const lineCount = q.lines || 4;
+                const spaceHeight = q.type === 'Multiple Choice' ? 0 : lineCount * 32;
+
+                qBlock.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                        <span style="font-weight: 800; font-size: 11pt; color: #0f172a;">
+                            Question ${index + 1}
+                            <span style="font-size: 8.5pt; font-weight: normal; color: #64748b; margin-left: 8px;">(${q.topic} › ${q.subtopic})</span>
+                        </span>
+                        <span style="font-weight: 700; font-size: 10pt; color: #005b94;">[${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}]</span>
+                    </div>
+
+                    <div style="font-size: 10.5pt; line-height: 1.5; margin-bottom: 8px; white-space: pre-line;">
+                        ${q.question}
+                    </div>
+
+                    ${spaceHeight > 0 ? `<div class="print-answer-space" style="height: ${spaceHeight}px;"></div>` : ''}
+                `;
+                printQList.appendChild(qBlock);
+            });
+
+            // Generate Solutions Section
+            const solSection = document.getElementById('printSolutionsSection');
+            const solList = document.getElementById('printSolutionsList');
+            solList.innerHTML = '';
+
+            if (includeSolutions) {
+                solSection.style.display = 'block';
+                selectedList.forEach((q, index) => {
+                    const solBlock = document.createElement('div');
+                    solBlock.className = 'print-solution-card';
+                    solBlock.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <strong style="color: #005b94; font-size: 10.5pt;">Question ${index + 1} (${q.id})</strong>
+                            <span style="font-weight: bold; font-size: 9.5pt;">${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}</span>
+                        </div>
+                        <div style="font-size: 9.5pt; line-height: 1.4; margin-bottom: 6px; white-space: pre-line;">
+                            <strong>Solution:</strong>\n${q.solution}
+                        </div>
+                        <div style="font-size: 8.5pt; color: #475569;">
+                            <strong>Criteria:</strong>
+                            <ul style="margin: 2px 0 0 16px; padding: 0;">
+                                ${q.criteria.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    solList.appendChild(solBlock);
+                });
+            } else {
+                solSection.style.display = 'none';
+            }
+
+            // Typeset MathJax in print container then trigger print
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([document.getElementById('printContainer')]).then(() => {
+                    setTimeout(() => window.print(), 200);
+                });
+            } else {
+                window.print();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadQuestions);
+    </script>
+</body>
+</html>

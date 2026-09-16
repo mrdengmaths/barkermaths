@@ -1,0 +1,172 @@
+[
+  {
+    "id": "Y11S-ALG-001",
+    "course": "Year 11 Standard",
+    "topic": "Algebra",
+    "subtopic": "Formulae & Equations",
+    "difficulty": "Easy",
+    "type": "Short Answer",
+    "marks": 2,
+    "calculator": true,
+    "lines": 4,
+    "question": "Solve the linear equation for $x$:\n\n$$3(2x - 5) = 21$$",
+    "solution": "Expand or divide by 3 first:\n\n$$\\begin{aligned}\n2x - 5 &= 7 \\\\\n2x &= 12 \\\\\nx &= 6\n\\end{aligned}$$",
+    "criteria": [
+      "1 mark: Correctly expands brackets or divides both sides by 3 ($2x - 5 = 7$ or $6x - 15 = 21$)",
+      "1 mark: Obtains the correct solution $x = 6$"
+    ]
+  },
+  {
+    "id": "Y11S-ALG-002",
+    "course": "Year 11 Standard",
+    "topic": "Algebra",
+    "subtopic": "Formulae & Equations",
+    "difficulty": "Medium",
+    "type": "Short Answer",
+    "marks": 2,
+    "calculator": false,
+    "lines": 4,
+    "question": "Make $a$ the subject of the formula:\n\n$$v = u + at$$",
+    "solution": "Subtract $u$ from both sides, then divide by $t$:\n\n$$\\begin{aligned}\nv - u &= at \\\\\na &= \\frac{v - u}{t}\n\\end{aligned}$$",
+    "criteria": [
+      "1 mark: Subtracts $u$ from both sides ($at = v - u$)",
+      "1 mark: Obtains the correct expression $a = \\frac{v - u}{t}$"
+    ]
+  },
+  {
+    "id": "Y11S-ALG-003",
+    "course": "Year 11 Standard",
+    "topic": "Algebra",
+    "subtopic": "Linear Relationships",
+    "difficulty": "Medium",
+    "type": "Multiple Choice",
+    "marks": 1,
+    "calculator": true,
+    "lines": 0,
+    "question": "What is the gradient ($m$) of the line with equation $2x - 4y = 12$?\n\n**A.** $m = 2$\n\n**B.** $m = \\frac{1}{2}$\n\n**C.** $m = -\\frac{1}{2}$\n\n**D.** $m = -3$",
+    "solution": "Rearrange into gradient-intercept form $y = mx + c$:\n\n$$\\begin{aligned}\n-4y &= -2x + 12 \\\\\ny &= \\frac{-2}{-4}x + \\frac{12}{-4} \\\\\ny &= \\frac{1}{2}x - 3\n\\end{aligned}$$\n\nTherefore, the gradient $m = \\frac{1}{2}$.\n\n**Correct Option: B**",
+    "criteria": [
+      "1 mark: Selects option B"
+    ]
+  },
+  {
+    "id": "Y11S-MEA-001",
+    "course": "Year 11 Standard",
+    "topic": "Measurement",
+    "subtopic": "Perimeter, Area & Volume",
+    "difficulty": "Easy",
+    "type": "Short Answer",
+    "marks": 2,
+    "calculator": true,
+    "lines": 4,
+    "question": "A cylindrical water tank has a radius of $r = 1.4\\text{ m}$ and a height of $h = 3.5\\text{ m}$.\n\nCalculate the volume of the tank in cubic metres, correct to $1$ decimal place.",
+    "solution": "Use the volume formula for a cylinder $V = \\pi r^2 h$:\n\n$$\\begin{aligned}\nV &= \\pi \\times (1.4)^2 \\times 3.5 \\\\\n&= \\pi \\times 1.96 \\times 3.5 \\\\\n&\\approx 21.5513... \\\\\n&\\approx 21.6\\text{ m}^3\n\\end{aligned}$$",
+    "criteria": [
+      "1 mark: Correct substitution into $V = \\pi r^2 h$",
+      "1 mark: Obtains $21.6\\text{ m}^3$ rounded correctly to 1 decimal place"
+    ]
+  },
+  {
+    "id": "Y11S-MEA-002",
+    "course": "Year 11 Standard",
+    "topic": "Measurement",
+    "subtopic": "Perimeter, Area & Volume",
+    "difficulty": "Medium",
+    "type": "Short Answer",
+    "marks": 3,
+    "calculator": true,
+    "lines": 6,
+    "question": "Use the Trapezoidal Rule with three measurements to estimate the surface area of a pond with parallel width measurements $d_f = 6\\text{ m}$, $d_m = 10\\text{ m}$, and $d_l = 8\\text{ m}$, spaced equally $h = 4\\text{ m}$ apart.\n\n$$\\text{Formula: } A \\approx \\frac{h}{2} \\Big(d_f + 2d_m + d_l\\Big)$$",
+    "solution": "Substitute the values $h = 4$, $d_f = 6$, $d_m = 10$, and $d_l = 8$ into the composite trapezoidal rule:\n\n$$\\begin{aligned}\nA &\\approx \\frac{4}{2} \\Big( 6 + 2(10) + 8 \\Big) \\\\\n&= 2 \\times (6 + 20 + 8) \\\\\n&= 2 \\times 34 \\\\\n&= 68\\text{ m}^2\n\\end{aligned}$$",
+    "criteria": [
+      "1 mark: Identifies correct values for $h$, $d_f$, $d_m$, and $d_l$",
+      "1 mark: Correctly substitutes into formula with $2d_m$",
+      "1 mark: Obtains final answer $68\\text{ m}^2$"
+    ]
+  },
+  {
+    "id": "Y11S-FIN-001",
+    "course": "Year 11 Standard",
+    "topic": "Financial Mathematics",
+    "subtopic": "Earning & Managing Money",
+    "difficulty": "Easy",
+    "type": "Multiple Choice",
+    "marks": 1,
+    "calculator": true,
+    "lines": 0,
+    "question": "Chloe works $35$ normal hours at a rate of $\\$24.00$ per hour, plus $4$ hours of overtime paid at time-and-a-half ($1.5\\times$).\n\nWhat are Chloe's total gross earnings for the week?\n\n**A.** $\\$840.00$\n\n**B.** $\\$936.00$\n\n**C.** $\\$984.00$\n\n**D.** $\\$1032.00$",
+    "solution": "Calculate normal pay and overtime pay:\n\n$$\\begin{aligned}\n\\text{Normal Pay} &= 35 \\times \\$24.00 = \\$840.00 \\\\\n\\text{Overtime Rate} &= 1.5 \\times \\$24.00 = \\$36.00/\\text{h} \\\\\n\\text{Overtime Pay} &= 4 \\times \\$36.00 = \\$144.00 \\\\\n\\text{Total Earnings} &= \\$840.00 + \\$144.00 = \\$984.00\n\\end{aligned}$$\n\n**Correct Option: C**",
+    "criteria": [
+      "1 mark: Selects option C"
+    ]
+  },
+  {
+    "id": "Y11S-FIN-002",
+    "course": "Year 11 Standard",
+    "topic": "Financial Mathematics",
+    "subtopic": "Investing Money",
+    "difficulty": "Medium",
+    "type": "Short Answer",
+    "marks": 2,
+    "calculator": true,
+    "lines": 4,
+    "question": "Oliver invests $\\$6\\,500$ at a simple interest rate of $4.5\\%$ per annum for $3$ years.\n\n**(a)** Calculate the interest earned.\n\n**(b)** Calculate the total value of the investment at the end of $3$ years.",
+    "solution": "**(a)** Using $I = Prn$:\n$$I = 6500 \\times 0.045 \\times 3 = \\$877.50$$\n\n**(b)** Total value $A = P + I$:\n$$A = 6500 + 877.50 = \\$7\\,377.50$$",
+    "criteria": [
+      "1 mark: Correctly calculates interest $I = \\$877.50$",
+      "1 mark: Correctly calculates total amount $A = \\$7\\,377.50$"
+    ]
+  },
+  {
+    "id": "Y11S-FIN-003",
+    "course": "Year 11 Standard",
+    "topic": "Financial Mathematics",
+    "subtopic": "Investing Money",
+    "difficulty": "Hard",
+    "type": "Short Answer",
+    "marks": 3,
+    "calculator": true,
+    "lines": 6,
+    "question": "A sum of $\\$12\\,000$ is invested at $6\\%$ per annum compounded quarterly for $4$ years.\n\nCalculate the final amount $A$ and the total compound interest earned, correct to the nearest cent.",
+    "solution": "Convert annual rate and years into compounding periods:\n- $P = 12\\,000$\n- $r = \\frac{0.06}{4} = 0.015$ per quarter\n- $n = 4 \\times 4 = 16$ compounding quarters\n\n$$\\begin{aligned}\nA &= P(1 + r)^n \\\\\n&= 12000(1 + 0.015)^{16} \\\\\n&= 12000(1.015)^{16} \\\\\n&\\approx 12000 \\times 1.2689855 \\\\\n&\\approx \\$15\\,227.83\n\\end{aligned}$$\n\n$$\\begin{aligned}\n\\text{Interest } I &= A - P \\\\\n&= 15227.83 - 12000 \\\\\n&= \\$3\\,227.83\n\\end{aligned}$$",
+    "criteria": [
+      "1 mark: Adjusts rate ($r = 0.015$) and periods ($n = 16$) for quarterly compounding",
+      "1 mark: Correctly computes final amount $A = \\$15\\,227.83$",
+      "1 mark: Correctly finds compound interest $I = \\$3\\,227.83$"
+    ]
+  },
+  {
+    "id": "Y11S-STA-001",
+    "course": "Year 11 Standard",
+    "topic": "Statistical Analysis",
+    "subtopic": "Data Classification & Summary",
+    "difficulty": "Easy",
+    "type": "Multiple Choice",
+    "marks": 1,
+    "calculator": false,
+    "lines": 0,
+    "question": "Which of the following variables is **quantitative continuous**?\n\n**A.** The number of students absent from class today\n\n**B.** The finishing places in a 100m sprint (1st, 2nd, 3rd)\n\n**C.** The time taken (in seconds) to complete a puzzle\n\n**D.** Postcodes of Australian suburbs",
+    "solution": "Quantitative continuous variables are numerical measurements that can take any value within an interval.\n\n- Time is a continuous measurement.\n- Number of students is discrete.\n- Finishing place is ordinal categorical.\n- Postcodes are nominal categorical.\n\n**Correct Option: C**",
+    "criteria": [
+      "1 mark: Selects option C"
+    ]
+  },
+  {
+    "id": "Y11S-STA-002",
+    "course": "Year 11 Standard",
+    "topic": "Statistical Analysis",
+    "subtopic": "Measures of Spread",
+    "difficulty": "Hard",
+    "type": "Short Answer",
+    "marks": 3,
+    "calculator": true,
+    "lines": 6,
+    "question": "Consider the ordered dataset representing test scores of $9$ students:\n\n$$12,\\; 15,\\; 18,\\; 19,\\; 22,\\; 25,\\; 29,\\; 31,\\; 35$$\n\n**(a)** State the median score.\n\n**(b)** Determine the lower quartile ($Q_1$) and upper quartile ($Q_3$).\n\n**(c)** Calculate the Interquartile Range (IQR).",
+    "solution": "There are $n = 9$ scores.\n\n**(a)** Median position $= \\frac{9+1}{2} = 5\\text{th score} = 22$.\n\n**(b)** Lower half: $[12, 15, 18, 19]$\n$$Q_1 = \\frac{15 + 18}{2} = 16.5$$\n\nUpper half: $[25, 29, 31, 35]$\n$$Q_3 = \\frac{29 + 31}{2} = 30$$\n\n**(c)** $\\text{IQR} = Q_3 - Q_1 = 30 - 16.5 = 13.5$",
+    "criteria": [
+      "1 mark: Correct median of $22$",
+      "1 mark: Correct $Q_1 = 16.5$ and $Q_3 = 30$",
+      "1 mark: Correct $\\text{IQR} = 13.5$"
+    ]
+  }
+]
