@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barker Maths — Worksheet Generator</title>
+    <title>Barker Maths — Question Bank & Practice</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -15,7 +15,10 @@
                             50: '#eef8ff',
                             100: '#d9efff',
                             200: '#bce2ff',
-                            600: '#0077c2',
+                            300: '#8acaff',
+                            400: '#52aaff',
+                            500: '#2687f5',
+                            600: '#0f68d9',
                             700: '#005b94', // Barker College Primary Navy Blue
                             800: '#004a7a',
                             900: '#003a61'
@@ -33,7 +36,13 @@
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
                 processEscapes: true
             },
-            svg: { fontCache: 'global' }
+            svg: { fontCache: 'global' },
+            startup: {
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    window.mathJaxReady = true;
+                }
+            }
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -124,39 +133,64 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
     <!-- ================= TOP HEADER (SCREEN ONLY) ================= -->
-    <header class="no-print bg-white border-b border-slate-200 px-6 py-3.5 sticky top-0 z-30 shadow-sm flex items-center justify-between">
+    <header class="no-print bg-white border-b border-slate-200 px-6 py-3 sticky top-0 z-30 shadow-sm flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-barker-700 text-white flex items-center justify-center font-black text-xl shadow-md">
+            <a href="../" class="w-9 h-9 rounded-xl bg-barker-700 text-white flex items-center justify-center font-black text-lg shadow hover:bg-barker-800 transition" title="Back to Home">
                 B
-            </div>
+            </a>
             <div>
-                <h1 class="font-bold text-lg leading-tight text-slate-900 flex items-center gap-2">
+                <h1 class="font-bold text-base md:text-lg leading-tight text-slate-900 flex items-center gap-2">
                     Maths Question Bank
-                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-barker-100 text-barker-700">Year 11 Standard</span>
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-barker-100 text-barker-700">Year 11 Standard</span>
                 </h1>
-                <p class="text-xs text-slate-500">Barker College • Question Selection & Worksheet Generator</p>
+                <p class="text-xs text-slate-500">Barker College • Worksheet Generator &amp; Practice Lab</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-3">
-            <button onclick="clearSelectedTray()" class="px-3.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-red-600 bg-slate-100 hover:bg-red-50 rounded-lg transition border border-slate-200">
-                Clear Selection
+        <!-- Mode Navigation Tabs -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <button id="navTabBuilder" onclick="switchView('builder')" class="px-4 py-1.5 text-xs font-bold rounded-lg transition text-white bg-barker-700 shadow-sm flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Worksheet Builder
             </button>
-            <button onclick="openPrintModal()" class="px-4 py-2 text-xs font-bold text-white bg-barker-700 hover:bg-barker-800 rounded-lg shadow-sm transition flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <button id="navTabPractice" onclick="switchView('practice')" class="px-4 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                Practice Mode
+            </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+            <button onclick="openTrayModal()" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition flex items-center gap-1.5">
+                <span>Tray</span>
+                <span id="topTrayBadge" class="px-1.5 py-0.2 bg-barker-700 text-white rounded-full font-bold text-[10px]">0</span>
+            </button>
+            <button onclick="openPrintModal()" class="px-4 py-1.5 text-xs font-bold text-white bg-barker-700 hover:bg-barker-800 rounded-lg shadow transition flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                 Print / Export PDF
             </button>
         </div>
     </header>
 
-    <!-- ================= MAIN LAYOUT (SCREEN ONLY) ================= -->
-    <div class="no-print flex-1 flex flex-col md:flex-row overflow-hidden">
+    <!-- ================= VIEW 1: WORKSHEET BUILDER ================= -->
+    <div id="builderView" class="no-print flex-1 flex flex-col md:flex-row overflow-hidden">
         
         <!-- SIDEBAR FILTERS -->
-        <aside class="w-full md:w-80 bg-white border-r border-slate-200 p-5 shrink-0 flex flex-col gap-5 overflow-y-auto">
+        <aside class="w-full md:w-80 bg-white border-r border-slate-200 p-5 shrink-0 flex flex-col gap-4 overflow-y-auto">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Filter Question Bank</h2>
                 <button onclick="resetFilters()" class="text-xs font-medium text-barker-700 hover:underline">Reset</button>
+            </div>
+
+            <!-- Course Select -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Course</label>
+                <select id="courseFilter" onchange="onCourseChange()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white font-medium text-slate-800 transition">
+                    <option value="y11-standard">Year 11 Standard (10 Questions)</option>
+                    <option value="y11-adv" disabled>Year 11 Advanced (Coming Soon)</option>
+                    <option value="y12-standard" disabled>Year 12 Standard (Coming Soon)</option>
+                    <option value="y12-adv" disabled>Year 12 Advanced (Coming Soon)</option>
+                </select>
             </div>
 
             <!-- Search -->
@@ -202,9 +236,19 @@
                 <input type="checkbox" id="mcToggle" onchange="applyFilters()" class="w-4 h-4 text-barker-700 border-slate-300 rounded focus:ring-barker-700 cursor-pointer">
             </div>
 
+            <!-- Quick Filter Actions -->
+            <div class="pt-3 border-t border-slate-100 flex gap-2">
+                <button onclick="selectAllFiltered()" class="flex-1 py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition text-center">
+                    + Add All Filtered
+                </button>
+                <button onclick="clearSelectedTray()" class="flex-1 py-1.5 px-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 text-xs font-semibold rounded-lg transition text-center">
+                    Clear Tray
+                </button>
+            </div>
+
             <!-- Summary counter -->
             <div class="mt-auto pt-4 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center">
-                <span>Showing: <strong id="filterCountDisplay" class="text-slate-800">0</strong> questions</span>
+                <span>Showing: <strong id="filterCountDisplay" class="text-slate-800">0</strong></span>
                 <span>Total: <strong id="totalBankCountDisplay" class="text-slate-800">0</strong></span>
             </div>
         </aside>
@@ -217,17 +261,71 @@
         </main>
     </div>
 
+    <!-- ================= VIEW 2: INTERACTIVE PRACTICE MODE ================= -->
+    <div id="practiceView" class="no-print hidden flex-1 flex flex-col bg-slate-100 overflow-y-auto p-4 md:p-8">
+        <div class="max-w-3xl mx-auto w-full flex-1 flex flex-col gap-5">
+            
+            <!-- Practice Header Bar -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 bg-barker-100 text-barker-800 font-bold rounded-lg text-xs" id="practiceProgressBadge">
+                        Question 1 of 1
+                    </span>
+                    <span id="practiceTopicTag" class="text-xs font-semibold text-slate-600">
+                        Topic
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- Timer -->
+                    <div class="flex items-center gap-1.5 text-xs font-mono font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span id="practiceTimer">00:00</span>
+                    </div>
+
+                    <!-- Source Selector -->
+                    <select id="practiceSourceSelect" onchange="startPracticeSession()" class="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700">
+                        <option value="filtered">Practice: Current Filter</option>
+                        <option value="tray">Practice: Selected Tray</option>
+                        <option value="all">Practice: All Bank</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Question Card Area -->
+            <div id="practiceCardContainer" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 flex-1 flex flex-col justify-between">
+                <!-- Injected via renderPracticeCurrentQuestion() -->
+            </div>
+
+            <!-- Bottom Navigation for Practice -->
+            <div class="flex items-center justify-between gap-3">
+                <button onclick="prevPracticeQuestion()" id="practicePrevBtn" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm">
+                    ← Previous
+                </button>
+                <button onclick="toggleFlagRedo()" id="practiceFlagBtn" class="px-3.5 py-2 bg-white border border-slate-200 text-slate-600 text-xs font-semibold rounded-xl hover:bg-amber-50 hover:text-amber-700 transition flex items-center gap-1.5 shadow-sm">
+                    <span>🚩 Flag for Redo</span>
+                </button>
+                <button onclick="nextPracticeQuestion()" id="practiceNextBtn" class="px-5 py-2 bg-barker-700 text-white text-xs font-bold rounded-xl hover:bg-barker-800 transition flex items-center gap-1.5 shadow-sm">
+                    Next Question →
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= BOTTOM WORKSHEET TRAY (SCREEN ONLY) ================= -->
     <div id="worksheetTray" class="no-print fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-barker-700 px-6 py-3.5 shadow-2xl z-40">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             
             <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="bg-barker-50 border border-barker-200 px-4 py-2 rounded-xl flex items-center gap-3">
+                <div onclick="openTrayModal()" class="bg-barker-50 border border-barker-200 px-4 py-2 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-barker-100 transition">
                     <span class="w-8 h-8 rounded-lg bg-barker-700 text-white font-bold flex items-center justify-center text-sm" id="trayCountBadge">
                         0
                     </span>
                     <div>
-                        <div class="text-xs font-bold text-slate-800 uppercase tracking-wide">Worksheet Tray</div>
+                        <div class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1">
+                            Worksheet Tray
+                            <span class="text-[10px] text-barker-700 font-normal">✎ Manage</span>
+                        </div>
                         <div class="text-xs text-slate-500 font-medium">
                             <span id="trayMarksTotal">0</span> Marks Total
                         </div>
@@ -246,7 +344,7 @@
             <div class="flex items-center gap-2.5 w-full md:w-auto justify-end">
                 <button onclick="addRandomFilteredQuestion()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition border border-slate-300 flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                    + Add Random Question
+                    + Add Random
                 </button>
                 <button onclick="openPrintModal()" class="px-5 py-2 text-xs font-bold text-white bg-barker-700 hover:bg-barker-800 rounded-lg shadow-md transition flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
@@ -254,6 +352,37 @@
                 </button>
             </div>
 
+        </div>
+    </div>
+
+    <!-- ================= TRAY MANAGEMENT MODAL (SCREEN ONLY) ================= -->
+    <div id="trayModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+                <div>
+                    <h3 class="font-bold text-base text-slate-900">Manage Selected Worksheet Questions</h3>
+                    <p class="text-xs text-slate-500">Reorder questions, adjust printed answer lines, or remove items.</p>
+                </div>
+                <button onclick="closeTrayModal()" class="text-slate-400 hover:text-slate-700 font-bold p-1 text-lg">✕</button>
+            </div>
+
+            <div id="trayModalList" class="flex-1 overflow-y-auto p-4 space-y-3">
+                <!-- Injected via renderTrayModalList() -->
+            </div>
+
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                <button onclick="clearSelectedTray(); closeTrayModal();" class="text-xs font-semibold text-rose-600 hover:underline">
+                    Clear All Selected
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="closeTrayModal()" class="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">
+                        Done
+                    </button>
+                    <button onclick="closeTrayModal(); openPrintModal();" class="px-4 py-2 text-xs font-bold text-white bg-barker-700 rounded-lg hover:bg-barker-800 transition shadow">
+                        Print Worksheet
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -293,20 +422,58 @@
 
     <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
-        // State
+        // --- State Management ---
         let allQuestions = [];
         let filteredQuestions = [];
-        let selectedQuestionIds = new Set();
+        let selectedQuestionIds = []; // Array to preserve order
+        let customLineHeights = {}; // Map question ID -> line count
 
-        // Load Question Bank on startup
+        // Practice State
+        let practiceQueue = [];
+        let practiceIndex = 0;
+        let practiceTimerInterval = null;
+        let practiceSeconds = 0;
+        let practiceScores = {}; // Map q.id -> score
+        let flaggedForRedo = new Set();
+        let selectedMCOption = null;
+
+        // --- Helper: Render Markdown to HTML without asterisks ---
+        function formatMarkdown(text) {
+            if (!text) return '';
+            let html = text;
+            
+            // Convert **bold** to <strong>bold</strong>
+            html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>');
+            
+            // Convert *italic* to <em>italic</em>
+            html = html.replace(/(?<!\*)\*([^\*]+)\*(?!\*)/g, '<em>$1</em>');
+            
+            // Convert newline-separated list items / paragraphs cleanly
+            const lines = html.split('\n');
+            let result = '';
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (!line) {
+                    result += '<div class="h-2"></div>';
+                } else if (line.startsWith('- ')) {
+                    result += `<div class="flex items-start gap-2 ml-2 my-1"><span class="text-barker-700">•</span><span>${line.substring(2)}</span></div>`;
+                } else {
+                    result += `<div class="my-1">${line}</div>`;
+                }
+            }
+            
+            return result;
+        }
+
+        // --- Load Question Bank ---
         async function loadQuestions() {
             try {
                 const response = await fetch('./questions/y11-standard.json');
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 allQuestions = await response.json();
             } catch (err) {
-                console.warn("Fetch failed (likely file:// protocol without local server). Using embedded fallback data.", err);
-                // Fallback dataset for direct file viewing
+                console.warn("Fetch failed, using embedded dataset fallback:", err);
                 allQuestions = [
                     {
                         "id": "Y11S-ALG-001", "course": "Year 11 Standard", "topic": "Algebra", "subtopic": "Formulae & Equations",
@@ -381,17 +548,23 @@
                 ];
             }
 
-            // Select first 3 questions by default for instant worksheet demo
-            allQuestions.slice(0, 3).forEach(q => selectedQuestionIds.add(q.id));
+            // Initialize custom line heights
+            allQuestions.forEach(q => {
+                customLineHeights[q.id] = q.lines || (q.type === 'Multiple Choice' ? 0 : 4);
+            });
+
+            // Select first 3 questions by default
+            selectedQuestionIds = allQuestions.slice(0, 3).map(q => q.id);
 
             populateTopicFilters();
             applyFilters();
             updateTrayUI();
         }
 
-        // Populate Topic and Subtopic Dropdowns
+        // --- Filters & Dropdowns ---
         function populateTopicFilters() {
             const topicSelect = document.getElementById('topicFilter');
+            topicSelect.innerHTML = '<option value="ALL">All Topics</option>';
             const topics = [...new Set(allQuestions.map(q => q.topic))];
             
             topics.forEach(t => {
@@ -422,7 +595,11 @@
             applyFilters();
         }
 
-        // Filter Questions
+        function onCourseChange() {
+            // Placeholder for future courses
+            applyFilters();
+        }
+
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
             const topic = document.getElementById('topicFilter').value;
@@ -458,7 +635,17 @@
             applyFilters();
         }
 
-        // Render Question Cards
+        function selectAllFiltered() {
+            filteredQuestions.forEach(q => {
+                if (!selectedQuestionIds.includes(q.id)) {
+                    selectedQuestionIds.push(q.id);
+                }
+            });
+            renderQuestionsFeed();
+            updateTrayUI();
+        }
+
+        // --- Render Questions Feed ---
         function renderQuestionsFeed() {
             const container = document.getElementById('questionsFeed');
             container.innerHTML = '';
@@ -474,9 +661,8 @@
             }
 
             filteredQuestions.forEach(q => {
-                const isSelected = selectedQuestionIds.has(q.id);
+                const isSelected = selectedQuestionIds.includes(q.id);
                 
-                // Difficulty badge color
                 let diffBadge = 'bg-emerald-100 text-emerald-800 border-emerald-200';
                 if (q.difficulty === 'Medium') diffBadge = 'bg-amber-100 text-amber-800 border-amber-200';
                 if (q.difficulty === 'Hard') diffBadge = 'bg-rose-100 text-rose-800 border-rose-200';
@@ -505,36 +691,37 @@
                         </label>
                     </div>
 
-                    <!-- Question Body -->
-                    <div class="text-slate-800 text-sm leading-relaxed whitespace-pre-line mb-4 math-content font-medium">
-                        ${q.question}
+                    <!-- Clean Formatted Question Body -->
+                    <div class="text-slate-800 text-sm leading-relaxed mb-4 math-content font-medium">
+                        ${formatMarkdown(q.question)}
                     </div>
 
                     <!-- Solution Accordion Button -->
-                    <div class="pt-3 border-t border-slate-100">
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                         <button onclick="toggleSolutionView('sol-${q.id}')" class="text-xs font-bold text-slate-500 hover:text-barker-700 flex items-center gap-1 transition">
-                            <span>🔍 View Worked Solution & Rubric</span>
+                            <span>🔍 View Worked Solution &amp; Rubric</span>
                         </button>
+                        <button onclick="practiceSingleQuestion('${q.id}')" class="text-xs font-semibold text-barker-700 hover:bg-barker-50 px-2.5 py-1 rounded-lg transition">
+                            ▶ Practice this
+                        </button>
+                    </div>
+
+                    <div id="sol-${q.id}" class="hidden mt-3 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-2">
+                        <div class="font-bold text-slate-900 uppercase tracking-wide text-[10px]">Worked Solution:</div>
+                        <div class="leading-relaxed font-sans">${formatMarkdown(q.solution)}</div>
                         
-                        <div id="sol-${q.id}" class="hidden mt-3 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-2">
-                            <div class="font-bold text-slate-900 uppercase tracking-wide text-[10px]">Worked Solution:</div>
-                            <div class="whitespace-pre-line leading-relaxed font-sans">${q.solution}</div>
-                            
-                            <div class="font-bold text-slate-900 uppercase tracking-wide text-[10px] pt-2 border-t border-slate-200">Marking Criteria:</div>
-                            <ul class="list-disc list-inside space-y-1 text-slate-600">
-                                ${q.criteria.map(c => `<li>${c}</li>`).join('')}
-                            </ul>
-                        </div>
+                        <div class="font-bold text-slate-900 uppercase tracking-wide text-[10px] pt-2 border-t border-slate-200">Marking Criteria:</div>
+                        <ul class="list-disc list-inside space-y-1 text-slate-600">
+                            ${q.criteria.map(c => `<li>${formatMarkdown(c)}</li>`).join('')}
+                        </ul>
                     </div>
                 `;
 
                 container.appendChild(card);
             });
 
-            // Typeset MathJax equations
-            if (window.MathJax && MathJax.typesetPromise) {
-                MathJax.typesetPromise([container]).catch(err => console.error(err));
-            }
+            // Typeset MathJax
+            typesetMath([container]);
         }
 
         function toggleSolutionView(id) {
@@ -542,42 +729,49 @@
             if (el) el.classList.toggle('hidden');
         }
 
-        // Selection & Worksheet Tray
+        function typesetMath(elements) {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise(elements).catch(err => console.error(err));
+            }
+        }
+
+        // --- Selection & Worksheet Tray ---
         function toggleSelectQuestion(id, isSelected) {
             if (isSelected) {
-                selectedQuestionIds.add(id);
+                if (!selectedQuestionIds.includes(id)) selectedQuestionIds.push(id);
             } else {
-                selectedQuestionIds.delete(id);
+                selectedQuestionIds = selectedQuestionIds.filter(qid => qid !== id);
             }
             renderQuestionsFeed();
             updateTrayUI();
         }
 
         function clearSelectedTray() {
-            selectedQuestionIds.clear();
+            selectedQuestionIds = [];
             renderQuestionsFeed();
             updateTrayUI();
         }
 
         function addRandomFilteredQuestion() {
-            const unselected = filteredQuestions.filter(q => !selectedQuestionIds.has(q.id));
+            const unselected = filteredQuestions.filter(q => !selectedQuestionIds.includes(q.id));
             if (unselected.length === 0) {
                 alert("All questions matching current filter are already in your worksheet!");
                 return;
             }
             const randomQ = unselected[Math.floor(Math.random() * unselected.length)];
-            selectedQuestionIds.add(randomQ.id);
+            selectedQuestionIds.push(randomQ.id);
             renderQuestionsFeed();
             updateTrayUI();
         }
 
         function updateTrayUI() {
-            const count = selectedQuestionIds.size;
+            const count = selectedQuestionIds.length;
             document.getElementById('trayCountBadge').innerText = count;
+            document.getElementById('topTrayBadge').innerText = count;
 
             let totalMarks = 0;
             allQuestions.forEach(q => {
-                if (selectedQuestionIds.has(q.id)) {
+                if (selectedQuestionIds.includes(q.id)) {
                     totalMarks += (q.marks || 1);
                 }
             });
@@ -585,22 +779,343 @@
             document.getElementById('trayMarksTotal').innerText = totalMarks;
         }
 
-        // Print / PDF Generation
+        // --- Tray Modal / Reorder / Line Adjust ---
+        function openTrayModal() {
+            renderTrayModalList();
+            document.getElementById('trayModal').classList.remove('hidden');
+        }
+
+        function closeTrayModal() {
+            document.getElementById('trayModal').classList.add('hidden');
+            renderQuestionsFeed();
+            updateTrayUI();
+        }
+
+        function renderTrayModalList() {
+            const listContainer = document.getElementById('trayModalList');
+            listContainer.innerHTML = '';
+
+            if (selectedQuestionIds.length === 0) {
+                listContainer.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">No questions in your tray yet. Add some from the builder!</div>';
+                return;
+            }
+
+            selectedQuestionIds.forEach((id, index) => {
+                const q = allQuestions.find(item => item.id === id);
+                if (!q) return;
+
+                const row = document.createElement('div');
+                row.className = 'bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3';
+                
+                const curLines = customLineHeights[q.id] !== undefined ? customLineHeights[q.id] : (q.lines || 4);
+
+                row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center">${index + 1}</span>
+                        <div>
+                            <div class="font-bold text-xs text-slate-800">${q.id} <span class="font-normal text-slate-500">(${q.topic})</span></div>
+                            <div class="text-[11px] text-slate-500">${q.marks} Marks • ${q.difficulty}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <!-- Answer space height selector -->
+                        ${q.type !== 'Multiple Choice' ? `
+                            <div class="flex items-center gap-1 text-xs text-slate-600">
+                                <span class="text-[10px]">Lines:</span>
+                                <select onchange="updateLineHeight('${q.id}', this.value)" class="text-xs bg-white border border-slate-200 rounded px-1.5 py-0.5">
+                                    <option value="2" ${curLines === 2 ? 'selected' : ''}>2</option>
+                                    <option value="4" ${curLines === 4 ? 'selected' : ''}>4</option>
+                                    <option value="6" ${curLines === 6 ? 'selected' : ''}>6</option>
+                                    <option value="8" ${curLines === 8 ? 'selected' : ''}>8</option>
+                                </select>
+                            </div>
+                        ` : ''}
+
+                        <!-- Move Up/Down -->
+                        <button onclick="moveTrayQuestion(${index}, -1)" ${index === 0 ? 'disabled class="opacity-30"' : 'class="hover:bg-slate-200 rounded p-1"'} title="Move Up">▲</button>
+                        <button onclick="moveTrayQuestion(${index}, 1)" ${index === selectedQuestionIds.length - 1 ? 'disabled class="opacity-30"' : 'class="hover:bg-slate-200 rounded p-1"'} title="Move Down">▼</button>
+                        
+                        <!-- Remove -->
+                        <button onclick="toggleSelectQuestion('${q.id}', false); renderTrayModalList();" class="text-rose-500 hover:text-rose-700 p-1 font-bold text-sm ml-1" title="Remove">✕</button>
+                    </div>
+                `;
+                listContainer.appendChild(row);
+            });
+        }
+
+        function updateLineHeight(id, val) {
+            customLineHeights[id] = parseInt(val, 10);
+        }
+
+        function moveTrayQuestion(index, delta) {
+            const newIndex = index + delta;
+            if (newIndex < 0 || newIndex >= selectedQuestionIds.length) return;
+            const temp = selectedQuestionIds[index];
+            selectedQuestionIds[index] = selectedQuestionIds[newIndex];
+            selectedQuestionIds[newIndex] = temp;
+            renderTrayModalList();
+            updateTrayUI();
+        }
+
+        // --- VIEW SWITCHER: Builder vs Practice ---
+        function switchView(viewName) {
+            const builder = document.getElementById('builderView');
+            const practice = document.getElementById('practiceView');
+            const tray = document.getElementById('worksheetTray');
+            const tabB = document.getElementById('navTabBuilder');
+            const tabP = document.getElementById('navTabPractice');
+
+            if (viewName === 'builder') {
+                builder.classList.remove('hidden');
+                practice.classList.add('hidden');
+                tray.classList.remove('hidden');
+
+                tabB.className = 'px-4 py-1.5 text-xs font-bold rounded-lg transition text-white bg-barker-700 shadow-sm flex items-center gap-1.5';
+                tabP.className = 'px-4 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition flex items-center gap-1.5';
+                clearInterval(practiceTimerInterval);
+            } else {
+                builder.classList.add('hidden');
+                practice.classList.remove('hidden');
+                tray.classList.add('hidden');
+
+                tabP.className = 'px-4 py-1.5 text-xs font-bold rounded-lg transition text-white bg-barker-700 shadow-sm flex items-center gap-1.5';
+                tabB.className = 'px-4 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition flex items-center gap-1.5';
+                startPracticeSession();
+            }
+        }
+
+        // --- INTERACTIVE PRACTICE MODE LOGIC ---
+        function practiceSingleQuestion(id) {
+            practiceQueue = allQuestions.filter(q => q.id === id);
+            practiceIndex = 0;
+            switchView('practice');
+            renderPracticeCurrentQuestion();
+        }
+
+        function startPracticeSession() {
+            const src = document.getElementById('practiceSourceSelect').value;
+            if (src === 'tray') {
+                practiceQueue = allQuestions.filter(q => selectedQuestionIds.includes(q.id));
+            } else if (src === 'filtered') {
+                practiceQueue = [...filteredQuestions];
+            } else {
+                practiceQueue = [...allQuestions];
+            }
+
+            if (practiceQueue.length === 0) {
+                practiceQueue = [...allQuestions];
+            }
+
+            practiceIndex = 0;
+            practiceSeconds = 0;
+            selectedMCOption = null;
+            clearInterval(practiceTimerInterval);
+            practiceTimerInterval = setInterval(() => {
+                practiceSeconds++;
+                const mins = String(Math.floor(practiceSeconds / 60)).padStart(2, '0');
+                const secs = String(practiceSeconds % 60).padStart(2, '0');
+                document.getElementById('practiceTimer').innerText = `${mins}:${secs}`;
+            }, 1000);
+
+            renderPracticeCurrentQuestion();
+        }
+
+        function renderPracticeCurrentQuestion() {
+            const container = document.getElementById('practiceCardContainer');
+            if (practiceQueue.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-500">No questions in practice queue.</div>`;
+                return;
+            }
+
+            const q = practiceQueue[practiceIndex];
+            const total = practiceQueue.length;
+            const isFlagged = flaggedForRedo.has(q.id);
+
+            document.getElementById('practiceProgressBadge').innerText = `Question ${practiceIndex + 1} of ${total}`;
+            document.getElementById('practiceTopicTag').innerText = `${q.topic} › ${q.subtopic} (${q.marks} Marks)`;
+            document.getElementById('practiceFlagBtn').innerHTML = isFlagged ? '🚩 <span class="text-amber-600 font-bold">Flagged</span>' : '<span>🚩 Flag for Redo</span>';
+
+            document.getElementById('practicePrevBtn').disabled = practiceIndex === 0;
+            document.getElementById('practicePrevBtn').style.opacity = practiceIndex === 0 ? '0.4' : '1';
+
+            let diffBadge = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+            if (q.difficulty === 'Medium') diffBadge = 'bg-amber-100 text-amber-800 border-amber-200';
+            if (q.difficulty === 'Hard') diffBadge = 'bg-rose-100 text-rose-800 border-rose-200';
+
+            container.innerHTML = `
+                <div>
+                    <!-- Top tags -->
+                    <div class="flex items-center gap-2 pb-4 border-b border-slate-100 mb-5">
+                        <span class="font-mono text-xs font-bold px-2.5 py-1 rounded bg-slate-100 text-slate-700">${q.id}</span>
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>
+                        ${q.calculator ? '<span class="text-xs font-medium text-slate-500">🧮 Calculator Allowed</span>' : '<span class="text-xs font-medium text-slate-400">🚫 Non-Calculator</span>'}
+                    </div>
+
+                    <!-- Question Text -->
+                    <div class="text-slate-900 text-base leading-relaxed mb-6 font-medium">
+                        ${formatMarkdown(q.question)}
+                    </div>
+
+                    <!-- Multiple Choice Quick Buttons if applicable -->
+                    ${q.type === 'Multiple Choice' ? `
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
+                            ${['A', 'B', 'C', 'D'].map(opt => `
+                                <button onclick="selectPracticeOption('${opt}')" id="mc-btn-${opt}" class="p-3 text-sm font-bold rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition flex items-center justify-center gap-2">
+                                    Option ${opt}
+                                </button>
+                            `).join('')}
+                        </div>
+                    ` : `
+                        <div class="mb-6">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">Scratchpad / Working Space</label>
+                            <textarea placeholder="Type your notes or working steps here..." class="w-full h-24 p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white transition"></textarea>
+                        </div>
+                    `}
+                </div>
+
+                <!-- Solution & Self-Marking -->
+                <div class="pt-4 border-t border-slate-100">
+                    <button onclick="togglePracticeSolution()" id="practiceSolBtn" class="w-full py-2.5 bg-barker-50 text-barker-700 font-bold text-xs rounded-xl hover:bg-barker-100 transition border border-barker-200 mb-3 flex items-center justify-center gap-2">
+                        <span>🔍 Reveal Worked Solution &amp; Criteria</span>
+                    </button>
+
+                    <div id="practiceSolBox" class="hidden p-5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-800 space-y-3 mb-4">
+                        <div>
+                            <strong class="text-barker-700 uppercase tracking-wide text-[11px] block mb-1">Worked Solution:</strong>
+                            <div class="leading-relaxed font-sans">${formatMarkdown(q.solution)}</div>
+                        </div>
+                        <div class="pt-2 border-t border-slate-200">
+                            <strong class="text-slate-700 uppercase tracking-wide text-[11px] block mb-1">Marking Rubric:</strong>
+                            <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                ${q.criteria.map(c => `<li>${formatMarkdown(c)}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <!-- Self-Marking Buttons -->
+                        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
+                            <span class="font-bold text-slate-700">Self-Mark this Question:</span>
+                            <div class="flex gap-2">
+                                <button onclick="selfMarkQuestion('${q.id}', ${q.marks})" class="px-3 py-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 font-bold rounded-lg transition text-xs">
+                                    ✓ Full Marks (${q.marks}/${q.marks})
+                                </button>
+                                <button onclick="selfMarkQuestion('${q.id}', 0)" class="px-3 py-1.5 bg-rose-100 text-rose-800 hover:bg-rose-200 font-bold rounded-lg transition text-xs">
+                                    ✗ Needs Review (0/${q.marks})
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            typesetMath([container]);
+        }
+
+        function togglePracticeSolution() {
+            const el = document.getElementById('practiceSolBox');
+            if (el) el.classList.toggle('hidden');
+        }
+
+        function selectPracticeOption(opt) {
+            ['A', 'B', 'C', 'D'].forEach(o => {
+                const btn = document.getElementById(`mc-btn-${o}`);
+                if (btn) btn.className = 'p-3 text-sm font-bold rounded-xl border border-slate-200 bg-slate-50 text-slate-700';
+            });
+            const selBtn = document.getElementById(`mc-btn-${opt}`);
+            if (selBtn) selBtn.className = 'p-3 text-sm font-bold rounded-xl border-2 border-barker-700 bg-barker-50 text-barker-700 shadow-sm';
+            togglePracticeSolution();
+        }
+
+        function selfMarkQuestion(id, score) {
+            practiceScores[id] = score;
+            nextPracticeQuestion();
+        }
+
+        function toggleFlagRedo() {
+            const q = practiceQueue[practiceIndex];
+            if (!q) return;
+            if (flaggedForRedo.has(q.id)) {
+                flaggedForRedo.delete(q.id);
+            } else {
+                flaggedForRedo.add(q.id);
+            }
+            renderPracticeCurrentQuestion();
+        }
+
+        function nextPracticeQuestion() {
+            if (practiceIndex < practiceQueue.length - 1) {
+                practiceIndex++;
+                renderPracticeCurrentQuestion();
+            } else {
+                showPracticeSummary();
+            }
+        }
+
+        function prevPracticeQuestion() {
+            if (practiceIndex > 0) {
+                practiceIndex--;
+                renderPracticeCurrentQuestion();
+            }
+        }
+
+        function showPracticeSummary() {
+            clearInterval(practiceTimerInterval);
+            const container = document.getElementById('practiceCardContainer');
+            
+            let totalEarned = 0;
+            let totalPossible = 0;
+            practiceQueue.forEach(q => {
+                totalPossible += (q.marks || 1);
+                totalEarned += (practiceScores[q.id] || 0);
+            });
+
+            const percent = totalPossible > 0 ? Math.round((totalEarned / totalPossible) * 100) : 0;
+
+            container.innerHTML = `
+                <div class="text-center py-8 space-y-4">
+                    <div class="w-16 h-16 rounded-2xl bg-barker-100 text-barker-700 flex items-center justify-center font-black text-2xl mx-auto shadow-sm">
+                        ★
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900">Practice Session Complete!</h2>
+                    <p class="text-sm text-slate-500">You scored <strong>${totalEarned} / ${totalPossible} Marks</strong> (${percent}%) in ${document.getElementById('practiceTimer').innerText}</p>
+
+                    ${flaggedForRedo.size > 0 ? `
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 max-w-md mx-auto text-left">
+                            <strong>🚩 Flagged for Revision (${flaggedForRedo.size}):</strong>
+                            <div class="mt-1 flex flex-wrap gap-1.5">
+                                ${Array.from(flaggedForRedo).map(id => `<span class="bg-white px-2 py-0.5 rounded border border-amber-200 font-mono font-bold">${id}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="pt-4 flex justify-center gap-3">
+                        <button onclick="startPracticeSession()" class="px-5 py-2.5 bg-barker-700 text-white text-xs font-bold rounded-xl hover:bg-barker-800 transition shadow">
+                            Practice Again
+                        </button>
+                        <button onclick="switchView('builder')" class="px-5 py-2.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-200 transition">
+                            Back to Worksheet Builder
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- PRINT ENGINE (A4 PDF EXPORT) ---
         function openPrintModal() {
-            if (selectedQuestionIds.size === 0) {
+            if (selectedQuestionIds.length === 0) {
                 alert("Please add at least 1 question to your worksheet before printing!");
                 return;
             }
 
-            const selectedList = allQuestions.filter(q => selectedQuestionIds.has(q.id));
+            const selectedList = selectedQuestionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean);
             const includeSolutions = document.getElementById('includeSolutionsToggle').checked;
 
             let totalMarks = 0;
             selectedList.forEach(q => totalMarks += (q.marks || 1));
 
-            // Populate Print Page
+            // Populate Print Header
             document.getElementById('printTotalMarks').innerText = totalMarks;
-            document.getElementById('printTimeAllowed').innerText = Math.round(totalMarks * 1.5); // ~1.5 min per mark standard
+            document.getElementById('printTimeAllowed').innerText = Math.round(totalMarks * 1.5);
 
             // Generate Print Questions
             const printQList = document.getElementById('printQuestionsList');
@@ -610,8 +1125,7 @@
                 const qBlock = document.createElement('div');
                 qBlock.className = 'print-question-card';
 
-                // Answer space box height
-                const lineCount = q.lines || 4;
+                const lineCount = customLineHeights[q.id] !== undefined ? customLineHeights[q.id] : (q.lines || 4);
                 const spaceHeight = q.type === 'Multiple Choice' ? 0 : lineCount * 32;
 
                 qBlock.innerHTML = `
@@ -623,8 +1137,8 @@
                         <span style="font-weight: 700; font-size: 10pt; color: #005b94;">[${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}]</span>
                     </div>
 
-                    <div style="font-size: 10.5pt; line-height: 1.5; margin-bottom: 8px; white-space: pre-line;">
-                        ${q.question}
+                    <div style="font-size: 10.5pt; line-height: 1.5; margin-bottom: 8px;">
+                        ${formatMarkdown(q.question)}
                     </div>
 
                     ${spaceHeight > 0 ? `<div class="print-answer-space" style="height: ${spaceHeight}px;"></div>` : ''}
@@ -647,13 +1161,14 @@
                             <strong style="color: #005b94; font-size: 10.5pt;">Question ${index + 1} (${q.id})</strong>
                             <span style="font-weight: bold; font-size: 9.5pt;">${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}</span>
                         </div>
-                        <div style="font-size: 9.5pt; line-height: 1.4; margin-bottom: 6px; white-space: pre-line;">
-                            <strong>Solution:</strong>\n${q.solution}
+                        <div style="font-size: 9.5pt; line-height: 1.4; margin-bottom: 6px;">
+                            <strong>Solution:</strong>
+                            ${formatMarkdown(q.solution)}
                         </div>
                         <div style="font-size: 8.5pt; color: #475569;">
                             <strong>Criteria:</strong>
                             <ul style="margin: 2px 0 0 16px; padding: 0;">
-                                ${q.criteria.map(c => `<li>${c}</li>`).join('')}
+                                ${q.criteria.map(c => `<li>${formatMarkdown(c)}</li>`).join('')}
                             </ul>
                         </div>
                     `;
@@ -666,14 +1181,14 @@
             // Typeset MathJax in print container then trigger print
             if (window.MathJax && MathJax.typesetPromise) {
                 MathJax.typesetPromise([document.getElementById('printContainer')]).then(() => {
-                    setTimeout(() => window.print(), 200);
+                    setTimeout(() => window.print(), 250);
                 });
             } else {
                 window.print();
             }
         }
 
-        // Initialize
+        // Initialize on DOM load
         document.addEventListener('DOMContentLoaded', loadQuestions);
     </script>
 </body>

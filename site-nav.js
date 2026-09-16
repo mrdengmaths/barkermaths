@@ -18,8 +18,10 @@
     const segments = path.split('/').filter(Boolean);
     const appIndex = segments.lastIndexOf('app');
     const quizIndex = segments.lastIndexOf('quiz');
-    const inApp = appIndex !== -1 && appIndex > quizIndex;
-    const inQuiz = quizIndex !== -1 && quizIndex > appIndex;
+    const worksheetIndex = segments.lastIndexOf('worksheet');
+    const inApp = appIndex !== -1 && appIndex >= quizIndex && appIndex >= worksheetIndex;
+    const inQuiz = quizIndex !== -1 && quizIndex >= appIndex && quizIndex >= worksheetIndex;
+    const inWorksheet = worksheetIndex !== -1 && worksheetIndex >= appIndex && worksheetIndex >= quizIndex;
 
     const prefixes = (() => {
         if (inApp) {
@@ -29,6 +31,7 @@
                 home: `${up}../`,
                 apps: up || './',
                 quiz: `${up}../quiz/`,
+                worksheet: `${up}../worksheet/`,
                 active: 'apps'
             };
         }
@@ -40,7 +43,20 @@
                 home: `${up}../`,
                 apps: `${up}../app/`,
                 quiz: up || './',
+                worksheet: `${up}../worksheet/`,
                 active: 'quiz'
+            };
+        }
+
+        if (inWorksheet) {
+            const depth = Math.max(0, segments.length - worksheetIndex - 1);
+            const up = '../'.repeat(depth);
+            return {
+                home: `${up}../`,
+                apps: `${up}../app/`,
+                quiz: `${up}../quiz/`,
+                worksheet: up || './',
+                active: 'worksheet'
             };
         }
 
@@ -48,6 +64,7 @@
             home: './',
             apps: './app/',
             quiz: './quiz/',
+            worksheet: './worksheet/',
             active: 'home'
         };
     })();
@@ -55,7 +72,8 @@
     const existingNav = document.querySelector('.topbar-nav, .nav-links, nav[aria-label="Primary navigation"]');
     const links = [
         { href: prefixes.apps, label: 'Apps', key: 'apps' },
-        { href: prefixes.quiz, label: 'Quiz', key: 'quiz' }
+        { href: prefixes.quiz, label: 'Quiz', key: 'quiz' },
+        { href: prefixes.worksheet, label: 'Worksheet', key: 'worksheet' }
     ];
 
     const existingSearch = document.getElementById('appSearch');
