@@ -75,7 +75,7 @@
             <!-- Stats -->
             <div class="w-full flex justify-between px-4 py-2 bg-white/50 rounded-lg border border-amber-200">
                 <span class="font-bold text-amber-900">Remaining:</span>
-                <span id="count-remaining" class="font-bold text-slate-800 text-xl">36</span>
+                <span id="count-remaining" class="font-bold text-slate-800 text-xl">49</span>
             </div>
 
             <!-- Buttons -->
@@ -100,17 +100,18 @@
 
         <!-- The Grid Side -->
         <div class="map-container p-2 md:p-6 bg-[#fff8e1] order-1 lg:order-2">
-            <div class="grid grid-cols-7 gap-1 md:gap-2">
+            <div class="grid grid-cols-8 gap-1 md:gap-2">
                 <!-- Corner spacer -->
                 <div class="h-8 md:h-12 w-8 md:w-12"></div>
                 
-                <!-- Column Headers (A-F) -->
+                <!-- Column Headers (A-G) -->
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">A</div>
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">B</div>
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">C</div>
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">D</div>
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">E</div>
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">F</div>
+                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">G</div>
 
                 <!-- Row 1 -->
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">1</div>
@@ -120,6 +121,7 @@
                 <div id="cell-D1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-E1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-F1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-G1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
 
                 <!-- Row 2 -->
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">2</div>
@@ -129,6 +131,7 @@
                 <div id="cell-D2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-E2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-F2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-G2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
 
                 <!-- Row 3 -->
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">3</div>
@@ -138,6 +141,7 @@
                 <div id="cell-D3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-E3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-F3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-G3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
 
                 <!-- Row 4 -->
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">4</div>
@@ -147,6 +151,7 @@
                 <div id="cell-D4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-E4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-F4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-G4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
 
                 <!-- Row 5 -->
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">5</div>
@@ -156,6 +161,7 @@
                 <div id="cell-D5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-E5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-F5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-G5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
 
                 <!-- Row 6 -->
                 <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">6</div>
@@ -165,14 +171,25 @@
                 <div id="cell-D6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-E6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
                 <div id="cell-F6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-G6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+
+                <!-- Row 7 -->
+                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">7</div>
+                <div id="cell-A7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-B7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-C7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-D7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-E7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-F7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+                <div id="cell-G7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
             </div>
         </div>
     </div>
 
     <!-- Audio for fun (optional, using browser Synth) -->
     <script>
-        const cols = ['A', 'B', 'C', 'D', 'E', 'F'];
-        const rows = ['1', '2', '3', '4', '5', '6'];
+        const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+        const rows = ['1', '2', '3', '4', '5', '6', '7'];
         let availableCoords = [];
         let lastCoord = null;
         
@@ -194,7 +211,7 @@
                 cell.classList.remove('marked', 'latest');
             });
             document.getElementById('display-coordinate').innerText = '--';
-            document.getElementById('count-remaining').innerText = '36';
+            document.getElementById('count-remaining').innerText = '49';
             document.getElementById('btn-generate').disabled = false;
             document.getElementById('btn-generate').innerText = "FIRE CANNON!";
             document.getElementById('btn-generate').classList.remove('opacity-50', 'cursor-not-allowed');
@@ -220,9 +237,9 @@
             const input = document.getElementById('manual-input');
             const rawVal = input.value.toUpperCase().trim();
 
-            // Validate format: Letter A-F followed by Number 1-6
-            if (!/^[A-F][1-6]$/.test(rawVal)) {
-                alert("Invalid coordinate! Please use a letter (A-F) and a number (1-6), e.g., 'B2'.");
+            // Validate format: Letter A-G followed by Number 1-7
+            if (!/^[A-G][1-7]$/.test(rawVal)) {
+                alert("Invalid coordinate! Please use a letter (A-G) and a number (1-7), e.g., 'B2'.");
                 return;
             }
 
