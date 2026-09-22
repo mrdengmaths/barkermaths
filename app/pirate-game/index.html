@@ -73,9 +73,19 @@
             </div>
 
             <!-- Stats -->
-            <div class="w-full flex justify-between px-4 py-2 bg-white/50 rounded-lg border border-amber-200">
-                <span class="font-bold text-amber-900">Remaining:</span>
-                <span id="count-remaining" class="font-bold text-slate-800 text-xl">49</span>
+            <div class="w-full flex flex-col gap-2 bg-white/50 rounded-lg border border-amber-200 px-4 py-2">
+                <div class="w-full flex justify-between items-center">
+                    <span class="font-bold text-amber-900">Remaining:</span>
+                    <span id="count-remaining" class="font-bold text-slate-800 text-xl">--</span>
+                </div>
+                <div class="w-full flex justify-between items-center border-t border-amber-200/50 pt-2">
+                    <span class="font-bold text-amber-900">Grid Size:</span>
+                    <select id="grid-size-select" onchange="buildGrid(parseInt(this.value))" class="bg-white border border-amber-400 rounded px-2 py-1 outline-none text-slate-800 font-bold focus:ring-2 focus:ring-amber-500 shadow-sm cursor-pointer">
+                        <option value="6">6 x 6 (A-F)</option>
+                        <option value="7" selected>7 x 7 (A-G)</option>
+                        <option value="8">8 x 8 (A-H)</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Buttons -->
@@ -100,125 +110,128 @@
 
         <!-- The Grid Side -->
         <div class="map-container p-2 md:p-6 bg-[#fff8e1] order-1 lg:order-2">
-            <div class="grid grid-cols-8 gap-1 md:gap-2">
-                <!-- Corner spacer -->
-                <div class="h-8 md:h-12 w-8 md:w-12"></div>
-                
-                <!-- Column Headers (A-G) -->
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">A</div>
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">B</div>
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">C</div>
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">D</div>
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">E</div>
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">F</div>
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">G</div>
+            <!-- Dynamically generated grid -->
+            <div id="grid-container" class="grid gap-1 md:gap-2">
+                <!-- Grid will be injected here by JS -->
+            </div>
+        </div>
+    </div>
 
-                <!-- Row 1 -->
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">1</div>
-                <div id="cell-A1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-B1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-C1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-D1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-E1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-F1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-G1" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-
-                <!-- Row 2 -->
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">2</div>
-                <div id="cell-A2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-B2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-C2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-D2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-E2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-F2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-G2" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-
-                <!-- Row 3 -->
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">3</div>
-                <div id="cell-A3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-B3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-C3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-D3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-E3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-F3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-G3" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-
-                <!-- Row 4 -->
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">4</div>
-                <div id="cell-A4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-B4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-C4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-D4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-E4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-F4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-G4" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-
-                <!-- Row 5 -->
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">5</div>
-                <div id="cell-A5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-B5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-C5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-D5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-E5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-F5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-G5" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-
-                <!-- Row 6 -->
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">6</div>
-                <div id="cell-A6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-B6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-C6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-D6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-E6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-F6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-G6" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-
-                <!-- Row 7 -->
-                <div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">7</div>
-                <div id="cell-A7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-B7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-C7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-D7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-E7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-F7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
-                <div id="cell-G7" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>
+    <!-- Custom Message Box (Replacing alert/confirm) -->
+    <div id="message-box" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 px-4">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full text-center border-4 border-amber-600 transform transition-transform" id="message-box-content">
+            <h3 class="text-2xl font-bold text-amber-900 mb-4 pirate-font" id="message-box-title">Captain!</h3>
+            <p id="message-box-text" class="text-slate-800 mb-6 font-semibold text-lg"></p>
+            <div class="flex gap-4 justify-center" id="message-box-buttons">
+                <!-- Buttons injected via JS -->
             </div>
         </div>
     </div>
 
     <!-- Audio for fun (optional, using browser Synth) -->
     <script>
-        const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-        const rows = ['1', '2', '3', '4', '5', '6', '7'];
+        let currentSize = 7;
         let availableCoords = [];
         let lastCoord = null;
         
         // Sound effects
         const synth = window.speechSynthesis;
 
+        function showMessage(title, text, isConfirm = false, onConfirm = null) {
+            document.getElementById('message-box-title').innerText = title;
+            document.getElementById('message-box-text').innerText = text;
+            
+            const btnContainer = document.getElementById('message-box-buttons');
+            if (isConfirm) {
+                btnContainer.innerHTML = `
+                    <button id="msg-btn-cancel" class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded shadow-lg pirate-font transition active:scale-95">Cancel</button>
+                    <button id="msg-btn-confirm" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded shadow-lg pirate-font transition active:scale-95">Clear Map</button>
+                `;
+                document.getElementById('msg-btn-cancel').onclick = closeMessageBox;
+                document.getElementById('msg-btn-confirm').onclick = () => {
+                    closeMessageBox();
+                    if(onConfirm) onConfirm();
+                };
+            } else {
+                btnContainer.innerHTML = `
+                    <button onclick="closeMessageBox()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-6 rounded shadow-lg pirate-font transition active:scale-95">Yarrr!</button>
+                `;
+            }
+
+            const msgBox = document.getElementById('message-box');
+            msgBox.classList.remove('hidden');
+            msgBox.classList.add('flex');
+        }
+
+        function closeMessageBox() {
+            const msgBox = document.getElementById('message-box');
+            msgBox.classList.remove('flex');
+            msgBox.classList.add('hidden');
+        }
+
+        function buildGrid(size) {
+            currentSize = size;
+            const gridEl = document.getElementById('grid-container');
+            
+            // Set grid columns dynamically
+            gridEl.style.gridTemplateColumns = `repeat(${size + 1}, minmax(0, 1fr))`;
+            
+            let html = '';
+            // Corner spacer
+            html += `<div class="h-8 md:h-12 w-8 md:w-12"></div>`;
+            
+            // Headers
+            for(let c = 0; c < size; c++) {
+                const letter = String.fromCharCode(65 + c);
+                html += `<div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl">${letter}</div>`;
+            }
+
+            // Rows
+            for(let r = 1; r <= size; r++) {
+                // Row Header
+                html += `<div class="flex items-center justify-center font-bold text-amber-900 pirate-font text-lg md:text-xl h-10 md:h-14">${r}</div>`;
+                // Cells
+                for(let c = 0; c < size; c++) {
+                    const letter = String.fromCharCode(65 + c);
+                    const coord = `${letter}${r}`;
+                    html += `<div id="cell-${coord}" class="grid-cell border-2 border-amber-200 bg-white rounded flex items-center justify-center h-10 md:h-14 w-10 md:w-14"></div>`;
+                }
+            }
+            gridEl.innerHTML = html;
+            initGame();
+        }
+
         function initGame() {
             availableCoords = [];
             lastCoord = null;
 
             // Generate all combinations
-            for (let c of cols) {
-                for (let r of rows) {
-                    availableCoords.push(c + r);
+            for(let c = 0; c < currentSize; c++) {
+                for(let r = 1; r <= currentSize; r++) {
+                    const letter = String.fromCharCode(65 + c);
+                    availableCoords.push(letter + r);
                 }
             }
+
             // Clear UI
             document.querySelectorAll('.grid-cell').forEach(cell => {
                 cell.classList.remove('marked', 'latest');
             });
             document.getElementById('display-coordinate').innerText = '--';
-            document.getElementById('count-remaining').innerText = '49';
-            document.getElementById('btn-generate').disabled = false;
-            document.getElementById('btn-generate').innerText = "FIRE CANNON!";
-            document.getElementById('btn-generate').classList.remove('opacity-50', 'cursor-not-allowed');
+            document.getElementById('count-remaining').innerText = currentSize * currentSize;
             
-            // Clear input
+            const btnGenerate = document.getElementById('btn-generate');
+            btnGenerate.disabled = false;
+            btnGenerate.innerText = "FIRE CANNON!";
+            btnGenerate.classList.remove('opacity-50', 'cursor-not-allowed');
+            
+            // Clear input & update placeholder
             const input = document.getElementById('manual-input');
-            if(input) input.value = '';
+            if(input) {
+                input.value = '';
+                const maxLetter = String.fromCharCode(64 + currentSize);
+                input.placeholder = `e.g. B2 (Max ${maxLetter}${currentSize})`;
+            }
         }
 
         // Triggered by "FIRE CANNON!" button
@@ -236,16 +249,19 @@
         function manualFire() {
             const input = document.getElementById('manual-input');
             const rawVal = input.value.toUpperCase().trim();
+            const maxLetter = String.fromCharCode(64 + currentSize);
+            
+            // Validates A to maxLetter, and 1 to currentSize dynamically!
+            const regex = new RegExp(`^[A-${maxLetter}][1-${currentSize}]$`);
 
-            // Validate format: Letter A-G followed by Number 1-7
-            if (!/^[A-G][1-7]$/.test(rawVal)) {
-                alert("Invalid coordinate! Please use a letter (A-G) and a number (1-7), e.g., 'B2'.");
+            if (!regex.test(rawVal)) {
+                showMessage("Invalid Aim!", `Please use a letter (A-${maxLetter}) and a number (1-${currentSize}), e.g., 'B2'.`);
                 return;
             }
 
             // Check if available
             if (!availableCoords.includes(rawVal)) {
-                alert("Captain! That spot has already been blasted or doesn't exist!");
+                showMessage("Already Blasted!", "Captain! That spot has already been blasted or doesn't exist!");
                 return;
             }
 
@@ -301,15 +317,12 @@
         }
 
         function resetGame() {
-            if(confirm("Are you sure you want to clear the map?")) {
-                initGame();
-            }
+            showMessage("Clear Map?", "Are you sure you want to scrub the deck and start fresh?", true, initGame);
         }
 
-        // Initialize on load
-        initGame();
+        // Initialize on load - Build a 7x7 grid by default
+        buildGrid(7);
 
     </script>
 </body>
 </html>
-
