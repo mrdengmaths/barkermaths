@@ -48,6 +48,11 @@
             border-radius: 8px;
             background: #fffdf0;
         }
+        
+        /* Fullscreen text stroke effect */
+        .text-stroke {
+            -webkit-text-stroke: 4px #000;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-8 px-2 text-gray-800">
@@ -128,14 +133,22 @@
         </div>
     </div>
 
-    <!-- Audio for fun (optional, using browser Synth) -->
+    <!-- Fullscreen Animation Overlay -->
+    <div id="fullscreen-anim" class="fixed inset-0 pointer-events-none z-[100] flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-500">
+        <div id="fullscreen-text" class="pirate-font text-[12rem] md:text-[20rem] lg:text-[25rem] text-amber-400 font-bold drop-shadow-[0_0_50px_rgba(251,191,36,0.8)] scale-50 transition-transform duration-300 text-stroke">
+            --
+        </div>
+    </div>
+
+    <!-- Logic and Audio -->
     <script>
         let currentSize = 7;
         let availableCoords = [];
         let lastCoord = null;
         
-        // Sound effects
+        // Sound effects & Voice Synthesis
         const synth = window.speechSynthesis;
+        const cannonSoundUrl = 'https://actions.google.com/sounds/v1/weapons/explosion.ogg';
 
         function showMessage(title, text, isConfirm = false, onConfirm = null) {
             document.getElementById('message-box-title').innerText = title;
@@ -270,6 +283,53 @@
             input.focus();
         }
 
+        function playFullscreenAnimation(coord) {
+            const animContainer = document.getElementById('fullscreen-anim');
+            const animText = document.getElementById('fullscreen-text');
+
+            // Set the target coordinate text
+            animText.innerText = coord;
+
+            // Trigger the pop-in effect
+            animContainer.classList.remove('opacity-0');
+            animContainer.classList.add('opacity-100');
+            animText.classList.remove('scale-50');
+            animText.classList.add('scale-100');
+
+            // Fade out the overlay after a short delay
+            setTimeout(() => {
+                animContainer.classList.remove('opacity-100');
+                animContainer.classList.add('opacity-0');
+                animText.classList.remove('scale-100');
+                animText.classList.add('scale-50');
+            }, 1200);
+        }
+
+        function playEffects(coord) {
+            // 1. Fullscreen Visual Animation
+            playFullscreenAnimation(coord);
+
+            // 2. Play explosion sound
+            const cannonAudio = new Audio(cannonSoundUrl);
+            cannonAudio.volume = 0.5; // Lower slightly so it doesn't blast ears
+            cannonAudio.play().catch(e => console.log("Audio play failed:", e));
+
+            // Stop any currently talking voices
+            synth.cancel();
+
+            // 3. Announce the coordinate slightly after the cannon boom
+            setTimeout(() => {
+                // Split for clear pronunciation (e.g., "D", "4" instead of "D4")
+                const letter = coord.charAt(0);
+                const number = coord.substring(1);
+                
+                const utterance = new SpeechSynthesisUtterance(`${letter}, ${number}`);
+                utterance.rate = 0.85; // Speak slightly slower for clarity
+                utterance.pitch = 0.9; // Slightly lower pitch
+                synth.speak(utterance);
+            }, 600); // Wait 600ms so the explosion doesn't completely mask the voice
+        }
+
         // Shared logic to update game state and UI
         function fireAtLocation(coord) {
             // Remove from array
@@ -277,6 +337,9 @@
             if (index > -1) {
                 availableCoords.splice(index, 1);
             }
+
+            // Trigger Visual Animation, Sound, and Text-To-Speech
+            playEffects(coord);
 
             // Update Big Display
             const displayEl = document.getElementById('display-coordinate');
