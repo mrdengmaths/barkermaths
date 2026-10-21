@@ -30,6 +30,16 @@ window.BARKER_VIDEOS = [
         order: 1
     },
     {
+        id: 'y7-capacity',
+        title: 'Understanding Capacity',
+        year: 7,
+        topic: 'Capacity',
+        description: 'Understand capacity as the amount a container can hold.',
+        video: 'year-7/capacity.mp4',
+        poster: '',
+        order: 2
+    },
+    {
         id: 'y9-gradient',
         title: 'Gradient: Rise over Run',
         year: 9,
