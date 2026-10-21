@@ -19,9 +19,11 @@
     const appIndex = segments.lastIndexOf('app');
     const quizIndex = segments.lastIndexOf('quiz');
     const worksheetIndex = segments.lastIndexOf('worksheet');
-    const inApp = appIndex !== -1 && appIndex >= quizIndex && appIndex >= worksheetIndex;
-    const inQuiz = quizIndex !== -1 && quizIndex >= appIndex && quizIndex >= worksheetIndex;
-    const inWorksheet = worksheetIndex !== -1 && worksheetIndex >= appIndex && worksheetIndex >= quizIndex;
+    const videosIndex = segments.lastIndexOf('videos');
+    const inApp = appIndex !== -1 && appIndex >= quizIndex && appIndex >= worksheetIndex && appIndex >= videosIndex;
+    const inQuiz = quizIndex !== -1 && quizIndex >= appIndex && quizIndex >= worksheetIndex && quizIndex >= videosIndex;
+    const inWorksheet = worksheetIndex !== -1 && worksheetIndex >= appIndex && worksheetIndex >= quizIndex && worksheetIndex >= videosIndex;
+    const inVideos = videosIndex !== -1 && videosIndex >= appIndex && videosIndex >= quizIndex && videosIndex >= worksheetIndex;
 
     const prefixes = (() => {
         if (inApp) {
@@ -32,6 +34,7 @@
                 apps: up || './',
                 quiz: `${up}../quiz/`,
                 worksheet: `${up}../worksheet/`,
+                videos: `${up}../videos/`,
                 active: 'apps'
             };
         }
@@ -44,6 +47,7 @@
                 apps: `${up}../app/`,
                 quiz: up || './',
                 worksheet: `${up}../worksheet/`,
+                videos: `${up}../videos/`,
                 active: 'quiz'
             };
         }
@@ -56,7 +60,23 @@
                 apps: `${up}../app/`,
                 quiz: `${up}../quiz/`,
                 worksheet: up || './',
+                videos: `${up}../videos/`,
                 active: 'worksheet'
+            };
+        }
+
+        if (inVideos) {
+            const lastSegment = segments[segments.length - 1] || '';
+            const fileSegment = /\.[a-z0-9]+$/i.test(lastSegment) ? 1 : 0;
+            const depth = Math.max(0, segments.length - videosIndex - 1 - fileSegment);
+            const up = '../'.repeat(depth);
+            return {
+                home: `${up}../`,
+                apps: `${up}../app/`,
+                quiz: `${up}../quiz/`,
+                worksheet: `${up}../worksheet/`,
+                videos: up || './',
+                active: 'videos'
             };
         }
 
@@ -65,6 +85,7 @@
             apps: './app/',
             quiz: './quiz/',
             worksheet: './worksheet/',
+            videos: './videos/',
             active: 'home'
         };
     })();
@@ -73,7 +94,8 @@
     const links = [
         { href: prefixes.apps, label: 'Apps', key: 'apps' },
         { href: prefixes.quiz, label: 'Quiz', key: 'quiz' },
-        { href: prefixes.worksheet, label: 'Worksheet', key: 'worksheet' }
+        { href: prefixes.worksheet, label: 'Worksheet', key: 'worksheet' },
+        { href: prefixes.videos, label: 'Videos', key: 'videos' }
     ];
 
     const existingSearch = document.getElementById('appSearch');
