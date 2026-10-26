@@ -49,5 +49,15 @@ window.BARKER_VIDEOS = [
         poster: '',
         duration: '2:49',
         order: 1
+    },
+    {
+        id: 'y11-minimum-spanning-tree',
+        title: 'Minimum Spanning Tree',
+        year: 11,
+        topic: 'Networks',
+        description: 'Find the minimum spanning tree of a weighted network.',
+        video: 'year-11/minimum-spanning-tree.mp4',
+        poster: '',
+        order: 1
     }
 ];
