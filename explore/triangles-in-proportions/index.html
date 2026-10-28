@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triangles in Proportions | Explore | Mr Deng Maths</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../explore.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="topbar-brand">
+                <a href="../../" class="topbar-title">Mr Deng Maths</a>
+                <nav class="topbar-nav" aria-label="Primary navigation">
+                    <a href="../../app/" class="topbar-link">Apps</a>
+                    <a href="../../quiz/" class="topbar-link">Quiz</a>
+                    <a href="../../worksheet/" class="topbar-link">Worksheet</a>
+                    <a href="../../videos/" class="topbar-link">Videos</a>
+                    <a href="../" class="topbar-link active">Explore</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="activity">
+
+        <section class="card hero" aria-labelledby="page-title">
+            <p class="eyebrow">Explore</p>
+            <h1 id="page-title">Triangles in Proportions</h1>
+            <p class="lead">When two triangles have the same height, their areas are in the same proportion as their bases.</p>
+            <ul class="meta-chips" aria-label="Activity details">
+                <li>Years 7–9</li>
+                <li>Geometry</li>
+                <li>Area</li>
+                <li>Ratio</li>
+                <li>15–20 min</li>
+            </ul>
+            <div class="prompt">
+                <p><strong>These triangles are not similar.</strong> They can have completely different shapes. What matters is that they have the same height and that one base is a multiple of the other.</p>
+            </div>
+        </section>
+
+        <!-- ================= Investigate ================= -->
+        <section class="card step" aria-labelledby="slide-h">
+            <div class="step-head"><span class="step-badge">Investigate</span></div>
+            <h2 id="slide-h">Change the base of triangle Y</h2>
+            <p>Both triangles are between the same parallel lines, so both have a height of 5 cm. Triangle X has a base of 4 cm.</p>
+
+            <figure class="figure">
+                <div class="diagram-frame">
+                    <svg class="diagram" id="prop-svg" viewBox="0 0 760 240" role="img" aria-labelledby="prop-t prop-d">
+                        <title id="prop-t">Triangles X and Y between parallel lines</title>
+                        <desc id="prop-d">Triangle X has a base of 4 centimetres. Triangle Y has a base that can be changed with the slider. Both triangles have a height of 5 centimetres.</desc>
+
+                        <line class="guide" x1="0" y1="40" x2="760" y2="40"/>
+                        <line class="guide" x1="0" y1="180" x2="760" y2="180"/>
+                        <path class="chev" d="M4 33 L12 40 L4 47"/>
+                        <path class="chev" d="M4 173 L12 180 L4 187"/>
+
+                        <polygon class="tri" points="60,180 172,180 100,40"/>
+                        <line class="base-line" x1="60" y1="180" x2="172" y2="180"/>
+                        <polygon class="tri tri-alt" id="prop-y-tri" points="300,180 524,180 368,40"/>
+                        <line class="base-line" id="prop-y-base" x1="300" y1="180" x2="524" y2="180"/>
+
+                        <text class="svg-label svg-big svg-point svg-mid" x="110" y="164">X</text>
+                        <text class="svg-label svg-big svg-point svg-mid" id="prop-y-label" x="400" y="164">Y</text>
+                        <text class="svg-label svg-small svg-base svg-mid" x="116" y="218">4 cm</text>
+                        <text class="svg-label svg-small svg-base svg-mid" id="prop-y-blabel" x="412" y="218">8 cm</text>
+                    </svg>
+                </div>
+                <figcaption>Not drawn to scale. The two long lines are parallel.</figcaption>
+            </figure>
+
+            <div class="slider-row">
+                <label for="prop-slider">Base of triangle Y</label>
+                <input type="range" id="prop-slider" min="1" max="12" step="1" value="8">
+                <output id="prop-slider-out" for="prop-slider">8 cm</output>
+            </div>
+
+            <div class="readouts" aria-label="Live measurements">
+                <div class="readout readout--stays">
+                    <h3>Triangle X</h3>
+                    <dl>
+                        <div><dt>Base</dt><dd>4 cm</dd></div>
+                        <div><dt>Height</dt><dd>5 cm</dd></div>
+                        <div><dt>Area</dt><dd>10 cm²</dd></div>
+                    </dl>
+                </div>
+                <div class="readout readout--changes">
+                    <h3>Triangle Y</h3>
+                    <dl>
+                        <div><dt>Base</dt><dd id="prop-yb">8 cm</dd></div>
+                        <div><dt>Height</dt><dd>5 cm</dd></div>
+                        <div><dt>Area</dt><dd id="prop-ya">20 cm²</dd></div>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="prompt" role="status" aria-live="polite">
+                <p id="prop-ratio">The base of Y is 2 times the base of X, so the area of Y is 2 times the area of X.</p>
+            </div>
+        </section>
+
+        <!-- ================= Why ================= -->
+        <section class="card step" aria-labelledby="why-h">
+            <div class="step-head"><span class="step-badge">Why?</span></div>
+            <h2 id="why-h">Same height, so the base decides</h2>
+            <p>If two triangles have the same height h:</p>
+            <p><span class="formula">Area of X = ½ × b<sub>X</sub> × h</span> <span class="formula">Area of Y = ½ × b<sub>Y</sub> × h</span></p>
+            <p>The ½ and the h are the same in both, so only the bases make the areas different. If the base of Y is 3 times as long, the area of Y is 3 times as big.</p>
+
+            <div class="equation" role="group" aria-label="same height, base multiplied by n, gives area multiplied by n">
+                <div class="eq-chip">same height</div>
+                <span class="eq-op" aria-hidden="true">+</span>
+                <div class="eq-chip">base × n</div>
+                <span class="eq-op" aria-hidden="true">→</span>
+                <div class="eq-chip eq-chip--result">area × n</div>
+            </div>
+        </section>
+
+        <!-- ================= Questions ================= -->
+        <section class="card step" aria-labelledby="questions-h">
+            <div class="step-head"><span class="step-badge">Questions</span></div>
+            <h2 id="questions-h">Now use the idea</h2>
+            <p class="muted">Choose an answer, press <strong>Check</strong>, then discuss. The questions get harder.</p>
+
+            <!-- P1 -->
+            <article class="question" data-answer="b">
+                <h3>Question 1</h3>
+                <figure class="figure">
+                    <div class="diagram-frame">
+                        <svg class="diagram" viewBox="0 0 700 240" role="img" aria-labelledby="p1-t p1-d">
+                            <title id="p1-t">Triangles X and Z between parallel lines</title>
+                            <desc id="p1-d">Two triangles stand on the lower of two parallel lines with their top vertices on the upper line. Triangle X has a base of 6 centimetres and triangle Z has a base of 3 centimetres.</desc>
+                            <line class="guide" x1="0" y1="40" x2="700" y2="40"/>
+                            <line class="guide" x1="0" y1="180" x2="700" y2="180"/>
+                            <path class="chev" d="M4 33 L12 40 L4 47"/>
+                            <path class="chev" d="M4 173 L12 180 L4 187"/>
+                            <polygon class="tri" points="60,180 240,180 120,40"/>
+                            <polygon class="tri tri-alt" points="390,180 480,180 580,40"/>
+                            <line class="base-line" x1="60" y1="180" x2="240" y2="180"/>
+                            <line class="base-line" x1="390" y1="180" x2="480" y2="180"/>
+                            <text class="svg-label svg-big svg-point svg-mid" x="146" y="162">X</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="450" y="166">Z</text>
+                            <text class="svg-label svg-small svg-base svg-mid" x="150" y="218">6 cm</text>
+                            <text class="svg-label svg-small svg-base svg-mid" x="435" y="218">3 cm</text>
+                        </svg>
+                    </div>
+                    <figcaption>Not drawn to scale. The two long lines are parallel.</figcaption>
+                </figure>
+                <p class="q-text">Triangles X and Z are between the same parallel lines. How does the area of Z compare with the area of X?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 1 answers</legend>
+                    <label class="option"><input type="radio" name="p1" value="a"><span><span class="letter">A.</span> They have the same area.</span></label>
+                    <label class="option"><input type="radio" name="p1" value="b"><span><span class="letter">B.</span> Z has half the area of X.</span></label>
+                    <label class="option"><input type="radio" name="p1" value="c"><span><span class="letter">C.</span> Z has a quarter of the area of X.</span></label>
+                    <label class="option"><input type="radio" name="p1" value="d"><span><span class="letter">D.</span> Z has double the area of X.</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="p1-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="p1-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>B.</strong> The triangles are between the same parallel lines, so they have the same perpendicular height. Z has a base of 3 cm, which is half of X’s base of 6 cm. Halving the base while keeping the height the same halves the area.</p>
+                </div>
+            </article>
+
+            <!-- P2 -->
+            <article class="question" data-answer="b">
+                <h3>Question 2</h3>
+                <figure class="figure">
+                    <div class="diagram-frame">
+                        <svg class="diagram" viewBox="0 0 760 256" role="img" aria-labelledby="p2-t p2-d">
+                            <title id="p2-t">Triangles PQR and SRT between parallel lines</title>
+                            <desc id="p2-d">Points Q, R and T lie on the lower line, with QR equal to 12 centimetres and RT equal to 6 centimetres. Points P and S lie on the upper, parallel line. Triangle PQR has an area of 30 square centimetres. Triangle SRT has an unknown area.</desc>
+                            <line class="guide" x1="0" y1="70" x2="760" y2="70"/>
+                            <line class="guide" x1="0" y1="170" x2="760" y2="170"/>
+                            <path class="chev" d="M4 63 L12 70 L4 77"/>
+                            <path class="chev" d="M4 163 L12 170 L4 177"/>
+                            <polygon class="tri" points="160,70 60,170 300,170"/>
+                            <polygon class="tri tri-alt" points="500,70 300,170 420,170"/>
+                            <circle class="pt" cx="60" cy="170" r="5"/>
+                            <circle class="pt" cx="300" cy="170" r="5"/>
+                            <circle class="pt" cx="420" cy="170" r="5"/>
+                            <circle class="pt" cx="160" cy="70" r="5"/>
+                            <circle class="pt" cx="500" cy="70" r="5"/>
+                            <text class="svg-label svg-big svg-point svg-mid" x="60" y="204">Q</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="300" y="204">R</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="420" y="204">T</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="160" y="52">P</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="500" y="52">S</text>
+                            <path class="guide-soft" d="M60 216 v6 h240 v-6"/>
+                            <path class="guide-soft" d="M300 216 v6 h120 v-6"/>
+                            <text class="svg-label svg-small svg-base svg-mid" x="180" y="248">12 cm</text>
+                            <text class="svg-label svg-small svg-base svg-mid" x="360" y="248">6 cm</text>
+                            <text class="svg-label svg-small svg-mid" x="165" y="148">30 cm²</text>
+                            <text class="svg-label svg-small svg-mid" x="395" y="146">?</text>
+                        </svg>
+                    </div>
+                    <figcaption>Not drawn to scale. The two long lines are parallel.</figcaption>
+                </figure>
+                <p class="q-text">The area of triangle PQR is 30 cm². QR = 12 cm and RT = 6 cm. What is the area of triangle SRT?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 2 answers</legend>
+                    <label class="option"><input type="radio" name="p2" value="a"><span><span class="letter">A.</span> 10 cm²</span></label>
+                    <label class="option"><input type="radio" name="p2" value="b"><span><span class="letter">B.</span> 15 cm²</span></label>
+                    <label class="option"><input type="radio" name="p2" value="c"><span><span class="letter">C.</span> 30 cm²</span></label>
+                    <label class="option"><input type="radio" name="p2" value="d"><span><span class="letter">D.</span> 60 cm²</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="p2-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="p2-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>B.</strong> Both triangles are between the same parallel lines, so they have the same height. The base RT (6 cm) is half of the base QR (12 cm), so the area of SRT is half of 30 cm², which is 15 cm².</p>
+                    <p>Check: 30 = ½ × 12 × h gives h = 5 cm, and ½ × 6 × 5 = 15 cm².</p>
+                </div>
+            </article>
+
+            <!-- P3 -->
+            <article class="question" data-answer="c">
+                <h3>Question 3</h3>
+                <figure class="figure">
+                    <div class="diagram-frame">
+                        <svg class="diagram" viewBox="0 0 760 256" role="img" aria-labelledby="p3-t p3-d">
+                            <title id="p3-t">Triangles PQR and PQT between parallel lines</title>
+                            <desc id="p3-d">Points Q, R and T lie on the lower line, with QR equal to 12 centimetres and RT equal to 6 centimetres. Point P is on the upper, parallel line. Triangle PQR has an area of 30 square centimetres. Triangle PQT, outlined with a dashed line, has an unknown area.</desc>
+                            <line class="guide" x1="0" y1="70" x2="760" y2="70"/>
+                            <line class="guide" x1="0" y1="170" x2="760" y2="170"/>
+                            <path class="chev" d="M4 63 L12 70 L4 77"/>
+                            <path class="chev" d="M4 163 L12 170 L4 177"/>
+                            <polygon class="tri" points="160,70 60,170 300,170"/>
+                            <polygon class="tri tri-alt" style="fill:none;stroke-dasharray:6 5" points="160,70 60,170 420,170"/>
+                            <circle class="pt" cx="60" cy="170" r="5"/>
+                            <circle class="pt" cx="300" cy="170" r="5"/>
+                            <circle class="pt" cx="420" cy="170" r="5"/>
+                            <circle class="pt" cx="160" cy="70" r="5"/>
+                            <text class="svg-label svg-big svg-point svg-mid" x="60" y="204">Q</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="300" y="204">R</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="420" y="204">T</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="160" y="52">P</text>
+                            <path class="guide-soft" d="M60 216 v6 h240 v-6"/>
+                            <path class="guide-soft" d="M300 216 v6 h120 v-6"/>
+                            <text class="svg-label svg-small svg-base svg-mid" x="180" y="248">12 cm</text>
+                            <text class="svg-label svg-small svg-base svg-mid" x="360" y="248">6 cm</text>
+                            <text class="svg-label svg-small svg-mid" x="165" y="148">30 cm²</text>
+                        </svg>
+                    </div>
+                    <figcaption>Not drawn to scale. The dashed outline is triangle PQT.</figcaption>
+                </figure>
+                <p class="q-text">The area of triangle PQR is 30 cm². QR = 12 cm and RT = 6 cm. What is the area of the whole triangle PQT?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 3 answers</legend>
+                    <label class="option"><input type="radio" name="p3" value="a"><span><span class="letter">A.</span> 36 cm²</span></label>
+                    <label class="option"><input type="radio" name="p3" value="b"><span><span class="letter">B.</span> 42 cm²</span></label>
+                    <label class="option"><input type="radio" name="p3" value="c"><span><span class="letter">C.</span> 45 cm²</span></label>
+                    <label class="option"><input type="radio" name="p3" value="d"><span><span class="letter">D.</span> 60 cm²</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="p3-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="p3-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>C.</strong> PQT has the same height as PQR. Its base QT = 12 + 6 = 18 cm, which is 1½ times the base QR. So its area is 1½ × 30 = 45 cm².</p>
+                    <p>Another way: PQT is PQR (30 cm²) plus triangle PRT. PRT has base RT = 6 cm, half of QR, so its area is 15 cm². 30 + 15 = 45 cm².</p>
+                </div>
+            </article>
+
+            <!-- P4 -->
+            <article class="question" data-answer="a" data-scope>
+                <h3>Question 4</h3>
+                <figure class="figure">
+                    <div class="diagram-frame diagram-small">
+                        <svg class="diagram" viewBox="0 0 480 250" role="img" aria-labelledby="p4-t p4-d">
+                            <title id="p4-t">Triangle ABC with point D on BC</title>
+                            <desc id="p4-d">Triangle ABC has its base BC along the bottom. D is a point on BC so that BD is two fifths of BC. A line joins A to D, and triangle ABD is shaded.</desc>
+                            <polygon class="tri tri-plain" points="180,40 60,200 420,200"/>
+                            <polygon class="tri" points="180,40 60,200 204,200"/>
+                            <g class="extra-layer">
+                                <line class="h-dash" x1="180" y1="40" x2="180" y2="200"/>
+                                <path class="ra" d="M180 188 h12 v12"/>
+                                <text class="svg-label svg-big svg-height svg-end" x="170" y="130">h</text>
+                            </g>
+                            <circle class="pt" cx="204" cy="200" r="5"/>
+                            <text class="svg-label svg-big svg-point svg-mid" x="180" y="26">A</text>
+                            <text class="svg-label svg-big svg-point svg-end" x="48" y="222">B</text>
+                            <text class="svg-label svg-big svg-point" x="432" y="222">C</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="204" y="234">D</text>
+                        </svg>
+                    </div>
+                    <figcaption>Not drawn to scale. Triangle ABD is shaded.</figcaption>
+                </figure>
+                <p class="q-text">D is a point on BC so that BD : DC = 2 : 3. The area of triangle ABC is 50 cm². What is the area of triangle ABD?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 4 answers</legend>
+                    <label class="option"><input type="radio" name="p4" value="a"><span><span class="letter">A.</span> 20 cm²</span></label>
+                    <label class="option"><input type="radio" name="p4" value="b"><span><span class="letter">B.</span> 25 cm²</span></label>
+                    <label class="option"><input type="radio" name="p4" value="c"><span><span class="letter">C.</span> 30 cm²</span></label>
+                    <label class="option"><input type="radio" name="p4" value="d"><span><span class="letter">D.</span> 33⅓ cm²</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="p4-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="p4-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>A.</strong> Triangles ABD and ABC have the same height: the perpendicular distance from A to the line BC.</p>
+                    <p>BD : DC = 2 : 3 means BD is 2 parts out of the 5 parts that make up BC. So BD = ⅖ of BC, and the area of ABD is ⅖ of 50 cm², which is 20 cm².</p>
+                </div>
+            </article>
+
+            <!-- P5 -->
+            <article class="question" data-answer="b" data-scope>
+                <h3>Question 5</h3>
+                <figure class="figure">
+                    <div class="diagram-frame diagram-small">
+                        <svg class="diagram" viewBox="0 0 480 250" role="img" aria-labelledby="p5-t p5-d">
+                            <title id="p5-t">Triangle ABC with point D on BC</title>
+                            <desc id="p5-d">Triangle ABC has its base BC along the bottom. D is a point on BC close to C, so that BD is three times DC. A line joins A to D, and triangle ADC is shaded.</desc>
+                            <polygon class="tri tri-plain" points="160,40 60,200 420,200"/>
+                            <polygon class="tri tri-alt" points="160,40 330,200 420,200"/>
+                            <g class="extra-layer">
+                                <line class="h-dash" x1="160" y1="40" x2="160" y2="200"/>
+                                <path class="ra" d="M160 188 h12 v12"/>
+                                <text class="svg-label svg-big svg-height svg-end" x="150" y="130">h</text>
+                            </g>
+                            <circle class="pt" cx="330" cy="200" r="5"/>
+                            <text class="svg-label svg-big svg-point svg-mid" x="160" y="26">A</text>
+                            <text class="svg-label svg-big svg-point svg-end" x="48" y="222">B</text>
+                            <text class="svg-label svg-big svg-point" x="432" y="222">C</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="330" y="234">D</text>
+                        </svg>
+                    </div>
+                    <figcaption>Not drawn to scale. Triangle ADC is shaded.</figcaption>
+                </figure>
+                <p class="q-text">D is a point on BC so that BD = 3 × DC. The area of triangle ADC is 8 cm². What is the area of triangle ABC?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 5 answers</legend>
+                    <label class="option"><input type="radio" name="p5" value="a"><span><span class="letter">A.</span> 24 cm²</span></label>
+                    <label class="option"><input type="radio" name="p5" value="b"><span><span class="letter">B.</span> 32 cm²</span></label>
+                    <label class="option"><input type="radio" name="p5" value="c"><span><span class="letter">C.</span> 40 cm²</span></label>
+                    <label class="option"><input type="radio" name="p5" value="d"><span><span class="letter">D.</span> 64 cm²</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="p5-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="p5-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>B.</strong> ADC and ABC have the same height. BD = 3 × DC, so BC = BD + DC = 4 × DC. The base of ABC is 4 times the base of ADC, so its area is 4 times as big: 4 × 8 = 32 cm².</p>
+                    <p>(24 cm² is the area of ABD, not ABC.)</p>
+                </div>
+            </article>
+
+            <!-- P6 -->
+            <article class="question" data-answer="c">
+                <h3>Question 6</h3>
+                <figure class="figure">
+                    <div class="diagram-frame">
+                        <svg class="diagram" viewBox="0 0 700 240" role="img" aria-labelledby="p6-t p6-d">
+                            <title id="p6-t">Triangles X and Y between parallel lines</title>
+                            <desc id="p6-d">Two triangles stand on the lower of two parallel lines with their top vertices on the upper line. Triangle X has a base of 4 centimetres and triangle Y has a base of 10 centimetres.</desc>
+                            <line class="guide" x1="0" y1="40" x2="700" y2="40"/>
+                            <line class="guide" x1="0" y1="180" x2="700" y2="180"/>
+                            <path class="chev" d="M4 33 L12 40 L4 47"/>
+                            <path class="chev" d="M4 173 L12 180 L4 187"/>
+                            <polygon class="tri" points="40,180 160,180 60,40"/>
+                            <polygon class="tri tri-alt" points="260,180 560,180 500,40"/>
+                            <line class="base-line" x1="40" y1="180" x2="160" y2="180"/>
+                            <line class="base-line" x1="260" y1="180" x2="560" y2="180"/>
+                            <text class="svg-label svg-big svg-point svg-mid" x="88" y="164">X</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="440" y="164">Y</text>
+                            <text class="svg-label svg-small svg-base svg-mid" x="100" y="218">4 cm</text>
+                            <text class="svg-label svg-small svg-base svg-mid" x="410" y="218">10 cm</text>
+                        </svg>
+                    </div>
+                    <figcaption>Not drawn to scale. The two long lines are parallel.</figcaption>
+                </figure>
+                <p class="q-text">Triangles X and Y are between the same parallel lines. Together their areas add up to 56 cm². What is the area of the larger triangle, Y?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 6 answers</legend>
+                    <label class="option"><input type="radio" name="p6" value="a"><span><span class="letter">A.</span> 28 cm²</span></label>
+                    <label class="option"><input type="radio" name="p6" value="b"><span><span class="letter">B.</span> 35 cm²</span></label>
+                    <label class="option"><input type="radio" name="p6" value="c"><span><span class="letter">C.</span> 40 cm²</span></label>
+                    <label class="option"><input type="radio" name="p6" value="d"><span><span class="letter">D.</span> 42 cm²</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="p6-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="p6-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>C.</strong> The triangles have the same height, so their areas are in the same ratio as their bases: 4 : 10, which simplifies to 2 : 5.</p>
+                    <p>That makes 2 + 5 = 7 equal parts, so one part is 56 ÷ 7 = 8 cm². Triangle X is 2 × 8 = 16 cm² and triangle Y is 5 × 8 = 40 cm².</p>
+                </div>
+            </article>
+
+            <!-- P7 -->
+            <article class="question" data-answer="b" data-scope>
+                <h3>Question 7</h3>
+                <figure class="figure">
+                    <div class="diagram-frame diagram-small">
+                        <svg class="diagram" viewBox="0 0 480 250" role="img" aria-labelledby="p7-t p7-d">
+                            <title id="p7-t">Triangle ABC with midpoints M and N</title>
+                            <desc id="p7-d">Triangle ABC has its base BC along the bottom. M is the midpoint of BC. N is the midpoint of the line AM. Lines join N to B and N to C, and triangle NBC is shaded.</desc>
+                            <polygon class="tri tri-plain" points="160,40 60,200 420,200"/>
+                            <polygon class="tri tri-alt" points="200,120 60,200 420,200"/>
+                            <line class="guide-soft" x1="160" y1="40" x2="240" y2="200"/>
+                            <g class="extra-layer">
+                                <line class="h-dash" x1="160" y1="40" x2="160" y2="200"/>
+                                <line class="h-dash" x1="200" y1="120" x2="200" y2="200"/>
+                                <path class="ra" d="M160 188 h-12 v12"/>
+                                <path class="ra" d="M200 188 h12 v12"/>
+                                <text class="svg-label svg-big svg-height svg-end" x="150" y="110">h</text>
+                                <text class="svg-label svg-small svg-height" x="208" y="165">½ h</text>
+                            </g>
+                            <circle class="pt" cx="240" cy="200" r="5"/>
+                            <circle class="pt" cx="200" cy="120" r="5"/>
+                            <text class="svg-label svg-big svg-point svg-mid" x="160" y="26">A</text>
+                            <text class="svg-label svg-big svg-point svg-end" x="48" y="222">B</text>
+                            <text class="svg-label svg-big svg-point" x="432" y="222">C</text>
+                            <text class="svg-label svg-big svg-point svg-mid" x="240" y="234">M</text>
+                            <text class="svg-label svg-big svg-point" x="212" y="114">N</text>
+                        </svg>
+                    </div>
+                    <figcaption>Not drawn to scale. Triangle NBC is shaded.</figcaption>
+                </figure>
+                <p class="q-text">M is the midpoint of BC and N is the midpoint of AM. The area of triangle ABC is 48 cm². What is the area of triangle NBC?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 7 answers</legend>
+                    <label class="option"><input type="radio" name="p7" value="a"><span><span class="letter">A.</span> 12 cm²</span></label>
+                    <label class="option"><input type="radio" name="p7" value="b"><span><span class="letter">B.</span> 24 cm²</span></label>
+                    <label class="option"><input type="radio" name="p7" value="c"><span><span class="letter">C.</span> 16 cm²</span></label>
+                    <label class="option"><input type="radio" name="p7" value="d"><span><span class="letter">D.</span> 36 cm²</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="p7-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="p7-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>B.</strong> Triangles NBC and ABC have the same base BC. N is halfway between A and M, and M is on BC, so N is only half as far from BC as A is. NBC has half the height of ABC.</p>
+                    <p>Same base, half the height, so half the area: ½ × 48 = 24 cm².</p>
+                </div>
+            </article>
+        </section>
+
+        <div class="activity-footer">
+            <a class="btn btn-secondary" href="../">← Back to Explore</a>
+            <a class="btn btn-secondary" href="#page-title">Back to top ↑</a>
+        </div>
+    </main>
+
+    <script src="../../site-nav.js"></script>
+    <script src="../explore.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>
