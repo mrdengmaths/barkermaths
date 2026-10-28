@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore | Mr Deng Maths</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./explore.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="topbar-brand">
+                <a href="../" class="topbar-title">Mr Deng Maths</a>
+                <nav class="topbar-nav" aria-label="Primary navigation">
+                    <a href="../app/" class="topbar-link">Apps</a>
+                    <a href="../quiz/" class="topbar-link">Quiz</a>
+                    <a href="../worksheet/" class="topbar-link">Worksheet</a>
+                    <a href="../videos/" class="topbar-link">Videos</a>
+                    <a href="./" class="topbar-link active">Explore</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container landing">
+        <h1>Explore</h1>
+        <p class="subtitle">Curious problems, surprising patterns and maths worth thinking about.</p>
+
+        <ol class="pathway" aria-label="How an investigation works">
+            <li>Calculate</li>
+            <li>Notice</li>
+            <li>Experiment</li>
+            <li>Conjecture</li>
+            <li>Explain</li>
+            <li>Apply</li>
+            <li>Generalise</li>
+        </ol>
+
+        <!--
+            Each activity is one <li> below. The data-* attributes hold its metadata so that
+            filters (year level, topic, type, difficulty, time) can be added later by reading
+            them from the DOM, without changing the card markup.
+        -->
+        <ul class="activity-list" id="activityGrid" aria-label="Investigations">
+            <li>
+                <article class="activity-card"
+                         data-years="7,8,9"
+                         data-topics="geometry,area,reasoning"
+                         data-type="investigation"
+                         data-difficulty="intermediate"
+                         data-minutes-min="15"
+                         data-minutes-max="25">
+                    <div class="activity-art">
+                        <svg viewBox="0 0 320 180" role="img" aria-label="Three triangles of different shapes standing on one line, with their top vertices on a parallel line above">
+                            <defs>
+                                <linearGradient id="art-bg" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0" stop-color="#3730a3"/>
+                                    <stop offset="1" stop-color="#6d63f0"/>
+                                </linearGradient>
+                                <pattern id="art-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+                                    <path d="M28 0H0V28" fill="none" stroke="#ffffff" stroke-opacity="0.12"/>
+                                </pattern>
+                            </defs>
+                            <rect width="320" height="180" fill="url(#art-bg)"/>
+                            <rect width="320" height="180" fill="url(#art-grid)"/>
+                            <g fill="none" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2">
+                                <line x1="10" y1="50" x2="310" y2="50"/>
+                                <line x1="10" y1="130" x2="310" y2="130"/>
+                            </g>
+                            <g fill="#ffffff" fill-opacity="0.22" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round">
+                                <polygon points="28,130 88,130 22,50"/>
+                                <polygon points="130,130 190,130 160,50"/>
+                                <polygon points="232,130 292,130 304,50"/>
+                            </g>
+                            <line x1="160" y1="50" x2="160" y2="130" stroke="#ffffff" stroke-width="2" stroke-dasharray="5 4"/>
+                        </svg>
+                    </div>
+                    <div class="activity-body">
+                        <div class="activity-meta">
+                            <span class="badge">Years 7–9</span>
+                            <span class="time-chip">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                                15–25 min
+                            </span>
+                        </div>
+                        <span class="activity-topic">Geometry • Area • Reasoning</span>
+                        <h2 class="activity-title">Same Base, Same Height</h2>
+                        <p class="activity-desc">Different triangles. Same area. Why?</p>
+                        <a class="activity-cta" href="./same-base-same-height/">Explore <span class="sr-only">Same Base, Same Height</span><span aria-hidden="true">→</span></a>
+                    </div>
+                </article>
+            </li>
+        </ul>
+
+        <p class="landing-note">More investigations are on the way.</p>
+    </main>
+
+    <script src="../site-nav.js"></script>
+</body>
+</html>

@@ -20,10 +20,12 @@
     const quizIndex = segments.lastIndexOf('quiz');
     const worksheetIndex = segments.lastIndexOf('worksheet');
     const videosIndex = segments.lastIndexOf('videos');
-    const inApp = appIndex !== -1 && appIndex >= quizIndex && appIndex >= worksheetIndex && appIndex >= videosIndex;
-    const inQuiz = quizIndex !== -1 && quizIndex >= appIndex && quizIndex >= worksheetIndex && quizIndex >= videosIndex;
-    const inWorksheet = worksheetIndex !== -1 && worksheetIndex >= appIndex && worksheetIndex >= quizIndex && worksheetIndex >= videosIndex;
-    const inVideos = videosIndex !== -1 && videosIndex >= appIndex && videosIndex >= quizIndex && videosIndex >= worksheetIndex;
+    const exploreIndex = segments.lastIndexOf('explore');
+    const inApp = appIndex !== -1 && appIndex >= quizIndex && appIndex >= worksheetIndex && appIndex >= videosIndex && appIndex >= exploreIndex;
+    const inQuiz = quizIndex !== -1 && quizIndex >= appIndex && quizIndex >= worksheetIndex && quizIndex >= videosIndex && quizIndex >= exploreIndex;
+    const inWorksheet = worksheetIndex !== -1 && worksheetIndex >= appIndex && worksheetIndex >= quizIndex && worksheetIndex >= videosIndex && worksheetIndex >= exploreIndex;
+    const inVideos = videosIndex !== -1 && videosIndex >= appIndex && videosIndex >= quizIndex && videosIndex >= worksheetIndex && videosIndex >= exploreIndex;
+    const inExplore = exploreIndex !== -1 && exploreIndex >= appIndex && exploreIndex >= quizIndex && exploreIndex >= worksheetIndex && exploreIndex >= videosIndex;
 
     const prefixes = (() => {
         if (inApp) {
@@ -35,6 +37,7 @@
                 quiz: `${up}../quiz/`,
                 worksheet: `${up}../worksheet/`,
                 videos: `${up}../videos/`,
+                explore: `${up}../explore/`,
                 active: 'apps'
             };
         }
@@ -48,6 +51,7 @@
                 quiz: up || './',
                 worksheet: `${up}../worksheet/`,
                 videos: `${up}../videos/`,
+                explore: `${up}../explore/`,
                 active: 'quiz'
             };
         }
@@ -61,6 +65,7 @@
                 quiz: `${up}../quiz/`,
                 worksheet: up || './',
                 videos: `${up}../videos/`,
+                explore: `${up}../explore/`,
                 active: 'worksheet'
             };
         }
@@ -76,7 +81,24 @@
                 quiz: `${up}../quiz/`,
                 worksheet: `${up}../worksheet/`,
                 videos: up || './',
+                explore: `${up}../explore/`,
                 active: 'videos'
+            };
+        }
+
+        if (inExplore) {
+            const lastSegment = segments[segments.length - 1] || '';
+            const fileSegment = /\.[a-z0-9]+$/i.test(lastSegment) ? 1 : 0;
+            const depth = Math.max(0, segments.length - exploreIndex - 1 - fileSegment);
+            const up = '../'.repeat(depth);
+            return {
+                home: `${up}../`,
+                apps: `${up}../app/`,
+                quiz: `${up}../quiz/`,
+                worksheet: `${up}../worksheet/`,
+                videos: `${up}../videos/`,
+                explore: up || './',
+                active: 'explore'
             };
         }
 
@@ -86,6 +108,7 @@
             quiz: './quiz/',
             worksheet: './worksheet/',
             videos: './videos/',
+            explore: './explore/',
             active: 'home'
         };
     })();
@@ -95,7 +118,8 @@
         { href: prefixes.apps, label: 'Apps', key: 'apps' },
         { href: prefixes.quiz, label: 'Quiz', key: 'quiz' },
         { href: prefixes.worksheet, label: 'Worksheet', key: 'worksheet' },
-        { href: prefixes.videos, label: 'Videos', key: 'videos' }
+        { href: prefixes.videos, label: 'Videos', key: 'videos' },
+        { href: prefixes.explore, label: 'Explore', key: 'explore' }
     ];
 
     const existingSearch = document.getElementById('appSearch');
