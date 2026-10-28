@@ -30,18 +30,13 @@
         <p class="subtitle">Curious problems, surprising patterns and maths worth thinking about.</p>
 
         <!--
-            Each activity is one <li> below. The tag filter buttons are built by filter.js from each
-            card's data-topics (comma separated). The other data-* attributes hold metadata for
-            future filters (year level, type, difficulty, time).
+            Each activity is one <li> below. The data-* attributes hold its metadata so that filters (year level, type, difficulty, time) can be added later by reading them from the DOM, without changing the card markup.
         -->
-        <div class="filter-bar" id="activityFilters" role="group" aria-label="Filter investigations by tag" hidden></div>
-        <p class="activity-status" id="activityStatus" role="status" aria-live="polite"></p>
 
         <ul class="activity-list" id="activityGrid" aria-label="Investigations">
             <li>
                 <article class="activity-card"
                          data-years="7,8,9"
-                         data-topics="geometry,area,reasoning"
                          data-type="investigation"
                          data-difficulty="intermediate"
                          data-minutes-min="15"
@@ -88,7 +83,6 @@
             <li>
                 <article class="activity-card"
                          data-years="7,8,9"
-                         data-topics="geometry,area,ratio"
                          data-type="investigation"
                          data-difficulty="intermediate"
                          data-minutes-min="15"
@@ -125,7 +119,6 @@
             <li>
                 <article class="activity-card"
                          data-years="7,8,9,10"
-                         data-topics="puzzles,patterns,number"
                          data-type="simulation"
                          data-difficulty="intermediate"
                          data-minutes-min="15"
@@ -175,6 +168,5 @@
     </main>
 
     <script src="../site-nav.js"></script>
-    <script src="./filter.js"></script>
 </body>
 </html>
