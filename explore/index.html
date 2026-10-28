@@ -30,10 +30,13 @@
         <p class="subtitle">Curious problems, surprising patterns and maths worth thinking about.</p>
 
         <!--
-            Each activity is one <li> below. The data-* attributes hold its metadata so that
-            filters (year level, topic, type, difficulty, time) can be added later by reading
-            them from the DOM, without changing the card markup.
+            Each activity is one <li> below. The tag filter buttons are built by filter.js from each
+            card's data-topics (comma separated). The other data-* attributes hold metadata for
+            future filters (year level, type, difficulty, time).
         -->
+        <div class="filter-bar" id="activityFilters" role="group" aria-label="Filter investigations by tag" hidden></div>
+        <p class="activity-status" id="activityStatus" role="status" aria-live="polite"></p>
+
         <ul class="activity-list" id="activityGrid" aria-label="Investigations">
             <li>
                 <article class="activity-card"
@@ -76,7 +79,6 @@
                                 15–25 min
                             </span>
                         </div>
-                        <span class="activity-topic">Geometry • Area • Reasoning</span>
                         <h2 class="activity-title">Same Base, Same Height</h2>
                         <p class="activity-desc">Different triangles. Same area. Why?</p>
                         <a class="activity-cta" href="./same-base-same-height/">Explore <span class="sr-only">Same Base, Same Height</span><span aria-hidden="true">→</span></a>
@@ -114,10 +116,56 @@
                                 15–20 min
                             </span>
                         </div>
-                        <span class="activity-topic">Geometry • Area • Ratio</span>
                         <h2 class="activity-title">Triangles in Proportions</h2>
                         <p class="activity-desc">Same height, bases in proportion. How do the areas compare?</p>
                         <a class="activity-cta" href="./triangles-in-proportions/">Explore <span class="sr-only">Triangles in Proportions</span><span aria-hidden="true">→</span></a>
+                    </div>
+                </article>
+            </li>
+            <li>
+                <article class="activity-card"
+                         data-years="7,8,9,10"
+                         data-topics="puzzles,patterns,number"
+                         data-type="simulation"
+                         data-difficulty="intermediate"
+                         data-minutes-min="15"
+                         data-minutes-max="30">
+                    <div class="activity-art">
+                        <svg viewBox="0 0 320 180" role="img" aria-label="A circle of numbered people, with some crossed out and one highlighted as the survivor">
+                            <rect width="320" height="180" fill="url(#art-bg)"/>
+                            <rect width="320" height="180" fill="url(#art-grid)"/>
+                            <circle cx="160" cy="90" r="62" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="4 5"/>
+                            <g stroke="#ffffff" stroke-width="2.5">
+                                <circle cx="160" cy="28" r="14" fill="#ffffff" fill-opacity="0.9"/>
+                                <circle cx="212" cy="58" r="14" fill="#ffffff" fill-opacity="0.2" stroke-dasharray="3 3"/>
+                                <circle cx="212" cy="122" r="14" fill="#ffffff" fill-opacity="0.9"/>
+                                <circle cx="160" cy="152" r="14" fill="#ffffff" fill-opacity="0.2" stroke-dasharray="3 3"/>
+                                <circle cx="108" cy="122" r="14" fill="#fbbf24" stroke="#fef3c7"/>
+                                <circle cx="108" cy="58" r="14" fill="#ffffff" fill-opacity="0.2" stroke-dasharray="3 3"/>
+                            </g>
+                            <g stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">
+                                <path d="M206 52L218 64M218 52L206 64"/>
+                                <path d="M154 146L166 158M166 146L154 158"/>
+                                <path d="M102 52L114 64M114 52L102 64"/>
+                            </g>
+                            <g font-family="Poppins, sans-serif" font-size="14" font-weight="700" text-anchor="middle">
+                                <text x="160" y="33" fill="#3730a3">1</text>
+                                <text x="212" y="127" fill="#3730a3">3</text>
+                                <text x="108" y="127" fill="#451a03">5</text>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="activity-body">
+                        <div class="activity-meta">
+                            <span class="badge">Years 7–10</span>
+                            <span class="time-chip">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                                15–30 min
+                            </span>
+                        </div>
+                        <h2 class="activity-title">The Josephus Problem</h2>
+                        <p class="activity-desc">Eliminate every second person in a circle. Who is left, and can you predict it?</p>
+                        <a class="activity-cta" href="./josephus-problem/">Explore <span class="sr-only">The Josephus Problem</span><span aria-hidden="true">→</span></a>
                     </div>
                 </article>
             </li>
@@ -127,5 +175,6 @@
     </main>
 
     <script src="../site-nav.js"></script>
+    <script src="./filter.js"></script>
 </body>
 </html>

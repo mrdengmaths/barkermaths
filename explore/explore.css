@@ -247,10 +247,43 @@ p { margin: 0 0 0.9rem; }
 
 .time-chip svg { width: 0.95rem; height: 0.95rem; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
 
-.activity-topic {
-    color: var(--muted);
-    font-size: 0.85rem;
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 0 0.75rem;
+}
+
+.filter-btn {
+    font-family: inherit;
+    font-size: 0.95rem;
     font-weight: 600;
+    color: #334155;
+    background: #ffffff;
+    border: 1px solid #d0d9e3;
+    border-radius: 999px;
+    padding: 0.55rem 1.1rem;
+    min-height: 44px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent-line);
+}
+
+.filter-btn[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+}
+
+.activity-status {
+    margin: 0 0 1.25rem;
+    font-size: 0.9rem;
+    color: var(--muted);
 }
 
 .activity-title {
@@ -721,7 +754,7 @@ p { margin: 0 0 0.9rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .activity-card, .btn, .activity-cta { transition: none; }
+    .activity-card, .btn, .activity-cta, .filter-btn { transition: none; }
     .activity-card:hover { transform: none; }
 }
 

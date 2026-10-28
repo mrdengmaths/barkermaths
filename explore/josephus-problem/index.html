@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Josephus Problem | Explore | Mr Deng Maths</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../explore.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="topbar-brand">
+                <a href="../../" class="topbar-title">Mr Deng Maths</a>
+                <nav class="topbar-nav" aria-label="Primary navigation">
+                    <a href="../../app/" class="topbar-link">Apps</a>
+                    <a href="../../quiz/" class="topbar-link">Quiz</a>
+                    <a href="../../worksheet/" class="topbar-link">Worksheet</a>
+                    <a href="../../videos/" class="topbar-link">Videos</a>
+                    <a href="../" class="topbar-link active">Explore</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="activity">
+
+        <!-- ================= The problem ================= -->
+        <section class="card hero" aria-labelledby="page-title">
+            <p class="eyebrow">Explore</p>
+            <h1 id="page-title">The Josephus Problem</h1>
+            <p class="lead">A circle of people. Every second person is eliminated. Where should you stand to be the last one left?</p>
+            <ul class="meta-chips" aria-label="Activity details">
+                <li>Years 7–10</li>
+                <li>Puzzles</li>
+                <li>Patterns</li>
+                <li>Number</li>
+                <li>15–30 min</li>
+            </ul>
+        </section>
+
+        <section class="card step" aria-labelledby="problem-h">
+            <div class="step-head"><span class="step-badge">The problem</span></div>
+            <h2 id="problem-h">Survive the circle</h2>
+            <p>An old story tells of Flavius Josephus, a soldier trapped in a cave with 40 companions. Rather than be captured, the group agreed to stand in a circle and eliminate every third person until only one was left. Josephus is said to have worked out where to stand so that he would be the last one alive.</p>
+
+            <div class="prompt">
+                <p>Here is the puzzle.</p>
+                <ol class="rules">
+                    <li><strong>n</strong> people stand in a circle, numbered <strong>1</strong> to <strong>n</strong> in order.</li>
+                    <li>Counting starts at person 1, who says “1”. The next person says “2”, and so on around the circle.</li>
+                    <li>Whoever says “<strong>k</strong>” is eliminated and leaves the circle. Counting starts again at the next person still in the circle.</li>
+                    <li>This repeats until only one person is left, the <strong>survivor</strong>.</li>
+                </ol>
+                <p>We begin with <strong>k = 2</strong>: every second person goes out.</p>
+            </div>
+
+            <div class="worked">
+                <h3>A small example: n = 5, k = 2</h3>
+                <p>Person 1 says “1” and 2 says “2”, so <strong>2</strong> is out. Then 3 says “1” and 4 says “2”, so <strong>4</strong> is out. Then 5 says “1” and 1 says “2”, so <strong>1</strong> is out. Then 3 says “1” and 5 says “2”, so <strong>5</strong> is out.</p>
+                <p>Person <strong>3</strong> is the survivor.</p>
+            </div>
+
+            <div class="prompt">
+                <p><strong>Predict first.</strong> If 10 people stand in the circle and every second person is eliminated, which position survives? Write your guess down, then use the simulator to test it.</p>
+            </div>
+        </section>
+
+        <!-- ================= Simulator ================= -->
+        <section class="card step" aria-labelledby="sim-h">
+            <div class="step-head"><span class="step-badge">Simulate</span></div>
+            <h2 id="sim-h">Run the circle</h2>
+            <p>Choose how many people are in the circle, set the pace, and watch who is eliminated. You can also change <strong>k</strong>.</p>
+
+            <div class="sim-grid">
+                <figure class="figure sim-figure">
+                    <div class="diagram-frame">
+                        <svg class="diagram" id="jos-svg" viewBox="0 0 520 520" role="img" aria-labelledby="jos-t jos-d">
+                            <title id="jos-t">Circle of people in the Josephus problem</title>
+                            <desc id="jos-d">People are arranged in a circle. The person currently counting is highlighted and eliminated people are crossed out. The last person left is marked with a star.</desc>
+                            <g id="jos-people"></g>
+                            <g aria-hidden="true">
+                                <text class="centre-big" id="jos-count" x="260" y="262" text-anchor="middle"></text>
+                                <text class="centre-small" id="jos-count-label" x="260" y="296" text-anchor="middle"></text>
+                            </g>
+                        </svg>
+                    </div>
+                    <figcaption>Person 1 is at the top. Counting goes clockwise.</figcaption>
+                </figure>
+
+                <div class="sim-panel">
+                    <div class="control">
+                        <label for="jos-n">Number of people (n)</label>
+                        <div class="control-row">
+                            <input type="range" id="jos-n" min="2" max="50" step="1" value="10">
+                            <output id="jos-n-out" for="jos-n">10</output>
+                        </div>
+                    </div>
+
+                    <div class="control">
+                        <label for="jos-k">Eliminate every k-th person (k)</label>
+                        <div class="control-row">
+                            <input type="range" id="jos-k" min="2" max="7" step="1" value="2">
+                            <output id="jos-k-out" for="jos-k">2</output>
+                        </div>
+                    </div>
+
+                    <div class="control">
+                        <label for="jos-speed">Pace</label>
+                        <div class="control-row">
+                            <input type="range" id="jos-speed" min="1" max="10" step="1" value="4">
+                            <output id="jos-speed-out" for="jos-speed">Medium</output>
+                        </div>
+                    </div>
+
+                    <div class="control">
+                        <label for="jos-guess">Your prediction (optional)</label>
+                        <input type="number" id="jos-guess" class="num-input" min="1" max="10" inputmode="numeric" placeholder="Survivor’s number">
+                    </div>
+
+                    <div class="btn-row">
+                        <button type="button" class="btn" id="jos-play">▶ Play</button>
+                        <button type="button" class="btn btn-secondary" id="jos-step">Step</button>
+                        <button type="button" class="btn btn-secondary" id="jos-finish">Skip to end</button>
+                        <button type="button" class="btn btn-secondary" id="jos-reset">Reset</button>
+                    </div>
+                    <div class="btn-row">
+                        <button type="button" class="btn btn-secondary" id="jos-legend-preset">The legend: n = 41, k = 3</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status" aria-live="polite" id="jos-status">Press <strong>Play</strong> or <strong>Step</strong> to begin.</div>
+
+            <div class="out-wrap">
+                <h3>Eliminated, in order</h3>
+                <ol class="out-list" id="jos-out" aria-label="Elimination order"></ol>
+                <p class="muted out-empty" id="jos-out-empty">Nobody yet.</p>
+            </div>
+
+            <p class="legend-row" aria-hidden="true">
+                <span class="key key-alive"></span> in the circle
+                <span class="key key-current"></span> counting now
+                <span class="key key-out"></span> eliminated
+                <span class="key key-win"></span> survivor
+            </p>
+        </section>
+
+        <!-- ================= Patterns ================= -->
+        <section class="card step" aria-labelledby="pat-h">
+            <div class="step-head"><span class="step-badge">Investigate</span></div>
+            <h2 id="pat-h">Find the pattern</h2>
+            <p>Use the simulator with <strong>k = 2</strong> and record the survivor for different numbers of people. Or look at this table, then try to spot the pattern.</p>
+
+            <div class="table-wrap">
+                <table class="pattern-table" id="jos-table">
+                    <caption class="sr-only">Survivor for each number of people when every second person is eliminated</caption>
+                    <tbody>
+                        <tr id="jos-row-n"><th scope="row">People (n)</th></tr>
+                        <tr id="jos-row-j"><th scope="row">Survivor</th></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="prompt">
+                <p>What do you notice about the survivor when <strong>n = 1, 2, 4, 8, 16, 32</strong>? What happens to the survivor each time n goes up by 1?</p>
+            </div>
+
+            <div class="btn-row">
+                <button type="button" class="btn btn-secondary" data-reveal="pat-sol" data-show-label="Show the pattern">Show the pattern</button>
+            </div>
+            <div class="reveal-panel" id="pat-sol" hidden>
+                <span class="panel-label">The pattern</span>
+                <ul class="reasoning">
+                    <li>When n is a power of 2 (1, 2, 4, 8, 16, 32…) the survivor is always <strong>person 1</strong>.</li>
+                    <li>Each extra person after a power of 2 moves the survivor on by <strong>2</strong>: 1, 3, 5, 7…</li>
+                    <li>The survivor goes back to 1 when n reaches the next power of 2.</li>
+                </ul>
+                <p><strong>Rule:</strong> write n = 2<sup>m</sup> + L, where 2<sup>m</sup> is the largest power of 2 that is not more than n. Then the survivor is</p>
+                <div class="equation">
+                    <span class="eq-chip eq-chip--result">2L + 1</span>
+                </div>
+            </div>
+
+            <div class="readouts shortcut">
+                <div class="readout readout--stays">
+                    <h3>Shortcut for the current n</h3>
+                    <p class="shortcut-text" id="jos-shortcut-text"></p>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button type="button" class="btn btn-secondary" data-reveal="why-sol" data-show-label="Why does it work?">Why does it work?</button>
+            </div>
+            <div class="reveal-panel" id="why-sol" hidden>
+                <span class="panel-label">Why it works</span>
+                <p>Start with a power of 2, such as 8 people. Going round once removes 2, 4, 6 and 8. Four people are left (1, 3, 5, 7) and person 1 is first to count again. The situation looks the same as before, just with half as many people, so person 1 will be first again, and again, until only person 1 remains.</p>
+                <p>Now try n = 2<sup>m</sup> + L, such as 13 = 8 + 5. The first L eliminations remove people 2, 4, …, 2L. After that, exactly 2<sup>m</sup> people remain, and the next person to count “1” is person 2L + 1. That is the same as the power-of-2 case, but with person 2L + 1 as the starter. The starter survives.</p>
+            </div>
+        </section>
+
+        <!-- ================= Practice ================= -->
+        <section class="card step" aria-labelledby="prac-h">
+            <div class="step-head"><span class="step-badge">Practise</span></div>
+            <h2 id="prac-h">Use the rule</h2>
+            <p class="muted">Every second person is eliminated (k = 2). Choose an answer, press <strong>Check</strong>, then test it in the simulator.</p>
+
+            <article class="question" data-answer="a">
+                <h3>Question 1</h3>
+                <p class="q-text">There are 16 people in the circle. Who is the survivor?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 1 answers</legend>
+                    <label class="option"><input type="radio" name="q1" value="a"><span><span class="letter">A.</span> Person 1</span></label>
+                    <label class="option"><input type="radio" name="q1" value="b"><span><span class="letter">B.</span> Person 8</span></label>
+                    <label class="option"><input type="radio" name="q1" value="c"><span><span class="letter">C.</span> Person 15</span></label>
+                    <label class="option"><input type="radio" name="q1" value="d"><span><span class="letter">D.</span> Person 16</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="q1-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="q1-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>A.</strong> 16 = 2<sup>4</sup> is a power of 2, so L = 0 and the survivor is 2 × 0 + 1 = 1.</p>
+                </div>
+            </article>
+
+            <article class="question" data-answer="c">
+                <h3>Question 2</h3>
+                <p class="q-text">There are 21 people in the circle. Who is the survivor?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 2 answers</legend>
+                    <label class="option"><input type="radio" name="q2" value="a"><span><span class="letter">A.</span> Person 5</span></label>
+                    <label class="option"><input type="radio" name="q2" value="b"><span><span class="letter">B.</span> Person 9</span></label>
+                    <label class="option"><input type="radio" name="q2" value="c"><span><span class="letter">C.</span> Person 11</span></label>
+                    <label class="option"><input type="radio" name="q2" value="d"><span><span class="letter">D.</span> Person 21</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="q2-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="q2-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>C.</strong> 21 = 16 + 5, so L = 5 and the survivor is 2 × 5 + 1 = 11.</p>
+                </div>
+            </article>
+
+            <article class="question" data-answer="d">
+                <h3>Question 3</h3>
+                <p class="q-text">For which of these numbers of people is the survivor person 1?</p>
+                <fieldset class="options">
+                    <legend class="sr-only">Question 3 answers</legend>
+                    <label class="option"><input type="radio" name="q3" value="a"><span><span class="letter">A.</span> 20</span></label>
+                    <label class="option"><input type="radio" name="q3" value="b"><span><span class="letter">B.</span> 33</span></label>
+                    <label class="option"><input type="radio" name="q3" value="c"><span><span class="letter">C.</span> 48</span></label>
+                    <label class="option"><input type="radio" name="q3" value="d"><span><span class="letter">D.</span> 64</span></label>
+                </fieldset>
+                <div class="btn-row">
+                    <button type="button" class="btn q-check">Check</button>
+                    <button type="button" class="btn btn-secondary" data-reveal="q3-sol" data-show-label="Show solution">Show solution</button>
+                </div>
+                <p class="feedback" role="status"></p>
+                <div class="reveal-panel" id="q3-sol" hidden>
+                    <span class="panel-label">Solution</span>
+                    <p><strong>D.</strong> The survivor is 1 only when L = 0, which means n is a power of 2. 64 = 2<sup>6</sup>. The others give 9 (for 20), 3 (for 33) and 33 (for 48).</p>
+                </div>
+            </article>
+        </section>
+
+        <!-- ================= Extend ================= -->
+        <section class="card step" aria-labelledby="ext-h">
+            <div class="step-head"><span class="step-badge">Go further</span></div>
+            <h2 id="ext-h">Challenges</h2>
+            <ul class="reasoning">
+                <li>The legend has 41 people with k = 3. Use the simulator to find where Josephus should stand.</li>
+                <li>For k = 2, why can the survivor never be an even number?</li>
+                <li>Change k to 3, 4 or 5. Is there still a neat pattern in the survivors?</li>
+            </ul>
+            <div class="btn-row">
+                <button type="button" class="btn btn-secondary" data-reveal="ext-sol" data-show-label="Show answers">Show answers</button>
+            </div>
+            <div class="reveal-panel" id="ext-sol" hidden>
+                <span class="panel-label">Answers</span>
+                <ul class="reasoning">
+                    <li>Josephus should stand in position <strong>31</strong>.</li>
+                    <li>The survivor is 2L + 1, which is always odd.</li>
+                    <li>For other values of k there is no simple formula like 2L + 1, but the pattern can still be built up step by step from smaller circles.</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="activity-footer">
+            <a class="btn btn-secondary" href="../">← Back to Explore</a>
+            <a class="btn btn-secondary" href="#page-title">Back to top ↑</a>
+        </div>
+    </main>
+
+    <script src="../../site-nav.js"></script>
+    <script src="../explore.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>
