@@ -47,12 +47,41 @@
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
+        :root {
+            --header-color: #002d4a;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
         }
+
+        /* Shared top bar (same look as Apps, Quiz, Videos and Explore; site-nav.js fills it in) */
+        .topbar {
+            position: sticky;
+            top: 0.75rem;
+            z-index: 50;
+            width: min(1180px, calc(100% - 2rem));
+            margin: 0.75rem auto 1rem;
+            padding: 0.9rem 1.1rem;
+            border: 1px solid rgba(255,255,255,0.65);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.74);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(16, 36, 58, 0.08);
+        }
+        .topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+        .topbar-brand { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .topbar-title { font-family: 'Roboto Slab', serif; font-size: 1.25rem; color: var(--header-color); margin: 0; white-space: nowrap; text-decoration: none; font-weight: 700; }
+        .topbar-nav { display: flex; align-items: center; gap: 0.4rem; }
+        .topbar-link { text-decoration: none; color: #334155; font-weight: 600; padding: 0.45rem 0.8rem; border-radius: 999px; transition: background-color 0.2s ease, color 0.2s ease; }
+        .topbar-link:hover, .topbar-link.active { background-color: #005b94; color: #ffffff; }
 
         /* Screen only scrollbars */
         ::-webkit-scrollbar {
@@ -65,8 +94,82 @@
         }
 
         /* ============================================================
+           WORKSHEET DOCUMENT (shared by the preview and the printout)
+           ============================================================ */
+        .ws-block { position: relative; padding-bottom: 34px; color: #0f172a; font-family: 'Inter', sans-serif; }
+        .ws-head { border-bottom: 2px solid #005b94; padding-bottom: 12px; }
+        .ws-head + .ws-block { padding-top: 16px; }
+        .ws-space { position: relative; margin-top: 6px; }
+        .ws-solutions-title { font-size: 14pt; font-weight: 800; color: #005b94; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
+        .ws-solution { border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; }
+        .ws-solution-wrap { padding-bottom: 14px; }
+
+        /* ============================================================
+           PREVIEW (screen only). Pages are A4 at 96dpi, scaled to fit.
+           ============================================================ */
+        .pv-measure { position: absolute; left: -10000px; top: 0; width: 680px; visibility: hidden; pointer-events: none; }
+        .pv-page-wrap { position: relative; margin: 0 auto; background: #ffffff; box-shadow: 0 2px 12px rgba(15, 23, 42, 0.2); }
+        .pv-page { position: absolute; top: 0; left: 0; width: 794px; height: 1123px; padding: 38px 57px; box-sizing: border-box; overflow: hidden; transform-origin: top left; background: #ffffff; }
+        .pv-page-label { text-align: center; font-size: 11px; color: #64748b; margin: 6px 0 16px; }
+
+        /* Editing controls inside the preview are sized in screen pixels, whatever the page scale (--s) */
+        .ws-add {
+            position: absolute; left: 0; bottom: calc(5px / var(--s, 1));
+            font: 600 calc(11px / var(--s, 1)) / 1 'Inter', sans-serif;
+            padding: calc(4px / var(--s, 1)) calc(10px / var(--s, 1));
+            color: #005b94; background: #eef8ff; border: calc(1px / var(--s, 1)) dashed #8acaff; border-radius: 999px;
+            cursor: pointer; opacity: 0.75; transition: opacity 0.15s ease, background-color 0.15s ease;
+        }
+        .ws-add:hover, .ws-add:focus-visible { opacity: 1; background: #d9efff; }
+        .ws-space-ui {
+            position: absolute; inset: 0;
+            border: calc(1px / var(--s, 1)) dashed rgba(138, 202, 255, 0.75); background: rgba(238, 248, 255, 0.35); border-radius: 4px;
+        }
+        .ws-space-label {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;
+            font: 600 calc(12px / var(--s, 1)) / 1.2 'Inter', sans-serif; color: rgba(38, 135, 245, 0.35); user-select: none;
+        }
+        .ws-space-remove {
+            position: absolute; top: calc(2px / var(--s, 1)); right: calc(4px / var(--s, 1));
+            font: 700 calc(12px / var(--s, 1)) / 1 'Inter', sans-serif; color: #94a3b8; background: none; border: none; cursor: pointer; padding: calc(2px / var(--s, 1)) calc(5px / var(--s, 1));
+        }
+        .ws-space-remove:hover { color: #e11d48; }
+        .ws-space-handle {
+            position: absolute; left: 0; right: 0; bottom: calc(-7px / var(--s, 1)); height: calc(14px / var(--s, 1));
+            cursor: ns-resize; touch-action: none; display: flex; align-items: center; justify-content: center;
+        }
+        .ws-space-handle::after {
+            content: ''; width: calc(44px / var(--s, 1)); height: calc(5px / var(--s, 1)); border-radius: 999px; background: #52aaff;
+        }
+        .ws-space-handle:hover::after, .ws-space-handle:focus-visible::after { background: #005b94; }
+
+        /* Per-question controls sit in the page margin: drag grip on the left, remove (x) on the right */
+        .ws-ctl {
+            position: absolute; top: 0; width: calc(20px / var(--s, 1)); height: calc(20px / var(--s, 1));
+            display: flex; align-items: center; justify-content: center; padding: 0;
+            font: 700 calc(12px / var(--s, 1)) / 1 'Inter', sans-serif; color: #64748b;
+            background: #ffffff; border: calc(1px / var(--s, 1)) solid #cbd5e1; border-radius: calc(5px / var(--s, 1));
+            cursor: pointer; opacity: 0.5; transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+        .ws-block:hover .ws-ctl, .ws-ctl:focus-visible { opacity: 1; }
+        .ws-remove { right: calc(-28px / var(--s, 1)); }
+        .ws-remove:hover { color: #e11d48; border-color: #fda4af; }
+        .ws-grip { left: calc(-28px / var(--s, 1)); cursor: grab; touch-action: none; user-select: none; }
+        .ws-grip:hover { color: #005b94; border-color: #8acaff; }
+        .ws-dragging { opacity: 0.3; }
+        .pv-dragging, .pv-dragging * { cursor: grabbing !important; user-select: none !important; }
+        .pv-drop-line { position: fixed; height: 3px; border-radius: 3px; background: #005b94; box-shadow: 0 0 0 2px rgba(0, 91, 148, 0.2); pointer-events: none; z-index: 9999; }
+
+        /* The title is edited in place on the preview */
+        .ws-title-edit { cursor: text; border-radius: 4px; outline: calc(1px / var(--s, 1)) dashed transparent; outline-offset: calc(3px / var(--s, 1)); }
+        .ws-title-edit:hover { outline-color: #8acaff; }
+        .ws-title-edit:focus { outline: calc(2px / var(--s, 1)) solid #52aaff; background: #f4faff; }
+
+        /* ============================================================
            PRINT STYLES FOR A4 WORKSHEET & PDF GENERATION
            ============================================================ */
+        @page { size: A4; margin: 10mm 15mm; }
+
         @media print {
             body {
                 background: white !important;
@@ -82,44 +185,12 @@
 
             #printContainer {
                 display: block !important;
-                padding: 10mm 15mm;
+                padding: 0;
             }
 
-            .print-page-header {
-                border-bottom: 2px solid #005b94;
-                padding-bottom: 12px;
-                margin-bottom: 20px;
-            }
-
-            .print-question-card {
+            .ws-block, .ws-solution-wrap {
                 break-inside: avoid;
                 page-break-inside: avoid;
-                margin-bottom: 24px;
-                padding-bottom: 12px;
-            }
-
-            .print-answer-space {
-                border: 1px dashed #94a3b8;
-                border-radius: 6px;
-                background-color: #fafafa;
-                margin-top: 10px;
-                margin-bottom: 12px;
-            }
-
-            .print-solution-section {
-                break-before: page;
-                page-break-before: always;
-                border-top: 3px double #005b94;
-                padding-top: 20px;
-            }
-
-            .print-solution-card {
-                break-inside: avoid;
-                page-break-inside: avoid;
-                border: 1px solid #e2e8f0;
-                padding: 12px;
-                margin-bottom: 16px;
-                border-radius: 6px;
             }
         }
 
@@ -130,21 +201,34 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+<body class="text-slate-800 min-h-screen flex flex-col">
 
-    <!-- ================= TOP HEADER (SCREEN ONLY) ================= -->
-    <header class="no-print bg-white border-b border-slate-200 px-6 py-3 sticky top-0 z-30 shadow-sm flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-            <a href="../" class="w-9 h-9 rounded-xl bg-barker-700 text-white flex items-center justify-center font-black text-lg shadow hover:bg-barker-800 transition" title="Back to Home">
-                B
-            </a>
-            <div>
-                <h1 class="font-bold text-base md:text-lg leading-tight text-slate-900 flex items-center gap-2">
-                    Maths Question Bank
-                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-barker-100 text-barker-700">Year 11 Standard</span>
-                </h1>
-                <p class="text-xs text-slate-500">Barker College • Worksheet Generator &amp; Practice Lab</p>
+    <!-- ================= SHARED TOP BAR (same as the other sections) ================= -->
+    <header class="topbar no-print">
+        <div class="topbar-inner">
+            <div class="topbar-brand">
+                <a href="../" class="topbar-title">Mr Deng Maths</a>
+                <nav class="topbar-nav" aria-label="Primary navigation">
+                    <a href="../app/" class="topbar-link">Apps</a>
+                    <a href="../quiz/" class="topbar-link">Quiz</a>
+                    <a href="./" class="topbar-link active">Worksheet</a>
+                    <a href="../videos/" class="topbar-link">Videos</a>
+                    <a href="../explore/" class="topbar-link">Explore</a>
+                </nav>
             </div>
+        </div>
+    </header>
+
+    <div id="appShell" class="no-print w-full max-w-[1700px] mx-auto px-4 pb-24 flex-1 flex flex-col gap-4">
+
+    <!-- ================= TOOLBAR (SCREEN ONLY) ================= -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+        <div>
+            <h1 class="font-bold text-base md:text-lg leading-tight text-slate-900 flex items-center gap-2">
+                Maths Question Bank
+                <span id="courseBadge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-barker-100 text-barker-700">Year 11 Standard</span>
+            </h1>
+            <p class="text-xs text-slate-500">Barker College • Worksheet Generator &amp; Practice Lab</p>
         </div>
 
         <!-- Mode Navigation Tabs -->
@@ -170,13 +254,13 @@
                 Print / Export PDF
             </button>
         </div>
-    </header>
+    </div>
 
-    <!-- ================= VIEW 1: WORKSHEET BUILDER ================= -->
-    <div id="builderView" class="no-print flex-1 flex flex-col md:flex-row overflow-hidden">
+    <!-- ================= VIEW 1: WORKSHEET BUILDER (filters | questions | preview) ================= -->
+    <div id="builderView" class="grid grid-cols-1 lg:grid-cols-[15rem_minmax(0,0.7fr)_minmax(0,1.3fr)] xl:grid-cols-[17rem_22rem_minmax(0,1fr)] gap-4 min-h-0">
         
         <!-- SIDEBAR FILTERS -->
-        <aside class="w-full md:w-80 bg-white border-r border-slate-200 p-5 shrink-0 flex flex-col gap-4 overflow-y-auto">
+        <aside class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4 overflow-y-auto">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Filter Question Bank</h2>
                 <button onclick="resetFilters()" class="text-xs font-medium text-barker-700 hover:underline">Reset</button>
@@ -186,10 +270,17 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Course</label>
                 <select id="courseFilter" onchange="onCourseChange()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white font-medium text-slate-800 transition">
-                    <option value="y11-standard">Year 11 Standard (10 Questions)</option>
+                    <option value="y7">Year 7</option>
+                    <option value="y8">Year 8</option>
+                    <option value="y9-core">Year 9 Core/Standard</option>
+                    <option value="y9-adv">Year 9 Advanced/Extension</option>
+                    <option value="y10-core">Year 10 Core/Standard</option>
+                    <option value="y10-adv">Year 10 Advanced/Extension</option>
+                    <option value="y11-standard" selected>Year 11 Standard</option>
                     <option value="y11-adv" disabled>Year 11 Advanced (Coming Soon)</option>
                     <option value="y12-standard" disabled>Year 12 Standard (Coming Soon)</option>
                     <option value="y12-adv" disabled>Year 12 Advanced (Coming Soon)</option>
+                    <option value="ALL">All courses</option>
                 </select>
             </div>
 
@@ -236,6 +327,12 @@
                 <input type="checkbox" id="mcToggle" onchange="applyFilters()" class="w-4 h-4 text-barker-700 border-slate-300 rounded focus:ring-barker-700 cursor-pointer">
             </div>
 
+            <!-- Checkbox: Enrichment Only -->
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <label for="enrichmentToggle" class="text-xs font-semibold text-slate-700 cursor-pointer">Enrichment Only <span class="font-normal text-slate-400">(harder)</span></label>
+                <input type="checkbox" id="enrichmentToggle" onchange="applyFilters()" class="w-4 h-4 text-barker-700 border-slate-300 rounded focus:ring-barker-700 cursor-pointer">
+            </div>
+
             <!-- Quick Filter Actions -->
             <div class="pt-3 border-t border-slate-100 flex gap-2">
                 <button onclick="selectAllFiltered()" class="flex-1 py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition text-center">
@@ -254,15 +351,42 @@
         </aside>
 
         <!-- MAIN QUESTION LIST FEED -->
-        <main class="flex-1 p-6 md:p-8 overflow-y-auto pb-36">
-            <div class="max-w-4xl mx-auto space-y-4" id="questionsFeed">
+        <main class="overflow-y-auto pr-1 min-h-[24rem] lg:min-h-0">
+            <div class="space-y-4">
+                <div id="bankWarning" class="hidden bg-amber-50 border border-amber-200 text-amber-900 text-xs rounded-xl p-3"></div>
+            </div>
+            <div class="space-y-4" id="questionsFeed">
                 <!-- Question cards injected via JavaScript -->
             </div>
         </main>
+
+        <!-- PRINT PREVIEW -->
+        <aside id="previewPanel" class="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col overflow-hidden min-h-[34rem] lg:min-h-0" aria-label="Print preview">
+            <div class="p-4 border-b border-slate-100 space-y-2.5 shrink-0">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-baseline gap-2">
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Print Preview</h2>
+                        <span id="pvPageCount" class="text-[11px] font-medium text-slate-500"></span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-slate-600"><strong id="pvQuestionCount">0</strong> <span id="pvQLabel">questions</span> • <strong id="pvMarks">0</strong> <span id="pvMLabel">marks</span> • <span id="pvTime">0</span> min</span>
+                        <button type="button" id="pvResetTitle" onclick="resetTitle()" class="hidden text-[11px] font-semibold text-barker-700 hover:underline">Reset title</button>
+                        <button type="button" onclick="openPrintModal()" class="px-3.5 py-1.5 text-xs font-bold text-white bg-barker-700 hover:bg-barker-800 rounded-lg shadow transition">Print / PDF</button>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-slate-400 leading-snug">Click the title to edit it. Drag <strong>⠿</strong> to reorder, <strong>✕</strong> to remove a question. <strong>＋ Add working space</strong> adds blank space; drag the blue bar to resize it.</p>
+            </div>
+
+            <div id="pvScroll" class="flex-1 overflow-y-auto bg-slate-200 p-3 min-h-0">
+                <div id="pvEmpty" class="hidden text-center text-sm text-slate-500 py-16 px-6">Add questions from the list to preview the worksheet here.</div>
+                <div id="pvPages"></div>
+            </div>
+        </aside>
     </div>
 
     <!-- ================= VIEW 2: INTERACTIVE PRACTICE MODE ================= -->
-    <div id="practiceView" class="no-print hidden flex-1 flex flex-col bg-slate-100 overflow-y-auto p-4 md:p-8">
+    <div id="practiceView" class="hidden flex-1 flex flex-col overflow-y-auto">
         <div class="max-w-3xl mx-auto w-full flex-1 flex flex-col gap-5">
             
             <!-- Practice Header Bar -->
@@ -312,6 +436,8 @@
         </div>
     </div>
 
+    </div><!-- /appShell -->
+
     <!-- ================= BOTTOM WORKSHEET TRAY (SCREEN ONLY) ================= -->
     <div id="worksheetTray" class="no-print fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-barker-700 px-6 py-3.5 shadow-2xl z-40">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -335,7 +461,7 @@
                 <!-- Solution & Criteria toggles for print -->
                 <div class="flex items-center gap-4 text-xs font-semibold text-slate-700">
                     <label class="flex items-center gap-1.5 cursor-pointer hover:text-barker-700">
-                        <input type="checkbox" id="includeSolutionsToggle" checked class="w-4 h-4 rounded text-barker-700 border-slate-300 focus:ring-barker-700">
+                        <input type="checkbox" id="includeSolutionsToggle" checked onchange="schedulePreview(0)" class="w-4 h-4 rounded text-barker-700 border-slate-300 focus:ring-barker-700">
                         <span>Include Solutions Page</span>
                     </label>
                 </div>
@@ -361,7 +487,7 @@
             <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
                 <div>
                     <h3 class="font-bold text-base text-slate-900">Manage Selected Worksheet Questions</h3>
-                    <p class="text-xs text-slate-500">Reorder questions, adjust printed answer lines, or remove items.</p>
+                    <p class="text-xs text-slate-500">Reorder questions or remove items.</p>
                 </div>
                 <button onclick="closeTrayModal()" class="text-slate-400 hover:text-slate-700 font-bold p-1 text-lg">✕</button>
             </div>
@@ -386,39 +512,14 @@
         </div>
     </div>
 
-    <!-- ================= PRINT CONTAINER (PRINT ONLY) ================= -->
-    <div id="printContainer">
-        <!-- Worksheet Header -->
-        <div class="print-page-header">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                <div>
-                    <h1 style="font-size: 16pt; font-weight: 800; color: #005b94; margin: 0;">BARKER COLLEGE</h1>
-                    <h2 style="font-size: 13pt; font-weight: 700; color: #1e293b; margin: 2px 0 0 0;">Year 11 Standard Mathematics — Practice Worksheet</h2>
-                </div>
-                <div style="text-align: right; font-size: 10pt; color: #475569;">
-                    <div><strong>Total Marks:</strong> <span id="printTotalMarks">0</span></div>
-                    <div><strong>Time Allowed:</strong> <span id="printTimeAllowed">--</span> mins</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: 30px; margin-top: 14px; font-size: 10.5pt; color: #334155;">
-                <div style="flex: 1;"><strong>Student Name:</strong> ___________________________________</div>
-                <div style="width: 180px;"><strong>Date / Class:</strong> ______________</div>
-            </div>
-        </div>
+    <!-- ================= PRINT CONTAINER (PRINT ONLY; filled by openPrintModal()) ================= -->
+    <div id="printContainer"></div>
 
-        <!-- Print Questions List -->
-        <div id="printQuestionsList"></div>
+    <!-- Off-screen area used to measure blocks when paginating the preview -->
+    <div id="pvMeasure" class="pv-measure no-print" aria-hidden="true"></div>
 
-        <!-- Print Solutions Section (Optional Page Break) -->
-        <div id="printSolutionsSection" class="print-solution-section">
-            <h2 style="font-size: 14pt; font-weight: 800; color: #005b94; margin-bottom: 12px; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px;">
-                WORKED SOLUTIONS &amp; MARKING CRITERIA
-            </h2>
-            <div id="printSolutionsList"></div>
-        </div>
-    </div>
 
+    <script src="../site-nav.js"></script>
 
     <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
@@ -426,7 +527,10 @@
         let allQuestions = [];
         let filteredQuestions = [];
         let selectedQuestionIds = []; // Array to preserve order
-        let customLineHeights = {}; // Map question ID -> line count
+        let workingSpace = {}; // Map question ID -> blank working space height (page px) shown after the question
+
+        // Worksheet title. null means "automatic"; set once the user edits it on the preview.
+        let titleOverride = null;
 
         // Practice State
         let practiceQueue = [];
@@ -437,11 +541,82 @@
         let flaggedForRedo = new Set();
         let selectedMCOption = null;
 
+        // --- Course and bank configuration ---
+        // Banks hold questions for one or more courses. A question lists its courses in "courses" (or a single "course").
+        const COURSE_NAMES = {
+            'y7': 'Year 7',
+            'y8': 'Year 8',
+            'y9-core': 'Year 9 Core/Standard',
+            'y9-adv': 'Year 9 Advanced/Extension',
+            'y10-core': 'Year 10 Core/Standard',
+            'y10-adv': 'Year 10 Advanced/Extension',
+            'y11-standard': 'Year 11 Standard'
+        };
+        const EXTRA_BANKS = ['./questions/y7-y8.json', './questions/y9-y10.json'];
+        const QUESTIONS_BASE = './questions/';
+
+        function selectedCourse() {
+            return document.getElementById('courseFilter').value;
+        }
+
+        // Questions in the selected course (all questions when "All courses" is chosen).
+        function bankQuestions() {
+            const course = selectedCourse();
+            if (course === 'ALL') return allQuestions;
+            const name = COURSE_NAMES[course];
+            return allQuestions.filter(q => q.courses.includes(name));
+        }
+
+        function escapeHtml(text) {
+            return String(text).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        }
+
+        function diagramHtml(q, maxWidth) {
+            if (!q.diagram) return '';
+            return `<div class="my-3"><img src="${QUESTIONS_BASE}${escapeHtml(q.diagram)}" alt="${escapeHtml(q.diagramAlt || 'Diagram for this question')}" style="max-width: ${maxWidth}px; width: 100%; height: auto;"></div>`;
+        }
+
+        function enrichmentBadgeHtml(q) {
+            return q.enrichment ? '<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border bg-violet-100 text-violet-800 border-violet-200" title="Harder than the standard questions, but within the syllabus">⭐ Enrichment</span>' : '';
+        }
+
+        function sourceHtml(q) {
+            if (!q.source) return '';
+            const link = q.sourceUrl
+                ? ` <a href="${escapeHtml(q.sourceUrl)}" target="_blank" rel="noopener noreferrer" class="text-barker-700 underline">Original page</a>`
+                : '';
+            return `<div class="text-[11px] text-slate-500 mt-1">📚 <strong>Source:</strong> ${escapeHtml(q.source)}${link}</div>`;
+        }
+
+        function waitForImages(container) {
+            const pending = [...container.querySelectorAll('img')]
+                .filter(img => !img.complete)
+                .map(img => new Promise(resolve => { img.onload = img.onerror = resolve; }));
+            return Promise.all(pending);
+        }
+
+        function updateCourseUI() {
+            const courseSelect = document.getElementById('courseFilter');
+            Object.keys(COURSE_NAMES).forEach(value => {
+                const count = allQuestions.filter(q => q.courses.includes(COURSE_NAMES[value])).length;
+                const option = courseSelect.querySelector(`option[value="${value}"]`);
+                if (option) option.innerText = `${COURSE_NAMES[value]} (${count} ${count === 1 ? 'Question' : 'Questions'})`;
+            });
+            document.getElementById('courseBadge').innerText = selectedCourse() === 'ALL' ? 'All courses' : COURSE_NAMES[selectedCourse()];
+        }
+
         // --- Helper: Render Markdown to HTML without asterisks ---
         function formatMarkdown(text) {
             if (!text) return '';
-            let html = text;
-            
+
+            // Maths (including $$...$$ blocks that span several lines) is lifted out first so that
+            // line splitting and the bold/italic rules cannot damage it, then put back untouched.
+            const math = [];
+            let html = text.replace(/\$\$[\s\S]+?\$\$|\$[^$\n]+\$/g, m => {
+                math.push(m);
+                return `\uE000${math.length - 1}\uE001`;
+            });
+
             // Convert **bold** to <strong>bold</strong>
             html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>');
             
@@ -463,7 +638,7 @@
                 }
             }
             
-            return result;
+            return result.replace(/\uE000(\d+)\uE001/g, (_, i) => math[Number(i)]);
         }
 
         // --- Load Question Bank ---
@@ -548,15 +723,36 @@
                 ];
             }
 
-            // Initialize custom line heights
+            // Additional question banks (Year 7-8 etc.). A missing bank should not break the page.
+            const extraResults = await Promise.allSettled(EXTRA_BANKS.map(async url => {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status} for ${url}`);
+                return res.json();
+            }));
+            const failedBanks = [];
+            extraResults.forEach((result, i) => {
+                if (result.status === 'fulfilled') {
+                    allQuestions = allQuestions.concat(result.value);
+                } else {
+                    console.warn('Could not load question bank:', EXTRA_BANKS[i], result.reason);
+                    failedBanks.push(EXTRA_BANKS[i]);
+                }
+            });
+            if (failedBanks.length) {
+                const warning = document.getElementById('bankWarning');
+                warning.innerText = `Some questions could not be loaded (${failedBanks.join(', ')}). If you opened this file directly, serve the folder over http instead.`;
+                warning.classList.remove('hidden');
+            }
+
             allQuestions.forEach(q => {
-                customLineHeights[q.id] = q.lines || (q.type === 'Multiple Choice' ? 0 : 4);
+                q.courses = q.courses || [q.course];
             });
 
             // Select first 3 questions by default
             selectedQuestionIds = allQuestions.slice(0, 3).map(q => q.id);
 
             populateTopicFilters();
+            updateCourseUI();
             applyFilters();
             updateTrayUI();
         }
@@ -565,7 +761,7 @@
         function populateTopicFilters() {
             const topicSelect = document.getElementById('topicFilter');
             topicSelect.innerHTML = '<option value="ALL">All Topics</option>';
-            const topics = [...new Set(allQuestions.map(q => q.topic))];
+            const topics = [...new Set(bankQuestions().map(q => q.topic))];
             
             topics.forEach(t => {
                 const opt = document.createElement('option');
@@ -581,8 +777,8 @@
             subtopicSelect.innerHTML = '<option value="ALL">All Subtopics</option>';
 
             const relevantQuestions = selectedTopic === 'ALL' 
-                ? allQuestions 
-                : allQuestions.filter(q => q.topic === selectedTopic);
+                ? bankQuestions() 
+                : bankQuestions().filter(q => q.topic === selectedTopic);
 
             const subtopics = [...new Set(relevantQuestions.map(q => q.subtopic))];
             subtopics.forEach(s => {
@@ -596,7 +792,9 @@
         }
 
         function onCourseChange() {
-            // Placeholder for future courses
+            populateTopicFilters();
+            document.getElementById('subtopicFilter').innerHTML = '<option value="ALL">All Subtopics</option>';
+            updateCourseUI();
             applyFilters();
         }
 
@@ -606,24 +804,27 @@
             const subtopic = document.getElementById('subtopicFilter').value;
             const difficulty = document.getElementById('difficultyFilter').value;
             const mcOnly = document.getElementById('mcToggle').checked;
+            const enrichmentOnly = document.getElementById('enrichmentToggle').checked;
 
-            filteredQuestions = allQuestions.filter(q => {
+            filteredQuestions = bankQuestions().filter(q => {
                 if (topic !== 'ALL' && q.topic !== topic) return false;
                 if (subtopic !== 'ALL' && q.subtopic !== subtopic) return false;
                 if (difficulty !== 'ALL' && q.difficulty !== difficulty) return false;
                 if (mcOnly && q.type !== 'Multiple Choice') return false;
+                if (enrichmentOnly && !q.enrichment) return false;
                 if (searchTerm) {
                     const matchQ = q.question.toLowerCase().includes(searchTerm);
                     const matchId = q.id.toLowerCase().includes(searchTerm);
                     const matchTopic = q.topic.toLowerCase().includes(searchTerm);
-                    if (!matchQ && !matchId && !matchTopic) return false;
+                    const matchSource = (q.source || '').toLowerCase().includes(searchTerm);
+                    if (!matchQ && !matchId && !matchTopic && !matchSource) return false;
                 }
                 return true;
             });
 
             renderQuestionsFeed();
             document.getElementById('filterCountDisplay').innerText = filteredQuestions.length;
-            document.getElementById('totalBankCountDisplay').innerText = allQuestions.length;
+            document.getElementById('totalBankCountDisplay').innerText = bankQuestions().length;
         }
 
         function resetFilters() {
@@ -632,6 +833,7 @@
             document.getElementById('subtopicFilter').innerHTML = '<option value="ALL">All Subtopics</option>';
             document.getElementById('difficultyFilter').value = 'ALL';
             document.getElementById('mcToggle').checked = false;
+            document.getElementById('enrichmentToggle').checked = false;
             applyFilters();
         }
 
@@ -678,6 +880,7 @@
                             <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">${q.id}</span>
                             <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">${q.topic} › ${q.subtopic}</span>
                             <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>
+                            ${enrichmentBadgeHtml(q)}
                             <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100">${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}</span>
                             ${q.calculator ? '<span class="text-xs text-slate-400 font-medium" title="Calculator Allowed">🧮 Calc</span>' : ''}
                         </div>
@@ -694,10 +897,13 @@
                     <!-- Clean Formatted Question Body -->
                     <div class="text-slate-800 text-sm leading-relaxed mb-4 math-content font-medium">
                         ${formatMarkdown(q.question)}
+                        ${diagramHtml(q, 320)}
                     </div>
 
+                    ${sourceHtml(q)}
+
                     <!-- Solution Accordion Button -->
-                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between">
                         <button onclick="toggleSolutionView('sol-${q.id}')" class="text-xs font-bold text-slate-500 hover:text-barker-700 flex items-center gap-1 transition">
                             <span>🔍 View Worked Solution &amp; Rubric</span>
                         </button>
@@ -777,6 +983,9 @@
             });
 
             document.getElementById('trayMarksTotal').innerText = totalMarks;
+
+            syncPreviewControls();
+            schedulePreview();
         }
 
         // --- Tray Modal / Reorder / Line Adjust ---
@@ -806,32 +1015,17 @@
 
                 const row = document.createElement('div');
                 row.className = 'bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3';
-                
-                const curLines = customLineHeights[q.id] !== undefined ? customLineHeights[q.id] : (q.lines || 4);
 
                 row.innerHTML = `
                     <div class="flex items-center gap-3">
                         <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center">${index + 1}</span>
                         <div>
                             <div class="font-bold text-xs text-slate-800">${q.id} <span class="font-normal text-slate-500">(${q.topic})</span></div>
-                            <div class="text-[11px] text-slate-500">${q.marks} Marks • ${q.difficulty}</div>
+                            <div class="text-[11px] text-slate-500">${q.marks} Marks • ${q.difficulty}${q.enrichment ? ' • ⭐ Enrichment' : ''}</div>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <!-- Answer space height selector -->
-                        ${q.type !== 'Multiple Choice' ? `
-                            <div class="flex items-center gap-1 text-xs text-slate-600">
-                                <span class="text-[10px]">Lines:</span>
-                                <select onchange="updateLineHeight('${q.id}', this.value)" class="text-xs bg-white border border-slate-200 rounded px-1.5 py-0.5">
-                                    <option value="2" ${curLines === 2 ? 'selected' : ''}>2</option>
-                                    <option value="4" ${curLines === 4 ? 'selected' : ''}>4</option>
-                                    <option value="6" ${curLines === 6 ? 'selected' : ''}>6</option>
-                                    <option value="8" ${curLines === 8 ? 'selected' : ''}>8</option>
-                                </select>
-                            </div>
-                        ` : ''}
-
                         <!-- Move Up/Down -->
                         <button onclick="moveTrayQuestion(${index}, -1)" ${index === 0 ? 'disabled class="opacity-30"' : 'class="hover:bg-slate-200 rounded p-1"'} title="Move Up">▲</button>
                         <button onclick="moveTrayQuestion(${index}, 1)" ${index === selectedQuestionIds.length - 1 ? 'disabled class="opacity-30"' : 'class="hover:bg-slate-200 rounded p-1"'} title="Move Down">▼</button>
@@ -842,10 +1036,6 @@
                 `;
                 listContainer.appendChild(row);
             });
-        }
-
-        function updateLineHeight(id, val) {
-            customLineHeights[id] = parseInt(val, 10);
         }
 
         function moveTrayQuestion(index, delta) {
@@ -870,6 +1060,8 @@
                 builder.classList.remove('hidden');
                 practice.classList.add('hidden');
                 tray.classList.remove('hidden');
+                fitBuilder();
+                applyPreviewScale();
 
                 tabB.className = 'px-4 py-1.5 text-xs font-bold rounded-lg transition text-white bg-barker-700 shadow-sm flex items-center gap-1.5';
                 tabP.className = 'px-4 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition flex items-center gap-1.5';
@@ -900,11 +1092,11 @@
             } else if (src === 'filtered') {
                 practiceQueue = [...filteredQuestions];
             } else {
-                practiceQueue = [...allQuestions];
+                practiceQueue = [...bankQuestions()];
             }
 
             if (practiceQueue.length === 0) {
-                practiceQueue = [...allQuestions];
+                practiceQueue = [...bankQuestions()];
             }
 
             practiceIndex = 0;
@@ -949,12 +1141,14 @@
                     <div class="flex items-center gap-2 pb-4 border-b border-slate-100 mb-5">
                         <span class="font-mono text-xs font-bold px-2.5 py-1 rounded bg-slate-100 text-slate-700">${q.id}</span>
                         <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>
+                        ${enrichmentBadgeHtml(q)}
                         ${q.calculator ? '<span class="text-xs font-medium text-slate-500">🧮 Calculator Allowed</span>' : '<span class="text-xs font-medium text-slate-400">🚫 Non-Calculator</span>'}
                     </div>
 
                     <!-- Question Text -->
                     <div class="text-slate-900 text-base leading-relaxed mb-6 font-medium">
                         ${formatMarkdown(q.question)}
+                        ${diagramHtml(q, 380)}
                     </div>
 
                     <!-- Multiple Choice Quick Buttons if applicable -->
@@ -990,6 +1184,7 @@
                             <ul class="list-disc list-inside space-y-1 text-slate-600">
                                 ${q.criteria.map(c => `<li>${formatMarkdown(c)}</li>`).join('')}
                             </ul>
+                            ${sourceHtml(q)}
                         </div>
 
                         <!-- Self-Marking Buttons -->
@@ -1100,96 +1295,499 @@
             `;
         }
 
+        // --- WORKSHEET DOCUMENT (shared by the preview and the printout) ---
+        const PAGE_W = 794;            // A4 width at 96dpi
+        const PAGE_H = 1123;           // A4 height at 96dpi
+        const PAGE_PAD_Y = 38;         // 10mm
+        const CONTENT_H = PAGE_H - 2 * PAGE_PAD_Y;
+        const DEFAULT_SPACE_PX = 120;
+        const MIN_SPACE_PX = 24;
+
+        function selectedQuestionList() {
+            return selectedQuestionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean);
+        }
+
+        function autoMarks(list) {
+            return list.reduce((sum, q) => sum + (q.marks || 1), 0);
+        }
+
+        function autoTitle(list) {
+            if (list.length === 0) return 'Mathematics Worksheet';
+
+            const common = list[0].courses.filter(c => list.every(q => q.courses.includes(c)));
+            let course = '';
+            if (common.length && common.length <= 2) {
+                course = `${common.join(' / ')} `;
+            } else if (common.length) {
+                // e.g. all four Year 9 and 10 courses become "Year 9 & Year 10"
+                const years = [...new Set(common.map(c => (c.match(/^Year \d+/) || [c])[0]))];
+                if (years.length <= 2) course = `${years.join(' & ')} `;
+            }
+
+            const subtopics = [...new Set(list.map(q => q.subtopic))];
+            const topics = [...new Set(list.map(q => q.topic))];
+            let focus;
+            if (subtopics.length === 1) focus = subtopics[0];
+            else if (topics.length === 1) focus = topics[0];
+            else if (topics.length === 2) focus = topics.join(' & ');
+            else focus = 'Mixed Topics';
+
+            const enrichment = list.every(q => q.enrichment) ? ' Enrichment' : '';
+            return `${course}Mathematics — ${focus}${enrichment} Worksheet`;
+        }
+
+        function currentTitle(list) {
+            return titleOverride !== null ? titleOverride : autoTitle(list);
+        }
+
+        function markLabel(n) {
+            return `${n} ${n === 1 ? 'Mark' : 'Marks'}`;
+        }
+
+        function workingSpaceHtml(q, preview) {
+            // Multiple choice questions are answered by choosing an option, so they get no working space
+            if (q.type === 'Multiple Choice') return '';
+            const height = workingSpace[q.id];
+            if (!height) {
+                return preview ? `<button type="button" class="ws-add" data-add-space="${escapeHtml(q.id)}">＋ Add working space</button>` : '';
+            }
+            const ui = preview
+                ? `<div class="ws-space-ui"><span class="ws-space-label">Working space</span><button type="button" class="ws-space-remove" data-remove-space="${escapeHtml(q.id)}" title="Remove working space" aria-label="Remove working space">✕</button></div>
+                   <div class="ws-space-handle" data-resize-space="${escapeHtml(q.id)}" role="slider" tabindex="0" aria-label="Working space height" aria-valuemin="${MIN_SPACE_PX}" aria-valuenow="${height}" title="Drag to resize"></div>`
+                : '';
+            return `<div class="ws-space" data-space="${escapeHtml(q.id)}" style="height: ${height}px;">${ui}</div>`;
+        }
+
+        // Builds the worksheet as a flat list of blocks that can be placed on pages without being split.
+        function buildWorksheetBlocks(preview) {
+            const list = selectedQuestionList();
+            const totalMarks = autoMarks(list);
+            const blocks = [];
+
+            const titleAttrs = preview ? ' class="ws-title-edit" contenteditable="true" spellcheck="false" data-title-edit title="Click to edit the title"' : '';
+            const head = document.createElement('div');
+            head.className = 'ws-block ws-head';
+            head.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 16px;">
+                    <div style="flex: 1; min-width: 0;">
+                        <div${titleAttrs} style="font-size: 16pt; font-weight: 800; color: #005b94; line-height: 1.25;">${escapeHtml(currentTitle(list))}</div>
+                    </div>
+                    <div style="text-align: right; font-size: 10pt; color: #475569; white-space: nowrap;">
+                        <div><strong>Questions:</strong> ${list.length}</div>
+                        <div><strong>Total Marks:</strong> ${totalMarks}</div>
+                        <div><strong>Time Allowed:</strong> ${Math.round(totalMarks * 1.5)} mins</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 30px; margin-top: 14px; font-size: 10.5pt; color: #334155;">
+                    <div style="flex: 1;"><strong>Student Name:</strong> ___________________________________</div>
+                    <div style="width: 180px;"><strong>Date / Class:</strong> ______________</div>
+                </div>
+            `;
+            // The head block is padded like the others but its rule already separates it from the questions
+            head.style.paddingBottom = '12px';
+            blocks.push(head);
+
+            list.forEach((q, index) => {
+                const block = document.createElement('div');
+                block.className = 'ws-block';
+                block.dataset.qid = q.id;
+                const controls = preview
+                    ? `<span class="ws-ctl ws-grip" data-drag-q role="button" tabindex="0" title="Drag to reorder (or use the up and down arrow keys)" aria-label="Move question ${index + 1}">⠿</span>
+                       <button type="button" class="ws-ctl ws-remove" data-remove-q="${escapeHtml(q.id)}" title="Remove this question" aria-label="Remove question ${index + 1}">✕</button>`
+                    : '';
+                block.innerHTML = `
+                    ${controls}
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                        <span style="font-weight: 800; font-size: 11pt; color: #0f172a;">
+                            Question ${index + 1}
+                            <span style="font-size: 8.5pt; font-weight: normal; color: #64748b; margin-left: 8px;">${escapeHtml(q.topic)} › ${escapeHtml(q.subtopic)}</span>
+                        </span>
+                        <span style="font-weight: 700; font-size: 10pt; color: #005b94;">[${markLabel(q.marks)}]</span>
+                    </div>
+
+                    <div style="font-size: 10.5pt; line-height: 1.5;">
+                        ${formatMarkdown(q.question)}
+                        ${diagramHtml(q, 300)}
+                    </div>
+
+                    ${workingSpaceHtml(q, preview)}
+                `;
+                blocks.push(block);
+            });
+
+            // All solutions together at the end, numbered to match the questions above
+            if (list.length && document.getElementById('includeSolutionsToggle').checked) {
+                const title = document.createElement('div');
+                title.className = 'ws-block';
+                title.dataset.pageBreak = 'before';
+                title.style.breakBefore = 'page';
+                title.innerHTML = '<div class="ws-solutions-title">WORKED SOLUTIONS</div>';
+                title.style.paddingBottom = '14px';
+                blocks.push(title);
+
+                list.forEach((q, index) => {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'ws-block ws-solution-wrap';
+                    wrap.innerHTML = `
+                        <div class="ws-solution">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+                                <span>
+                                    <strong style="color: #005b94; font-size: 10.5pt;">Question ${index + 1}</strong>
+                                    <span style="font-size: 7pt; color: #a1acbb; margin-left: 6px;">${escapeHtml(q.id)}</span>
+                                </span>
+                                <span style="font-weight: bold; font-size: 9.5pt;">${markLabel(q.marks)}</span>
+                            </div>
+                            <div style="font-size: 9.5pt; line-height: 1.4;">
+                                ${formatMarkdown(q.solution)}
+                            </div>
+                            ${q.source ? `<div style="font-size: 8pt; color: #64748b; margin-top: 6px;"><strong>Source:</strong> ${escapeHtml(q.source)}${q.sourceUrl ? ' ' + escapeHtml(q.sourceUrl) : ''}</div>` : ''}
+                        </div>
+                    `;
+                    wrap.style.paddingBottom = '14px';
+                    blocks.push(wrap);
+                });
+            }
+
+            return blocks;
+        }
+
+        // Waits for fonts, MathJax and images, so that block heights are final before pages are laid out.
+        async function prepareDocument(container) {
+            for (let i = 0; i < 80 && !(window.MathJax && MathJax.typesetPromise); i++) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            try {
+                if (window.MathJax && MathJax.typesetPromise) await MathJax.typesetPromise([container]);
+                await waitForImages(container);
+                if (document.fonts && document.fonts.ready) await document.fonts.ready;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // --- PREVIEW ---
+        let previewTimer = null;
+        let previewToken = 0;
+        let previewScale = 1;
+
+        function schedulePreview(delay = 150) {
+            clearTimeout(previewTimer);
+            previewTimer = setTimeout(renderPreview, delay);
+        }
+
+        // Places blocks on pages. A block is never split, matching "break-inside: avoid" when printing.
+        function paginate(blocks, heights) {
+            const pages = [];
+            let current = null;
+            let used = 0;
+            blocks.forEach((block, i) => {
+                const forced = block.dataset.pageBreak === 'before';
+                if (!current || forced || (used + heights[i] > CONTENT_H && current.length)) {
+                    current = [];
+                    pages.push(current);
+                    used = 0;
+                }
+                current.push(block);
+                used += heights[i];
+            });
+            return pages;
+        }
+
+        function mountPages(pages) {
+            const pagesEl = document.getElementById('pvPages');
+            const scroller = document.getElementById('pvScroll');
+            const scrollTop = scroller.scrollTop;
+            const fragment = document.createDocumentFragment();
+            pages.forEach((pageBlocks, i) => {
+                const wrap = document.createElement('div');
+                wrap.className = 'pv-page-wrap';
+                const page = document.createElement('div');
+                page.className = 'pv-page';
+                pageBlocks.forEach(b => page.appendChild(b));
+                wrap.appendChild(page);
+                const label = document.createElement('div');
+                label.className = 'pv-page-label';
+                label.innerText = `Page ${i + 1} of ${pages.length}`;
+                fragment.append(wrap, label);
+            });
+            pagesEl.replaceChildren(fragment);
+            document.getElementById('pvPageCount').innerText = `${pages.length} ${pages.length === 1 ? 'page' : 'pages'}`;
+            applyPreviewScale();
+            scroller.scrollTop = scrollTop;
+        }
+
+        async function renderPreview() {
+            const token = ++previewToken;
+            const pagesEl = document.getElementById('pvPages');
+            const emptyEl = document.getElementById('pvEmpty');
+            const measure = document.getElementById('pvMeasure');
+
+            if (selectedQuestionIds.length === 0) {
+                pagesEl.replaceChildren();
+                emptyEl.classList.remove('hidden');
+                document.getElementById('pvPageCount').innerText = '';
+                return;
+            }
+            emptyEl.classList.add('hidden');
+
+            const blocks = buildWorksheetBlocks(true);
+            measure.replaceChildren(...blocks);
+            await prepareDocument(measure);
+            if (token !== previewToken) return;
+
+            let heights = blocks.map(b => b.offsetHeight);
+            mountPages(paginate(blocks, heights));
+
+            // Pages clip their content, so check the heights again now the blocks are in place and
+            // lay the pages out again if anything changed (e.g. a late-loading font or image).
+            for (let pass = 0; pass < 3; pass++) {
+                await new Promise(resolve => requestAnimationFrame(resolve));
+                if (token !== previewToken) return;
+                const actual = blocks.map(b => b.offsetHeight);
+                if (actual.every((h, i) => Math.abs(h - heights[i]) <= 1)) break;
+                heights = actual;
+                mountPages(paginate(blocks, heights));
+            }
+        }
+
+        function applyPreviewScale() {
+            const scroller = document.getElementById('pvScroll');
+            const available = scroller.clientWidth - 24;
+            if (available <= 0) return;
+            previewScale = Math.min(1, available / PAGE_W);
+            const pagesEl = document.getElementById('pvPages');
+            pagesEl.style.setProperty('--s', previewScale);
+            pagesEl.querySelectorAll('.pv-page-wrap').forEach(wrap => {
+                wrap.style.width = `${PAGE_W * previewScale}px`;
+                wrap.style.height = `${PAGE_H * previewScale}px`;
+                wrap.firstElementChild.style.transform = `scale(${previewScale})`;
+            });
+        }
+
+        // The builder fills the window below the toolbar on wide screens so each column scrolls on its own.
+        function fitBuilder() {
+            const builder = document.getElementById('builderView');
+            if (builder.classList.contains('hidden')) return;
+            if (window.matchMedia('(min-width: 1024px)').matches) {
+                const top = builder.getBoundingClientRect().top + window.scrollY;
+                const tray = document.getElementById('worksheetTray').offsetHeight;
+                builder.style.height = `${Math.max(520, window.innerHeight - top - tray - 16)}px`;
+            } else {
+                builder.style.height = '';
+            }
+        }
+
+        // --- Summary above the preview and the in-place title ---
+        function syncPreviewControls() {
+            const list = selectedQuestionList();
+            const marks = autoMarks(list);
+            document.getElementById('pvQuestionCount').innerText = list.length;
+            document.getElementById('pvQLabel').innerText = list.length === 1 ? 'question' : 'questions';
+            document.getElementById('pvMarks').innerText = marks;
+            document.getElementById('pvMLabel').innerText = marks === 1 ? 'mark' : 'marks';
+            document.getElementById('pvTime').innerText = Math.round(marks * 1.5);
+            document.getElementById('pvResetTitle').classList.toggle('hidden', titleOverride === null);
+        }
+
+        function resetTitle() {
+            titleOverride = null;
+            syncPreviewControls();
+            schedulePreview(0);
+        }
+
+        // --- Working space: add, remove and drag to resize ---
+        function setWorkingSpace(id, height) {
+            if (height) workingSpace[id] = Math.round(height);
+            else delete workingSpace[id];
+            schedulePreview(0);
+        }
+
+        // --- Reordering questions by dragging them in the preview ---
+        function startQuestionDrag(event, grip) {
+            event.preventDefault();
+            const pagesEl = document.getElementById('pvPages');
+            const scroller = document.getElementById('pvScroll');
+            const block = grip.closest('.ws-block');
+            const id = block.dataset.qid;
+            const others = [...pagesEl.querySelectorAll('.ws-block[data-qid]')].filter(b => b !== block);
+            if (others.length === 0) return;
+
+            const line = document.createElement('div');
+            line.className = 'pv-drop-line';
+            document.body.appendChild(line);
+            document.body.classList.add('pv-dragging');
+            block.classList.add('ws-dragging');
+            grip.setPointerCapture(event.pointerId);
+
+            let pointerY = event.clientY;
+            let beforeId = null; // id of the question to insert before; null means "at the end"
+            let frame = null;
+
+            const update = () => {
+                const target = others.find(b => {
+                    const r = b.getBoundingClientRect();
+                    return pointerY < r.top + r.height / 2;
+                });
+                beforeId = target ? target.dataset.qid : null;
+                const anchor = target || others[others.length - 1];
+                const rect = anchor.getBoundingClientRect();
+                const page = anchor.closest('.pv-page').getBoundingClientRect();
+                const y = target ? rect.top : rect.bottom;
+                const view = scroller.getBoundingClientRect();
+                line.style.display = y >= view.top && y <= view.bottom ? 'block' : 'none';
+                line.style.left = `${page.left + 8}px`;
+                line.style.width = `${page.width - 16}px`;
+                line.style.top = `${y - 1.5}px`;
+            };
+
+            // Scroll the preview while the pointer is held near its top or bottom edge
+            const autoScroll = () => {
+                const view = scroller.getBoundingClientRect();
+                if (pointerY < view.top + 48) scroller.scrollTop -= 14;
+                else if (pointerY > view.bottom - 48) scroller.scrollTop += 14;
+                update();
+                frame = requestAnimationFrame(autoScroll);
+            };
+
+            const onMove = e => { pointerY = e.clientY; update(); };
+            const finish = commit => {
+                cancelAnimationFrame(frame);
+                grip.removeEventListener('pointermove', onMove);
+                grip.removeEventListener('pointerup', onUp);
+                grip.removeEventListener('pointercancel', onCancel);
+                line.remove();
+                document.body.classList.remove('pv-dragging');
+                block.classList.remove('ws-dragging');
+                if (!commit) return;
+                const ids = selectedQuestionIds.filter(x => x !== id);
+                ids.splice(beforeId === null ? ids.length : ids.indexOf(beforeId), 0, id);
+                if (ids.join() !== selectedQuestionIds.join()) {
+                    selectedQuestionIds = ids;
+                    updateTrayUI();
+                }
+            };
+            const onUp = () => finish(true);
+            const onCancel = () => finish(false);
+            grip.addEventListener('pointermove', onMove);
+            grip.addEventListener('pointerup', onUp);
+            grip.addEventListener('pointercancel', onCancel);
+            update();
+            frame = requestAnimationFrame(autoScroll);
+        }
+
+        function initPreviewInteractions() {
+            const pagesEl = document.getElementById('pvPages');
+
+            pagesEl.addEventListener('click', event => {
+                const add = event.target.closest('[data-add-space]');
+                if (add) return setWorkingSpace(add.dataset.addSpace, DEFAULT_SPACE_PX);
+                const remove = event.target.closest('[data-remove-space]');
+                if (remove) return setWorkingSpace(remove.dataset.removeSpace, 0);
+                const removeQuestion = event.target.closest('[data-remove-q]');
+                if (removeQuestion) toggleSelectQuestion(removeQuestion.dataset.removeQ, false);
+            });
+
+            // Title: edited directly on the page. The preview is not rebuilt while typing, only afterwards.
+            pagesEl.addEventListener('input', event => {
+                const title = event.target.closest('[data-title-edit]');
+                if (title) titleOverride = title.innerText.replace(/\s*\n\s*/g, ' ');
+            });
+            pagesEl.addEventListener('keydown', event => {
+                const title = event.target.closest('[data-title-edit]');
+                if (title && event.key === 'Enter') {
+                    event.preventDefault();
+                    title.blur();
+                }
+            });
+            pagesEl.addEventListener('paste', event => {
+                if (!event.target.closest('[data-title-edit]')) return;
+                event.preventDefault();
+                const text = (event.clipboardData.getData('text/plain') || '').replace(/\s*\n\s*/g, ' ');
+                document.execCommand('insertText', false, text);
+            });
+            pagesEl.addEventListener('focusout', event => {
+                const title = event.target.closest('[data-title-edit]');
+                if (!title) return;
+                if (titleOverride !== null && titleOverride.trim() === '') titleOverride = null;
+                else if (titleOverride !== null) titleOverride = titleOverride.trim();
+                syncPreviewControls();
+                schedulePreview(0);
+            });
+
+            pagesEl.addEventListener('pointerdown', event => {
+                const grip = event.target.closest('[data-drag-q]');
+                if (grip) return startQuestionDrag(event, grip);
+            });
+
+            pagesEl.addEventListener('pointerdown', event => {
+                const handle = event.target.closest('[data-resize-space]');
+                if (!handle) return;
+                event.preventDefault();
+
+                const id = handle.dataset.resizeSpace;
+                const space = handle.closest('.ws-space');
+                const block = handle.closest('.ws-block');
+                const startY = event.clientY;
+                const startHeight = space.offsetHeight;
+                // The block (question plus space) has to fit on one page
+                const maxHeight = Math.max(MIN_SPACE_PX, CONTENT_H - (block.offsetHeight - startHeight) - 4);
+                let height = startHeight;
+                handle.setPointerCapture(event.pointerId);
+
+                const move = e => {
+                    height = Math.min(maxHeight, Math.max(MIN_SPACE_PX, startHeight + (e.clientY - startY) / previewScale));
+                    space.style.height = `${height}px`;
+                };
+                const end = () => {
+                    handle.removeEventListener('pointermove', move);
+                    handle.removeEventListener('pointerup', end);
+                    handle.removeEventListener('pointercancel', end);
+                    setWorkingSpace(id, height);
+                };
+                handle.addEventListener('pointermove', move);
+                handle.addEventListener('pointerup', end);
+                handle.addEventListener('pointercancel', end);
+            });
+
+            pagesEl.addEventListener('keydown', event => {
+                const grip = event.target.closest('[data-drag-q]');
+                if (grip && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+                    event.preventDefault();
+                    const index = selectedQuestionIds.indexOf(grip.closest('.ws-block').dataset.qid);
+                    moveTrayQuestion(index, event.key === 'ArrowDown' ? 1 : -1);
+                    return;
+                }
+                const handle = event.target.closest('[data-resize-space]');
+                if (!handle || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
+                event.preventDefault();
+                const id = handle.dataset.resizeSpace;
+                const change = event.key === 'ArrowDown' ? 12 : -12;
+                setWorkingSpace(id, Math.max(MIN_SPACE_PX, (workingSpace[id] || DEFAULT_SPACE_PX) + change));
+            });
+
+            new ResizeObserver(applyPreviewScale).observe(document.getElementById('pvScroll'));
+            window.addEventListener('resize', fitBuilder);
+        }
+
         // --- PRINT ENGINE (A4 PDF EXPORT) ---
-        function openPrintModal() {
+        async function openPrintModal() {
             if (selectedQuestionIds.length === 0) {
                 alert("Please add at least 1 question to your worksheet before printing!");
                 return;
             }
 
-            const selectedList = selectedQuestionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean);
-            const includeSolutions = document.getElementById('includeSolutionsToggle').checked;
-
-            let totalMarks = 0;
-            selectedList.forEach(q => totalMarks += (q.marks || 1));
-
-            // Populate Print Header
-            document.getElementById('printTotalMarks').innerText = totalMarks;
-            document.getElementById('printTimeAllowed').innerText = Math.round(totalMarks * 1.5);
-
-            // Generate Print Questions
-            const printQList = document.getElementById('printQuestionsList');
-            printQList.innerHTML = '';
-
-            selectedList.forEach((q, index) => {
-                const qBlock = document.createElement('div');
-                qBlock.className = 'print-question-card';
-
-                const lineCount = customLineHeights[q.id] !== undefined ? customLineHeights[q.id] : (q.lines || 4);
-                const spaceHeight = q.type === 'Multiple Choice' ? 0 : lineCount * 32;
-
-                qBlock.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
-                        <span style="font-weight: 800; font-size: 11pt; color: #0f172a;">
-                            Question ${index + 1}
-                            <span style="font-size: 8.5pt; font-weight: normal; color: #64748b; margin-left: 8px;">(${q.topic} › ${q.subtopic})</span>
-                        </span>
-                        <span style="font-weight: 700; font-size: 10pt; color: #005b94;">[${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}]</span>
-                    </div>
-
-                    <div style="font-size: 10.5pt; line-height: 1.5; margin-bottom: 8px;">
-                        ${formatMarkdown(q.question)}
-                    </div>
-
-                    ${spaceHeight > 0 ? `<div class="print-answer-space" style="height: ${spaceHeight}px;"></div>` : ''}
-                `;
-                printQList.appendChild(qBlock);
-            });
-
-            // Generate Solutions Section
-            const solSection = document.getElementById('printSolutionsSection');
-            const solList = document.getElementById('printSolutionsList');
-            solList.innerHTML = '';
-
-            if (includeSolutions) {
-                solSection.style.display = 'block';
-                selectedList.forEach((q, index) => {
-                    const solBlock = document.createElement('div');
-                    solBlock.className = 'print-solution-card';
-                    solBlock.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <strong style="color: #005b94; font-size: 10.5pt;">Question ${index + 1} (${q.id})</strong>
-                            <span style="font-weight: bold; font-size: 9.5pt;">${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}</span>
-                        </div>
-                        <div style="font-size: 9.5pt; line-height: 1.4; margin-bottom: 6px;">
-                            <strong>Solution:</strong>
-                            ${formatMarkdown(q.solution)}
-                        </div>
-                        <div style="font-size: 8.5pt; color: #475569;">
-                            <strong>Criteria:</strong>
-                            <ul style="margin: 2px 0 0 16px; padding: 0;">
-                                ${q.criteria.map(c => `<li>${formatMarkdown(c)}</li>`).join('')}
-                            </ul>
-                        </div>
-                    `;
-                    solList.appendChild(solBlock);
-                });
-            } else {
-                solSection.style.display = 'none';
-            }
-
-            // Typeset MathJax in print container then trigger print
-            if (window.MathJax && MathJax.typesetPromise) {
-                MathJax.typesetPromise([document.getElementById('printContainer')]).then(() => {
-                    setTimeout(() => window.print(), 250);
-                });
-            } else {
-                window.print();
-            }
+            const printContainer = document.getElementById('printContainer');
+            printContainer.replaceChildren(...buildWorksheetBlocks(false));
+            await prepareDocument(printContainer);
+            setTimeout(() => window.print(), 250);
         }
-
         // Initialize on DOM load
-        document.addEventListener('DOMContentLoaded', loadQuestions);
+        document.addEventListener('DOMContentLoaded', () => {
+            initPreviewInteractions();
+            fitBuilder();
+            loadQuestions();
+        });
+        window.addEventListener('load', fitBuilder);
     </script>
 </body>
 </html>

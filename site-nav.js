@@ -16,6 +16,8 @@
 
     const path = (window.location.pathname || '').replace(/\\/g, '/');
     const segments = path.split('/').filter(Boolean);
+    const lastPathSegment = segments[segments.length - 1] || '';
+    const pathFileOffset = /\.[a-z0-9]+$/i.test(lastPathSegment) ? 1 : 0;
     const appIndex = segments.lastIndexOf('app');
     const quizIndex = segments.lastIndexOf('quiz');
     const worksheetIndex = segments.lastIndexOf('worksheet');
@@ -29,7 +31,7 @@
 
     const prefixes = (() => {
         if (inApp) {
-            const depth = Math.max(0, segments.length - appIndex - 1);
+            const depth = Math.max(0, segments.length - appIndex - 1 - pathFileOffset);
             const up = '../'.repeat(depth);
             return {
                 home: `${up}../`,
@@ -43,7 +45,7 @@
         }
 
         if (inQuiz) {
-            const depth = Math.max(0, segments.length - quizIndex - 1);
+            const depth = Math.max(0, segments.length - quizIndex - 1 - pathFileOffset);
             const up = '../'.repeat(depth);
             return {
                 home: `${up}../`,
@@ -57,7 +59,7 @@
         }
 
         if (inWorksheet) {
-            const depth = Math.max(0, segments.length - worksheetIndex - 1);
+            const depth = Math.max(0, segments.length - worksheetIndex - 1 - pathFileOffset);
             const up = '../'.repeat(depth);
             return {
                 home: `${up}../`,

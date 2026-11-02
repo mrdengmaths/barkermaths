@@ -1,0 +1,24 @@
+[
+  {
+    "id": "Y78E-MEA-001",
+    "courses": ["Year 7", "Year 8"],
+    "topic": "Measurement",
+    "subtopic": "Perimeter, Area & Volume",
+    "difficulty": "Hard",
+    "enrichment": true,
+    "type": "Short Answer",
+    "marks": 3,
+    "calculator": true,
+    "lines": 8,
+    "diagram": "diagrams/Y78E-MEA-001.svg",
+    "diagramAlt": "Four squares of increasing size placed side by side along a single horizontal line, smallest on the left and largest on the right. Their bottom edges lie on the same line.",
+    "source": "ARML (American Regions Mathematics League). Reproduced as textbook problem 4.33 (textbook not yet identified).",
+    "question": "The diagram shows 4 squares placed together along a single line. Each square has a side length that is $\\frac{1}{2}$ the side length of the next larger square.\n\nThe outer perimeter of the figure is $115$ units.\n\nWhat is the area of the whole figure?",
+    "solution": "Let the smallest square have side length $x$. Then the side lengths are $x,\\ 2x,\\ 4x,\\ 8x$.\n\nThe outer perimeter is the same as the perimeter of the rectangle that just fits around the figure. That rectangle is $x + 2x + 4x + 8x = 15x$ wide and $8x$ high.\n\n$$\\begin{aligned} P &= 2(15x + 8x) = 46x \\\\ 46x &= 115 \\\\ x &= 2.5 \\end{aligned}$$\n\nSo the side lengths are $2.5,\\ 5,\\ 10,\\ 20$.\n\n$$\\begin{aligned} \\text{Area} &= 2.5^2 + 5^2 + 10^2 + 20^2 \\\\ &= 6.25 + 25 + 100 + 400 \\\\ &= 531.25 \\text{ square units} \\end{aligned}$$",
+    "criteria": [
+      "1 mark: Writes the side lengths in terms of one variable ($x, 2x, 4x, 8x$) and forms the perimeter equation $46x = 115$ (or equivalent)",
+      "1 mark: Solves for the side lengths ($x = 2.5$, so $2.5,\\ 5,\\ 10,\\ 20$)",
+      "1 mark: Obtains the total area $531.25$ square units"
+    ]
+  }
+]

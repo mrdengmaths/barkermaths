@@ -1,0 +1,65 @@
+[
+  {
+    "id": "Y910E-GEO-001",
+    "courses": ["Year 9 Core/Standard", "Year 9 Advanced/Extension", "Year 10 Core/Standard", "Year 10 Advanced/Extension"],
+    "topic": "Geometry",
+    "subtopic": "Area of Triangles (equal base / height)",
+    "difficulty": "Hard",
+    "enrichment": true,
+    "type": "Multiple Choice",
+    "marks": 1,
+    "calculator": true,
+    "lines": 0,
+    "diagram": "diagrams/Y910E-GEO-001.svg",
+    "diagramAlt": "A rectangle ABCD with a right-angled trapezium ABEF attached on the left. Points E, B and C lie on a straight line. The line DE crosses AB at G. The region made of triangles AGF and ADG is shaded.",
+    "source": "Adapted from Huatu Education (Anhui), \"Geometry: equal base (height) problems\", Example 1, 26 Dec 2025. Context, wording and units changed.",
+    "sourceUrl": "https://m.ah.huatu.com/2025/1226/3169197.html",
+    "question": "A nature reserve is laid out as shown (not drawn to scale). $ABCD$ is a rectangle and $ABEF$ is a right-angled trapezium with right angles at $B$ and $E$. The points $E$, $B$ and $C$ lie on a straight line, and $AB$ and $DE$ cross at $G$.\n\nThe shaded region $ADGF$ is a protected koala habitat. $AD = 240$ m, $AF = 150$ m and $AB = 100$ m.\n\nWhat is the area of the koala habitat? (1 hectare = $10\\,000\\ \\text{m}^2$)\n\n**A.** $1.4$ hectares\n\n**B.** $1.2$ hectares\n\n**C.** $1.5$ hectares\n\n**D.** $1.3$ hectares",
+    "solution": "Join $A$ to $E$.\n\nTriangles $AGF$ and $AGE$ share the base $AG$. Their other vertices, $F$ and $E$, both lie on the line $FE$, which is parallel to $AB$. So the two triangles have the same height, and therefore the same area.\n\nShaded area $=$ area $AGF$ $+$ area $ADG$ $=$ area $AGE$ $+$ area $ADG$ $=$ area $ADE$.\n\nTriangle $ADE$ has base $AD = 240$ m. Its height is the distance from $E$ to the line $AD$. Since $E$ is on the line $BC$, which is parallel to $AD$, this height is $AB = 100$ m.\n\n$$\\text{Area} = \\tfrac{1}{2} \\times 240 \\times 100 = 12\\,000\\ \\text{m}^2 = 1.2 \\text{ hectares}$$\n\nThe length $AF = 150$ m is not needed.\n\n**Correct Option: B**",
+    "criteria": [
+      "1 mark: Selects option B"
+    ]
+  },
+  {
+    "id": "Y910E-GEO-002",
+    "courses": ["Year 9 Core/Standard", "Year 9 Advanced/Extension", "Year 10 Core/Standard", "Year 10 Advanced/Extension"],
+    "topic": "Geometry",
+    "subtopic": "Area of Triangles (equal base / height)",
+    "difficulty": "Hard",
+    "enrichment": true,
+    "type": "Multiple Choice",
+    "marks": 1,
+    "calculator": true,
+    "lines": 0,
+    "diagram": "diagrams/Y910E-GEO-002.svg",
+    "diagramAlt": "A rectangle ABCD split by a vertical line FE into two rectangles, with F on AB and E on DC. The diagonal BD crosses FE at O. Triangle DOC is shaded.",
+    "source": "Adapted from Huatu Education (Anhui), \"Geometry: equal base (height) problems\", Example 2, 26 Dec 2025. Context, wording and units changed.",
+    "sourceUrl": "https://m.ah.huatu.com/2025/1226/3169197.html",
+    "question": "A rectangular farm $ABCD$ is divided by a fence $FE$ into two rectangles, where $F$ is on $AB$ and $E$ is on $DC$. The rectangle $ADEF$ is used for vegetables and the rectangle $BCEF$ is a picnic area.\n\nA walking track runs along the diagonal $BD$ and crosses the fence at $O$. The farm is not drawn to scale. $AF = 600$ m and $FE = 400$ m.\n\nWhat is the area of the shaded triangle $COD$? (1 hectare = $10\\,000\\ \\text{m}^2$)\n\n**A.** $15$ hectares\n\n**B.** $16$ hectares\n\n**C.** $12$ hectares\n\n**D.** $18$ hectares",
+    "solution": "Join $B$ to $E$.\n\nTriangles $OCE$ and $OBE$ share the base $OE$. Their other vertices, $B$ and $C$, both lie on the line $BC$, which is parallel to $FE$. So the two triangles have the same height, and therefore the same area.\n\nShaded area $=$ area $ODE$ $+$ area $OCE$ $=$ area $ODE$ $+$ area $OBE$ $=$ area $BDE$.\n\nTriangle $BDE$ has base $DE = AF = 600$ m (opposite sides of rectangle $ADEF$) and height $BC = FE = 400$ m.\n\n$$\\text{Area} = \\tfrac{1}{2} \\times 600 \\times 400 = 120\\,000\\ \\text{m}^2 = 12 \\text{ hectares}$$\n\n**Correct Option: C**",
+    "criteria": [
+      "1 mark: Selects option C"
+    ]
+  },
+  {
+    "id": "Y910E-GEO-003",
+    "courses": ["Year 9 Core/Standard", "Year 9 Advanced/Extension", "Year 10 Core/Standard", "Year 10 Advanced/Extension"],
+    "topic": "Geometry",
+    "subtopic": "Area of Triangles (equal base / height)",
+    "difficulty": "Hard",
+    "enrichment": true,
+    "type": "Multiple Choice",
+    "marks": 1,
+    "calculator": true,
+    "lines": 0,
+    "diagram": "diagrams/Y910E-GEO-003.svg",
+    "diagramAlt": "A four-sided shape ABCD with both diagonals, AC and BD, drawn. The diagonals cross at O, dividing the shape into four triangles.",
+    "source": "Adapted from Huatu Education (Anhui), \"Geometry: equal base (height) problems\", Example 3, 26 Dec 2025. Context, wording and units changed.",
+    "sourceUrl": "https://m.ah.huatu.com/2025/1226/3169197.html",
+    "question": "A community garden $ABCD$ has two straight paths, $AC$ and $BD$, that cross at $O$. The paths divide the garden into four triangular beds (not drawn to scale).\n\nBed $AOD$ has area $9\\ \\text{m}^2$, bed $AOB$ has area $15\\ \\text{m}^2$ and bed $COD$ has area $12\\ \\text{m}^2$. The side $CD$ is $8$ m long.\n\nWhat is the perpendicular distance from $B$ to the line $CD$?\n\n**A.** $9$ m\n\n**B.** $6$ m\n\n**C.** $7$ m\n\n**D.** $8$ m",
+    "solution": "Triangles $AOD$ and $COD$ have the same height (the distance from $D$ to the line $AC$), so their areas are in the same ratio as their bases:\n\n$$\\frac{AO}{CO} = \\frac{\\text{area } AOD}{\\text{area } COD} = \\frac{9}{12} = \\frac{3}{4}$$\n\nTriangles $AOB$ and $COB$ also share a height (the distance from $B$ to the line $AC$), so:\n\n$$\\frac{\\text{area } AOB}{\\text{area } COB} = \\frac{AO}{CO} = \\frac{3}{4} \\quad \\Rightarrow \\quad \\text{area } COB = 15 \\times \\frac{4}{3} = 20\\ \\text{m}^2$$\n\nTriangle $BCD$ has area $12 + 20 = 32\\ \\text{m}^2$. Using $CD$ as the base and $h$ as the height from $B$:\n\n$$\\tfrac{1}{2} \\times 8 \\times h = 32 \\quad \\Rightarrow \\quad h = 8\\ \\text{m}$$\n\n**Correct Option: D**",
+    "criteria": [
+      "1 mark: Selects option D"
+    ]
+  }
+]

@@ -11,53 +11,46 @@
 
     const el = {
         people: $('jos-people'),
+        fx: $('jos-fx'),
         count: $('jos-count'),
         countLabel: $('jos-count-label'),
         n: $('jos-n'),
         nOut: $('jos-n-out'),
-        k: $('jos-k'),
-        kOut: $('jos-k-out'),
         speed: $('jos-speed'),
         speedOut: $('jos-speed-out'),
+        sound: $('jos-sound'),
         guess: $('jos-guess'),
         play: $('jos-play'),
         step: $('jos-step'),
         finish: $('jos-finish'),
         reset: $('jos-reset'),
-        preset: $('jos-legend-preset'),
         status: $('jos-status'),
         outList: $('jos-out'),
         outEmpty: $('jos-out-empty'),
         shortcut: $('jos-shortcut-text'),
         rowN: $('jos-row-n'),
-        rowJ: $('jos-row-j')
+        rowJ: $('jos-row-j'),
+        fast: $('jos-fast'),
+        clear: $('jos-clear'),
+        tableNote: $('jos-table-note')
     };
 
     if (!el.people) return;
 
-    /* ---------- Maths ---------- */
-
-    // Position (1-based) of the survivor, using J(1) = 0 and J(m) = (J(m - 1) + k) mod m.
-    function survivorOf(n, k) {
-        let j = 0;
-        for (let m = 2; m <= n; m++) j = (j + k) % m;
-        return j + 1;
-    }
-
     /* ---------- State ---------- */
 
     const state = {
-        n: 10,
-        k: 2,
+        n: 41,
         alive: [],
         aliveCount: 0,
-        current: -1,
-        count: 0,
+        swinger: 0,
         eliminated: [],
         done: false,
         playing: false,
         timer: null,
-        nodes: []
+        run: 0,
+        nodes: [],
+        positions: []
     };
 
     function intervalMs() {
@@ -83,8 +76,9 @@
         const n = state.n;
         el.people.textContent = '';
         state.nodes = [];
+        state.positions = [];
 
-        const spacing = 2 * RING * Math.sin(Math.PI / n);
+        const spacing = n === 1 ? Infinity : 2 * RING * Math.sin(Math.PI / n);
         const r = Math.min(26, spacing * 0.42);
         const fontSize = Math.min(18, r * 0.95);
 
@@ -124,6 +118,7 @@
 
             el.people.appendChild(group);
             state.nodes.push(group);
+            state.positions.push({ x, y });
         }
     }
 
@@ -163,18 +158,19 @@
 
     function reset() {
         stop();
+        state.run += 1;
+        el.fx.textContent = '';
         state.n = Number(el.n.value);
-        state.k = Number(el.k.value);
         state.alive = new Array(state.n).fill(true);
         state.aliveCount = state.n;
-        state.current = state.n - 1; // counting begins at person 1
-        state.count = 0;
+        state.swinger = 0; // person 1 swings first
         state.eliminated = [];
         state.done = false;
 
         buildCircle();
+        state.nodes[0].classList.add('current');
         updateOutList();
-        setCentre('', '');
+        setCentre(String(state.n), state.n === 1 ? 'person' : 'people');
         setStatus('Press <strong>Play</strong> or <strong>Step</strong> to begin.');
         el.guess.max = String(state.n);
         updatePlayButton();
@@ -189,10 +185,7 @@
         return i;
     }
 
-    function finishRun() {
-        const winner = state.alive.indexOf(true);
-        state.done = true;
-        state.current = -1;
+    function showFinish(winner) {
         state.nodes.forEach((node) => node.classList.remove('current'));
         state.nodes[winner].classList.add('survivor');
         setCentre('★', `Person ${winner + 1} survives`);
@@ -205,55 +198,171 @@
                 : ` You predicted ${guess}.`;
         }
         setStatus(message);
-        stop();
+        recordRun(state.n, winner + 1);
     }
 
-    // One count: the next person in the circle says the next number. Returns true if that person was eliminated.
-    function tick() {
-        if (state.done) return false;
+    /* ---------- Sword animation and sound ---------- */
 
-        const prev = state.current;
-        if (state.nodes[prev]) state.nodes[prev].classList.remove('current');
+    let audioCtx = null;
+    let noiseBuffer = null;
 
-        state.current = nextAlive(prev);
-        state.count += 1;
-        const person = state.current + 1;
-        const node = state.nodes[state.current];
+    function ensureAudio() {
+        if (!audioCtx) {
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (Ctx) audioCtx = new Ctx();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    }
 
-        if (state.count < state.k) {
-            node.classList.add('current');
-            setCentre(String(state.count), `Person ${person} says “${state.count}”`);
-            return false;
+    function playSwingSound(durationMs) {
+        if (!audioCtx || !el.sound.checked) return;
+        const t = audioCtx.currentTime;
+        const dur = Math.max(0.12, durationMs / 1000);
+
+        if (!noiseBuffer) {
+            noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate, audioCtx.sampleRate);
+            const data = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
         }
 
-        state.alive[state.current] = false;
-        state.aliveCount -= 1;
-        state.eliminated.push(person);
-        state.count = 0;
-        node.classList.add('out');
-        updateOutList();
+        // Whoosh: noise through a band-pass filter that sweeps upwards, then fades.
+        const whoosh = audioCtx.createBufferSource();
+        whoosh.buffer = noiseBuffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.Q.value = 1.4;
+        filter.frequency.setValueAtTime(500, t);
+        filter.frequency.exponentialRampToValueAtTime(3600, t + dur * 0.62);
+        filter.frequency.exponentialRampToValueAtTime(1200, t + dur);
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.55, t + dur * 0.55);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        whoosh.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        whoosh.start(t);
+        whoosh.stop(t + dur + 0.05);
+
+        // A short metallic ring as the blade lands.
+        const hit = t + dur * 0.62;
+        const ring = audioCtx.createOscillator();
+        ring.type = 'triangle';
+        ring.frequency.setValueAtTime(1800, hit);
+        ring.frequency.exponentialRampToValueAtTime(1100, hit + 0.18);
+        const ringGain = audioCtx.createGain();
+        ringGain.gain.setValueAtTime(0.0001, hit);
+        ringGain.gain.exponentialRampToValueAtTime(0.18, hit + 0.01);
+        ringGain.gain.exponentialRampToValueAtTime(0.0001, hit + 0.2);
+        ring.connect(ringGain);
+        ringGain.connect(audioCtx.destination);
+        ring.start(hit);
+        ring.stop(hit + 0.22);
+    }
+
+    // A sword drawn pointing along +x, 50 units long, with the hand at the origin.
+    function buildSword() {
+        const sword = svgEl('g', { class: 'sword' });
+        sword.appendChild(svgEl('rect', { class: 'sword-grip', x: -9, y: -2, width: 11, height: 4, rx: 1.5 }));
+        sword.appendChild(svgEl('rect', { class: 'sword-guard', x: 2, y: -6.5, width: 3.5, height: 13, rx: 1 }));
+        sword.appendChild(svgEl('polygon', { class: 'sword-blade', points: '5.5,-3 42,-3 51,0 42,3 5.5,3' }));
+        return sword;
+    }
+
+    function swingSword(from, to, durationMs) {
+        const a = state.positions[from];
+        const b = state.positions[to];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const base = Math.atan2(dy, dx) * 180 / Math.PI;
+        const length = Math.max(34, Math.min(80, Math.hypot(dx, dy) * 0.95));
+
+        const holder = svgEl('g', { transform: `translate(${a.x.toFixed(1)} ${a.y.toFixed(1)})` });
+        const sword = buildSword();
+        holder.appendChild(sword);
+        el.fx.appendChild(holder);
+
+        const start = performance.now();
+        const scale = length / 50;
+        function frame(now) {
+            if (!holder.isConnected) return;
+            const t = Math.min(1, (now - start) / durationMs);
+            const eased = t * t * (3 - 2 * t);
+            const angle = base - 85 + 120 * eased;
+            sword.setAttribute('transform', `rotate(${angle.toFixed(1)}) scale(${scale.toFixed(3)})`);
+            holder.setAttribute('opacity', t > 0.8 ? ((1 - t) / 0.2).toFixed(2) : '1');
+            if (t < 1) {
+                requestAnimationFrame(frame);
+            } else {
+                holder.remove();
+            }
+        }
+        requestAnimationFrame(frame);
+    }
+
+    /* ---------- Simulation steps ---------- */
+
+    // One swing: the person holding the sword strikes the next person on their left, then the sword
+    // passes to whoever is next in the circle. durationMs of 0 means no animation.
+    function tick(durationMs) {
+        if (state.done) return;
+        const run = state.run;
 
         if (state.aliveCount === 1) {
-            setCentre(String(state.k), `Person ${person} is out`);
-            finishRun();
-        } else {
-            node.classList.add('current');
-            setCentre(String(state.k), `Person ${person} is out`);
-            setStatus(`Person <strong>${person}</strong> is out. ${state.aliveCount} left in the circle.`);
+            state.done = true;
+            stop();
+            showFinish(state.alive.indexOf(true));
+            return;
         }
-        return true;
+
+        const swinger = state.swinger;
+        const victim = nextAlive(swinger);
+        state.alive[victim] = false;
+        state.aliveCount -= 1;
+        state.eliminated.push(victim + 1);
+
+        const last = state.aliveCount === 1;
+        const next = last ? swinger : nextAlive(victim);
+        state.swinger = next;
+        if (last) {
+            state.done = true;
+            stop();
+        }
+
+        const apply = () => {
+            if (run !== state.run) return;
+            state.nodes[swinger].classList.remove('current');
+            state.nodes[victim].classList.add('out');
+            updateOutList();
+            if (last) {
+                showFinish(swinger);
+                return;
+            }
+            state.nodes[next].classList.add('current');
+            setCentre(String(state.aliveCount), 'left');
+            setStatus(`Person <strong>${swinger + 1}</strong> struck down person <strong>${victim + 1}</strong>. ${state.aliveCount} left in the circle.`);
+        };
+
+        if (durationMs >= 90) {
+            swingSword(swinger, victim, durationMs);
+            playSwingSound(durationMs);
+            setTimeout(apply, durationMs * 0.62);
+        } else {
+            apply();
+        }
     }
 
     function schedule() {
         state.timer = setTimeout(() => {
             state.timer = null;
             if (!state.playing) return;
-            tick();
+            tick(Math.min(450, intervalMs() * 0.85));
             if (state.playing && !state.done) schedule();
         }, intervalMs());
     }
 
     function play() {
+        ensureAudio();
         if (state.playing) {
             stop();
             return;
@@ -265,25 +374,22 @@
     }
 
     function stepOnce() {
+        ensureAudio();
         if (state.playing) stop();
         if (state.done) reset();
-        tick();
+        tick(450);
     }
 
     function skipToEnd() {
         stop();
         if (state.done) reset();
-        let guard = state.n * state.k + 10;
-        while (!state.done && guard-- > 0) tick();
+        let guard = state.n + 5;
+        while (!state.done && guard-- > 0) tick(0);
     }
 
     /* ---------- Shortcut readout and table ---------- */
 
     function updateShortcut() {
-        if (state.k !== 2) {
-            el.shortcut.textContent = 'The 2L + 1 rule is for k = 2. Set k back to 2 to see it for this many people.';
-            return;
-        }
         const n = state.n;
         let power = 1;
         while (power * 2 <= n) power *= 2;
@@ -291,46 +397,86 @@
         el.shortcut.innerHTML = `n = ${n} = ${power} + ${extra}, so L = ${extra}.<br>Survivor = 2 × ${extra} + 1 = <strong>${2 * extra + 1}</strong>.`;
     }
 
+    const TABLE_MAX = 50;
+    const tableCells = [];
+
     function buildTable() {
-        for (let n = 1; n <= 32; n++) {
-            const isPower = (n & (n - 1)) === 0;
+        for (let n = 1; n <= TABLE_MAX; n++) {
             const head = document.createElement('td');
             head.textContent = String(n);
             const value = document.createElement('td');
-            value.textContent = String(survivorOf(n, 2));
-            if (isPower) {
-                head.className = 'pow';
-                value.className = 'pow';
-            }
             el.rowN.appendChild(head);
             el.rowJ.appendChild(value);
+            tableCells[n] = { head, value };
         }
+    }
+
+    function fillCell(n, survivor) {
+        const cell = tableCells[n];
+        if (!cell) return;
+        cell.value.textContent = String(survivor);
+        const isPower = (n & (n - 1)) === 0;
+        cell.head.classList.toggle('pow', isPower);
+        cell.value.classList.toggle('pow', isPower);
+    }
+
+    function filledCount() {
+        return tableCells.filter((cell) => cell && cell.value.textContent !== '').length;
+    }
+
+    function setTableNote(text) {
+        el.tableNote.textContent = text;
+    }
+
+    // Plays out the whole circle by actually eliminating every second person, with no animation.
+    function simulateInstantly(n) {
+        const circle = Array.from({ length: n }, (_, i) => i + 1);
+        let index = 0;
+        while (circle.length > 1) {
+            index = (index + 1) % circle.length;
+            circle.splice(index, 1);
+        }
+        return circle[0];
+    }
+
+    function fillTableFast() {
+        for (let n = 1; n <= TABLE_MAX; n++) fillCell(n, simulateInstantly(n));
+        setTableNote(`Filled n = 1 to ${TABLE_MAX}.`);
+    }
+
+    function clearTable() {
+        for (let n = 1; n <= TABLE_MAX; n++) {
+            const cell = tableCells[n];
+            cell.value.textContent = '';
+            cell.head.classList.remove('pow');
+            cell.value.classList.remove('pow');
+        }
+        setTableNote('');
+    }
+
+    function recordRun(n, survivor) {
+        fillCell(n, survivor);
+        setTableNote(`Added n = ${n}. ${filledCount()} of ${TABLE_MAX} entries filled.`);
     }
 
     /* ---------- Wiring ---------- */
 
     function onSizeChange() {
         el.nOut.textContent = el.n.value;
-        el.kOut.textContent = el.k.value;
         reset();
     }
 
     el.n.addEventListener('input', onSizeChange);
-    el.k.addEventListener('input', onSizeChange);
     el.speed.addEventListener('input', () => { el.speedOut.textContent = speedLabel(); });
     el.play.addEventListener('click', play);
     el.step.addEventListener('click', stepOnce);
     el.finish.addEventListener('click', skipToEnd);
     el.reset.addEventListener('click', reset);
-    el.preset.addEventListener('click', () => {
-        el.n.value = '41';
-        el.k.value = '3';
-        onSizeChange();
-    });
+    el.fast.addEventListener('click', fillTableFast);
+    el.clear.addEventListener('click', clearTable);
 
     el.speedOut.textContent = speedLabel();
     el.nOut.textContent = el.n.value;
-    el.kOut.textContent = el.k.value;
     buildTable();
     reset();
 })();

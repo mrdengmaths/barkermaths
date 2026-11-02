@@ -103,6 +103,14 @@
 .person.survivor .person-num { fill: #451a03; }
 .person.survivor .person-star { display: block; }
 
+.sword-blade { fill: #e2e8f0; stroke: #475569; stroke-width: 1.2; stroke-linejoin: round; }
+.sword-guard { fill: #b45309; stroke: #78350f; stroke-width: 1; }
+.sword-grip { fill: #7c2d12; }
+#jos-fx { pointer-events: none; }
+
+.control label.check { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 500; cursor: pointer; }
+.control label.check input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); }
+
 .centre-big {
     font-family: 'Roboto Slab', serif;
     font-size: 72px;
