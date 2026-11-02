@@ -107,10 +107,13 @@
         /* ============================================================
            PREVIEW (screen only). Pages are A4 at 96dpi, scaled to fit.
            ============================================================ */
-        .pv-measure { position: absolute; left: -10000px; top: 0; width: 680px; visibility: hidden; pointer-events: none; }
-        .pv-page-wrap { position: relative; margin: 0 auto; background: #ffffff; box-shadow: 0 2px 12px rgba(15, 23, 42, 0.2); }
-        .pv-page { position: absolute; top: 0; left: 0; width: 794px; height: 1123px; padding: 38px 57px; box-sizing: border-box; overflow: hidden; transform-origin: top left; background: #ffffff; }
-        .pv-page-label { text-align: center; font-size: 11px; color: #64748b; margin: 6px 0 16px; }
+        .pv-measure { position: absolute; left: -10000px; top: 0; width: calc(210mm - 114px); visibility: hidden; pointer-events: none; }
+        .pv-page-wrap { position: relative; margin: 0 auto 16px; background: #ffffff; box-shadow: 0 2px 12px rgba(15, 23, 42, 0.2); }
+        .pv-page.doc-page { position: absolute; top: 0; left: 0; transform-origin: top left; }
+
+        /* An A4 page, used by both the preview and the printout. Content width is 210mm minus 2 x 57px. */
+        .doc-page { position: relative; width: 210mm; height: 297mm; padding: 38px 57px 46px; box-sizing: border-box; overflow: hidden; background: #ffffff; }
+        .doc-footer { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font: 500 8.5pt 'Inter', sans-serif; color: #64748b; }
 
         /* Editing controls inside the preview are sized in screen pixels, whatever the page scale (--s) */
         .ws-add {
@@ -161,17 +164,31 @@
         .pv-drop-line { position: fixed; height: 3px; border-radius: 3px; background: #005b94; box-shadow: 0 0 0 2px rgba(0, 91, 148, 0.2); pointer-events: none; z-index: 9999; }
 
         /* The title is edited in place on the preview */
-        .ws-title-edit { cursor: text; border-radius: 4px; outline: calc(1px / var(--s, 1)) dashed transparent; outline-offset: calc(3px / var(--s, 1)); }
-        .ws-title-edit:hover { outline-color: #8acaff; }
-        .ws-title-edit:focus { outline: calc(2px / var(--s, 1)) solid #52aaff; background: #f4faff; }
+        .ws-edit { cursor: text; border-radius: 4px; outline: calc(1px / var(--s, 1)) dashed transparent; outline-offset: calc(3px / var(--s, 1)); }
+        .ws-edit:hover { outline-color: #8acaff; }
+        .ws-edit:focus { outline: calc(2px / var(--s, 1)) solid #52aaff; background: #f4faff; }
+
+        /* Option toggles above the preview */
+        .opt-chip {
+            font-size: 12px; font-weight: 600; line-height: 1; padding: 6px 12px; border-radius: 999px; cursor: pointer;
+            color: #475569; background: #ffffff; border: 1px solid #cbd5e1; transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+        .opt-chip::before { content: '＋ '; }
+        .opt-chip:hover { border-color: #52aaff; color: #005b94; }
+        .opt-chip[aria-pressed="true"] { color: #ffffff; background: #005b94; border-color: #005b94; }
+        .opt-chip[aria-pressed="true"]::before { content: '✓ '; }
+        .opt-chip:disabled { opacity: 0.45; cursor: not-allowed; }
 
         /* ============================================================
            PRINT STYLES FOR A4 WORKSHEET & PDF GENERATION
+           Pages are built explicitly (same layout as the preview) so every page can carry its number.
            ============================================================ */
-        @page { size: A4; margin: 10mm 15mm; }
+        @page { size: A4; margin: 0; }
 
         @media print {
             body {
+                display: block !important;
+                min-height: 0 !important;
                 background: white !important;
                 color: black !important;
                 font-size: 11pt !important;
@@ -188,9 +205,14 @@
                 padding: 0;
             }
 
-            .ws-block, .ws-solution-wrap {
-                break-inside: avoid;
-                page-break-inside: avoid;
+            #printContainer .doc-page {
+                break-after: page;
+                page-break-after: always;
+            }
+
+            #printContainer .doc-page:last-child {
+                break-after: auto;
+                page-break-after: auto;
             }
         }
 
@@ -375,7 +397,11 @@
                     </div>
                 </div>
 
-                <p class="text-[11px] text-slate-400 leading-snug">Click the title to edit it. Drag <strong>⠿</strong> to reorder, <strong>✕</strong> to remove a question. <strong>＋ Add working space</strong> adds blank space; drag the blue bar to resize it.</p>
+                <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Worksheet options">
+                    <button type="button" id="optSolutions" data-opt="solutions" onclick="toggleOption('solutions')" class="opt-chip" aria-pressed="true" title="Add the worked solutions at the end of the worksheet">Solutions</button>
+                    <button type="button" id="optSpace" data-opt="space" onclick="toggleOption('space')" class="opt-chip" aria-pressed="false" title="Add blank working space after every question except multiple choice. Resize or remove it on the preview.">Working space</button>
+                    <button type="button" id="optCriteria" data-opt="criteria" onclick="toggleOption('criteria')" class="opt-chip" aria-pressed="false" title="Add the marking criteria to each solution (needs Solutions)">Marking criteria</button>
+                </div>
             </div>
 
             <div id="pvScroll" class="flex-1 overflow-y-auto bg-slate-200 p-3 min-h-0">
@@ -457,14 +483,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Solution & Criteria toggles for print -->
-                <div class="flex items-center gap-4 text-xs font-semibold text-slate-700">
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-barker-700">
-                        <input type="checkbox" id="includeSolutionsToggle" checked onchange="schedulePreview(0)" class="w-4 h-4 rounded text-barker-700 border-slate-300 focus:ring-barker-700">
-                        <span>Include Solutions Page</span>
-                    </label>
-                </div>
             </div>
 
             <div class="flex items-center gap-2.5 w-full md:w-auto justify-end">
@@ -529,8 +547,13 @@
         let selectedQuestionIds = []; // Array to preserve order
         let workingSpace = {}; // Map question ID -> blank working space height (page px) shown after the question
 
-        // Worksheet title. null means "automatic"; set once the user edits it on the preview.
+        // Worksheet title and time allowed. null means "automatic"; set once the user edits them on the preview.
         let titleOverride = null;
+        let timeOverride = null;
+        let dateClassText = '';
+
+        // Options chosen with the toggles above the preview
+        const options = { solutions: true, space: false, criteria: false };
 
         // Practice State
         let practiceQueue = [];
@@ -1296,10 +1319,11 @@
         }
 
         // --- WORKSHEET DOCUMENT (shared by the preview and the printout) ---
-        const PAGE_W = 794;            // A4 width at 96dpi
-        const PAGE_H = 1123;           // A4 height at 96dpi
-        const PAGE_PAD_Y = 38;         // 10mm
-        const CONTENT_H = PAGE_H - 2 * PAGE_PAD_Y;
+        const PAGE_W = 793.7;          // A4 width (210mm) at 96dpi
+        const PAGE_H = 1122.5;         // A4 height (297mm) at 96dpi
+        const PAGE_PAD_TOP = 38;       // 10mm
+        const PAGE_PAD_BOTTOM = 46;    // leaves room for the page number
+        const CONTENT_H = Math.floor(PAGE_H - PAGE_PAD_TOP - PAGE_PAD_BOTTOM);
         const DEFAULT_SPACE_PX = 120;
         const MIN_SPACE_PX = 24;
 
@@ -1340,14 +1364,25 @@
             return titleOverride !== null ? titleOverride : autoTitle(list);
         }
 
+        function currentTime(list) {
+            return timeOverride !== null ? timeOverride : Math.round(autoMarks(list) * 1.5);
+        }
+
         function markLabel(n) {
             return `${n} ${n === 1 ? 'Mark' : 'Marks'}`;
         }
 
-        function workingSpaceHtml(q, preview) {
+        function workingSpaceHeight(q) {
             // Multiple choice questions are answered by choosing an option, so they get no working space
+            if (q.type === 'Multiple Choice') return 0;
+            const own = workingSpace[q.id];
+            if (own !== undefined) return own;
+            return options.space ? DEFAULT_SPACE_PX : 0;
+        }
+
+        function workingSpaceHtml(q, preview) {
             if (q.type === 'Multiple Choice') return '';
-            const height = workingSpace[q.id];
+            const height = workingSpaceHeight(q);
             if (!height) {
                 return preview ? `<button type="button" class="ws-add" data-add-space="${escapeHtml(q.id)}">＋ Add working space</button>` : '';
             }
@@ -1364,23 +1399,25 @@
             const totalMarks = autoMarks(list);
             const blocks = [];
 
-            const titleAttrs = preview ? ' class="ws-title-edit" contenteditable="true" spellcheck="false" data-title-edit title="Click to edit the title"' : '';
+            const editable = (kind, hint) => preview
+                ? ` class="ws-edit" contenteditable="true" spellcheck="false" data-edit="${kind}" title="${hint}"`
+                : '';
             const head = document.createElement('div');
             head.className = 'ws-block ws-head';
             head.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 16px;">
                     <div style="flex: 1; min-width: 0;">
-                        <div${titleAttrs} style="font-size: 16pt; font-weight: 800; color: #005b94; line-height: 1.25;">${escapeHtml(currentTitle(list))}</div>
+                        <div${editable('title', 'Click to edit the title')} style="font-size: 16pt; font-weight: 800; color: #005b94; line-height: 1.25;">${escapeHtml(currentTitle(list))}</div>
                     </div>
                     <div style="text-align: right; font-size: 10pt; color: #475569; white-space: nowrap;">
                         <div><strong>Questions:</strong> ${list.length}</div>
                         <div><strong>Total Marks:</strong> ${totalMarks}</div>
-                        <div><strong>Time Allowed:</strong> ${Math.round(totalMarks * 1.5)} mins</div>
+                        <div><strong>Time Allowed:</strong> <span${editable('time', 'Click to change the time allowed')} style="display: inline-block; min-width: 1.2em; text-align: right;">${currentTime(list)}</span> mins</div>
                     </div>
                 </div>
-                <div style="display: flex; gap: 30px; margin-top: 14px; font-size: 10.5pt; color: #334155;">
+                <div style="display: flex; gap: 30px; margin-top: 14px; font-size: 10.5pt; color: #334155; align-items: flex-end;">
                     <div style="flex: 1;"><strong>Student Name:</strong> ___________________________________</div>
-                    <div style="width: 180px;"><strong>Date / Class:</strong> ______________</div>
+                    <div style="flex: 0 0 auto;"><strong>Date / Class:</strong> <span${editable('dateclass', 'Click to type the date or class')} style="display: inline-block; min-width: 130px; min-height: 1.3em; vertical-align: bottom; border-bottom: 1px solid #334155; white-space: pre-wrap;">${escapeHtml(dateClassText)}</span></div>
                 </div>
             `;
             // The head block is padded like the others but its rule already separates it from the questions
@@ -1416,11 +1453,10 @@
             });
 
             // All solutions together at the end, numbered to match the questions above
-            if (list.length && document.getElementById('includeSolutionsToggle').checked) {
+            if (list.length && options.solutions) {
                 const title = document.createElement('div');
                 title.className = 'ws-block';
                 title.dataset.pageBreak = 'before';
-                title.style.breakBefore = 'page';
                 title.innerHTML = '<div class="ws-solutions-title">WORKED SOLUTIONS</div>';
                 title.style.paddingBottom = '14px';
                 blocks.push(title);
@@ -1428,6 +1464,14 @@
                 list.forEach((q, index) => {
                     const wrap = document.createElement('div');
                     wrap.className = 'ws-block ws-solution-wrap';
+                    const criteria = options.criteria && q.criteria && q.criteria.length
+                        ? `<div style="font-size: 8.5pt; color: #475569; margin-top: 6px;">
+                               <strong>Marking criteria:</strong>
+                               <ul style="margin: 2px 0 0 0; padding-left: 18px; list-style: disc outside;">
+                                   ${q.criteria.map(c => `<li style="display: list-item;">${formatMarkdown(c)}</li>`).join('')}
+                               </ul>
+                           </div>`
+                        : '';
                     wrap.innerHTML = `
                         <div class="ws-solution">
                             <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
@@ -1440,6 +1484,7 @@
                             <div style="font-size: 9.5pt; line-height: 1.4;">
                                 ${formatMarkdown(q.solution)}
                             </div>
+                            ${criteria}
                             ${q.source ? `<div style="font-size: 8pt; color: #64748b; margin-top: 6px;"><strong>Source:</strong> ${escapeHtml(q.source)}${q.sourceUrl ? ' ' + escapeHtml(q.sourceUrl) : ''}</div>` : ''}
                         </div>
                     `;
@@ -1493,6 +1538,18 @@
             return pages;
         }
 
+        // One A4 page: the blocks plus its page number
+        function buildPage(pageBlocks, index, total) {
+            const page = document.createElement('div');
+            page.className = 'doc-page';
+            pageBlocks.forEach(b => page.appendChild(b));
+            const footer = document.createElement('div');
+            footer.className = 'doc-footer';
+            footer.textContent = `Page ${index + 1} of ${total}`;
+            page.appendChild(footer);
+            return page;
+        }
+
         function mountPages(pages) {
             const pagesEl = document.getElementById('pvPages');
             const scroller = document.getElementById('pvScroll');
@@ -1501,14 +1558,10 @@
             pages.forEach((pageBlocks, i) => {
                 const wrap = document.createElement('div');
                 wrap.className = 'pv-page-wrap';
-                const page = document.createElement('div');
-                page.className = 'pv-page';
-                pageBlocks.forEach(b => page.appendChild(b));
+                const page = buildPage(pageBlocks, i, pages.length);
+                page.classList.add('pv-page');
                 wrap.appendChild(page);
-                const label = document.createElement('div');
-                label.className = 'pv-page-label';
-                label.innerText = `Page ${i + 1} of ${pages.length}`;
-                fragment.append(wrap, label);
+                fragment.appendChild(wrap);
             });
             pagesEl.replaceChildren(fragment);
             document.getElementById('pvPageCount').innerText = `${pages.length} ${pages.length === 1 ? 'page' : 'pages'}`;
@@ -1530,10 +1583,16 @@
             }
             emptyEl.classList.add('hidden');
 
+            // Never rebuild the page while a field on it is being typed in; it is rebuilt when the field loses focus.
+            const typing = () => {
+                const active = document.activeElement;
+                return !!(active && active.isContentEditable && pagesEl.contains(active));
+            };
+
             const blocks = buildWorksheetBlocks(true);
             measure.replaceChildren(...blocks);
             await prepareDocument(measure);
-            if (token !== previewToken) return;
+            if (token !== previewToken || typing()) return;
 
             let heights = blocks.map(b => b.offsetHeight);
             mountPages(paginate(blocks, heights));
@@ -1542,7 +1601,7 @@
             // lay the pages out again if anything changed (e.g. a late-loading font or image).
             for (let pass = 0; pass < 3; pass++) {
                 await new Promise(resolve => requestAnimationFrame(resolve));
-                if (token !== previewToken) return;
+                if (token !== previewToken || typing()) return;
                 const actual = blocks.map(b => b.offsetHeight);
                 if (actual.every((h, i) => Math.abs(h - heights[i]) <= 1)) break;
                 heights = actual;
@@ -1577,7 +1636,7 @@
             }
         }
 
-        // --- Summary above the preview and the in-place title ---
+        // --- Summary above the preview, option toggles and in-place fields ---
         function syncPreviewControls() {
             const list = selectedQuestionList();
             const marks = autoMarks(list);
@@ -1585,8 +1644,24 @@
             document.getElementById('pvQLabel').innerText = list.length === 1 ? 'question' : 'questions';
             document.getElementById('pvMarks').innerText = marks;
             document.getElementById('pvMLabel').innerText = marks === 1 ? 'mark' : 'marks';
-            document.getElementById('pvTime').innerText = Math.round(marks * 1.5);
+            document.getElementById('pvTime').innerText = currentTime(list);
             document.getElementById('pvResetTitle').classList.toggle('hidden', titleOverride === null);
+        }
+
+        function syncOptionButtons() {
+            document.querySelectorAll('[data-opt]').forEach(btn => {
+                btn.setAttribute('aria-pressed', String(options[btn.dataset.opt]));
+            });
+            // Criteria are printed inside the solutions
+            document.getElementById('optCriteria').disabled = !options.solutions;
+        }
+
+        function toggleOption(name) {
+            options[name] = !options[name];
+            // Working space applies to every question except multiple choice, so start again from that state
+            if (name === 'space') workingSpace = {};
+            syncOptionButtons();
+            schedulePreview(0);
         }
 
         function resetTitle() {
@@ -1596,9 +1671,9 @@
         }
 
         // --- Working space: add, remove and drag to resize ---
+        // An entry of 0 means "none" even when the Working space option is on.
         function setWorkingSpace(id, height) {
-            if (height) workingSpace[id] = Math.round(height);
-            else delete workingSpace[id];
+            workingSpace[id] = height ? Math.round(height) : 0;
             schedulePreview(0);
         }
 
@@ -1687,29 +1762,41 @@
                 if (removeQuestion) toggleSelectQuestion(removeQuestion.dataset.removeQ, false);
             });
 
-            // Title: edited directly on the page. The preview is not rebuilt while typing, only afterwards.
+            // Title, time allowed and date/class are edited directly on the page. The preview is not
+            // rebuilt while typing, only once the field loses focus.
+            const oneLine = text => text.replace(/\s*\n\s*/g, ' ');
             pagesEl.addEventListener('input', event => {
-                const title = event.target.closest('[data-title-edit]');
-                if (title) titleOverride = title.innerText.replace(/\s*\n\s*/g, ' ');
+                const field = event.target.closest('[data-edit]');
+                if (!field) return;
+                if (field.dataset.edit === 'title') titleOverride = oneLine(field.innerText);
+                else if (field.dataset.edit === 'dateclass') dateClassText = oneLine(field.innerText);
             });
             pagesEl.addEventListener('keydown', event => {
-                const title = event.target.closest('[data-title-edit]');
-                if (title && event.key === 'Enter') {
+                const field = event.target.closest('[data-edit]');
+                if (field && event.key === 'Enter') {
                     event.preventDefault();
-                    title.blur();
+                    field.blur();
                 }
             });
             pagesEl.addEventListener('paste', event => {
-                if (!event.target.closest('[data-title-edit]')) return;
+                if (!event.target.closest('[data-edit]')) return;
                 event.preventDefault();
-                const text = (event.clipboardData.getData('text/plain') || '').replace(/\s*\n\s*/g, ' ');
+                const text = oneLine(event.clipboardData.getData('text/plain') || '');
                 document.execCommand('insertText', false, text);
             });
             pagesEl.addEventListener('focusout', event => {
-                const title = event.target.closest('[data-title-edit]');
-                if (!title) return;
-                if (titleOverride !== null && titleOverride.trim() === '') titleOverride = null;
-                else if (titleOverride !== null) titleOverride = titleOverride.trim();
+                const field = event.target.closest('[data-edit]');
+                if (!field) return;
+                const kind = field.dataset.edit;
+                if (kind === 'title') {
+                    titleOverride = titleOverride === null || titleOverride.trim() === '' ? null : titleOverride.trim();
+                } else if (kind === 'time') {
+                    // Anything that is not a positive number goes back to the automatic time
+                    const minutes = parseInt(field.innerText.replace(/\D/g, ''), 10);
+                    timeOverride = minutes > 0 ? Math.min(minutes, 999) : null;
+                } else if (kind === 'dateclass') {
+                    dateClassText = dateClassText.trim();
+                }
                 syncPreviewControls();
                 schedulePreview(0);
             });
@@ -1776,14 +1863,26 @@
                 return;
             }
 
-            const printContainer = document.getElementById('printContainer');
-            printContainer.replaceChildren(...buildWorksheetBlocks(false));
-            await prepareDocument(printContainer);
+            // Lay the pages out exactly as the preview does, then print those pages
+            const measure = document.createElement('div');
+            measure.className = 'pv-measure no-print';
+            measure.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(measure);
+            try {
+                const blocks = buildWorksheetBlocks(false);
+                measure.replaceChildren(...blocks);
+                await prepareDocument(measure);
+                const pages = paginate(blocks, blocks.map(b => b.offsetHeight));
+                document.getElementById('printContainer').replaceChildren(...pages.map((p, i) => buildPage(p, i, pages.length)));
+            } finally {
+                measure.remove();
+            }
             setTimeout(() => window.print(), 250);
         }
         // Initialize on DOM load
         document.addEventListener('DOMContentLoaded', () => {
             initPreviewInteractions();
+            syncOptionButtons();
             fitBuilder();
             loadQuestions();
         });
