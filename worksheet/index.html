@@ -167,6 +167,8 @@
         .ws-edit { cursor: text; border-radius: 4px; outline: calc(1px / var(--s, 1)) dashed transparent; outline-offset: calc(3px / var(--s, 1)); }
         .ws-edit:hover { outline-color: #8acaff; }
         .ws-edit:focus { outline: calc(2px / var(--s, 1)) solid #52aaff; background: #f4faff; }
+        .ws-edit:empty::before { content: '\2026'; color: #cbd5e1; }
+        .doc-footer .ws-quote { font-style: italic; }
 
         /* Option toggles above the preview */
         .opt-chip {
@@ -550,7 +552,86 @@
         // Worksheet title and time allowed. null means "automatic"; set once the user edits them on the preview.
         let titleOverride = null;
         let timeOverride = null;
-        let dateClassText = '';
+        // Header text the teacher can reword; the underlines are ordinary text so they can be edited too
+        const HEADER_DEFAULTS = {
+            name: 'Student Name: ___________________________________',
+            date: 'Date / Class: ____________________',
+            timeLabel: 'Time Allowed:',
+            timeUnit: 'mins'
+        };
+        const headerText = { ...HEADER_DEFAULTS };
+
+        const WELLBEING_QUOTES = [
+            'Mistakes are proof that you are trying.',
+            'You are more capable than you think.',
+            'Take a deep breath. You have got this.',
+            'Progress, not perfection.',
+            'Every expert was once a beginner.',
+            'Be kind to yourself today.',
+            'Small steps still move you forward.',
+            'Your effort matters more than your score.',
+            'It is okay to ask for help.',
+            'Believe in the person you are becoming.',
+            'Hard problems make strong thinkers.',
+            'You do not have to be perfect to be great.',
+            'Rest is part of learning too.',
+            'Curiosity is a superpower.',
+            'Stay calm, think clearly, keep going.',
+            'Learning is a journey, not a race.',
+            'Today is a good day to learn something new.',
+            'You are not alone. Reach out when things feel heavy.',
+            'Be proud of how far you have come.',
+            'Failing is just learning in disguise.',
+            'One question at a time.',
+            'Your best is enough.',
+            'Challenge yourself. You will grow.',
+            'Kindness counts, to others and to yourself.',
+            'Great things take time and patience.',
+            'Look after your mind as well as your marks.',
+            'Courage is trying again.',
+            'You belong here, and your ideas matter.',
+            'Celebrate the small wins.',
+            'Sleep, water and a smile help your brain work.',
+            'Do not compare your chapter 1 to someone else\u2019s chapter 20.',
+            'Every problem solved makes the next one easier.',
+            'Breathe in calm, breathe out worry.',
+            'Ask questions. That is how thinking grows.',
+            'You can do hard things.',
+            'Be curious, be brave, be kind.',
+            'Your mistakes help you learn.',
+            'Focus on what you can control.',
+            'A positive attitude makes problems smaller.',
+            'Keep going. Your future self will thank you.',
+            'Talk to someone you trust if you are worried.',
+            'Effort today builds confidence tomorrow.',
+            'It is fine to take a break and come back.',
+            'Think like a mathematician: explore, test, refine.',
+            'You are allowed to be a work in progress.',
+            'Every attempt teaches you something.',
+            'Patience is part of problem solving.',
+            'The only way to fail is to stop trying.',
+            'Good things come to those who keep practising.',
+            'Be the kind of friend you would like to have.',
+            'Your wellbeing matters more than any test.',
+            'Gratitude turns what we have into enough.',
+            'Stretch your thinking. It is how it grows.',
+            'Smile. It helps you and the people around you.',
+            'You make a difference to the people around you.',
+            'Start where you are, use what you have.',
+            'Strong minds are built by steady practice.',
+            'Today\u2019s effort is tomorrow\u2019s strength.',
+            'Be gentle with yourself when things go wrong.',
+            'Every day is a new chance to improve.'
+        ];
+        // Random starting point per page load so students rarely meet the same quote twice in a row
+        const quoteOffset = Math.floor(Math.random() * WELLBEING_QUOTES.length);
+        const quoteOverrides = {};
+
+        function quoteForPage(pageIndex) {
+            const slot = Math.floor(pageIndex / 3);
+            if (quoteOverrides[slot] !== undefined) return quoteOverrides[slot];
+            return WELLBEING_QUOTES[(quoteOffset + slot * 7) % WELLBEING_QUOTES.length];
+        }
 
         // Options chosen with the toggles above the preview
         const options = { solutions: true, space: false, criteria: false };
@@ -1412,12 +1493,12 @@
                     <div style="text-align: right; font-size: 10pt; color: #475569; white-space: nowrap;">
                         <div><strong>Questions:</strong> ${list.length}</div>
                         <div><strong>Total Marks:</strong> ${totalMarks}</div>
-                        <div><strong>Time Allowed:</strong> <span${editable('time', 'Click to change the time allowed')} style="display: inline-block; min-width: 1.2em; text-align: right;">${currentTime(list)}</span> mins</div>
+                        <div><strong><span${editable('timeLabel', 'Click to reword')}>${escapeHtml(headerText.timeLabel)}</span></strong> <span${editable('time', 'Click to change the time allowed')} style="display: inline-block; min-width: 1.2em; text-align: right;">${currentTime(list)}</span> <span${editable('timeUnit', 'Click to reword')}>${escapeHtml(headerText.timeUnit)}</span></div>
                     </div>
                 </div>
                 <div style="display: flex; gap: 30px; margin-top: 14px; font-size: 10.5pt; color: #334155; align-items: flex-end;">
-                    <div style="flex: 1;"><strong>Student Name:</strong> ___________________________________</div>
-                    <div style="flex: 0 0 auto;"><strong>Date / Class:</strong> <span${editable('dateclass', 'Click to type the date or class')} style="display: inline-block; min-width: 130px; min-height: 1.3em; vertical-align: bottom; border-bottom: 1px solid #334155; white-space: pre-wrap;">${escapeHtml(dateClassText)}</span></div>
+                    <div style="flex: 1;"><strong${editable('name', 'Click to edit')} style="white-space: pre-wrap;">${escapeHtml(headerText.name)}</strong></div>
+                    <div style="flex: 0 0 auto;"><strong${editable('date', 'Click to edit')} style="white-space: pre-wrap;">${escapeHtml(headerText.date)}</strong></div>
                 </div>
             `;
             // The head block is padded like the others but its rule already separates it from the questions
@@ -1539,13 +1620,30 @@
         }
 
         // One A4 page: the blocks plus its page number
-        function buildPage(pageBlocks, index, total) {
+        function buildPage(pageBlocks, index, total, preview) {
             const page = document.createElement('div');
             page.className = 'doc-page';
             pageBlocks.forEach(b => page.appendChild(b));
             const footer = document.createElement('div');
             footer.className = 'doc-footer';
-            footer.textContent = `Page ${index + 1} of ${total}`;
+            footer.appendChild(document.createTextNode(`Page ${index + 1} of ${total}`));
+            if ((index + 1) % 3 === 0) {
+                const quote = quoteForPage(index);
+                const slot = Math.floor(index / 3);
+                footer.appendChild(document.createTextNode(' \u00b7 '));
+                const q = document.createElement('span');
+                q.className = 'ws-quote';
+                if (preview) {
+                    q.classList.add('ws-edit');
+                    q.contentEditable = 'true';
+                    q.spellcheck = false;
+                    q.dataset.edit = 'quote';
+                    q.dataset.slot = slot;
+                    q.title = 'Click to edit this message (clear it to get a new random one)';
+                }
+                q.textContent = quote;
+                footer.appendChild(q);
+            }
             page.appendChild(footer);
             return page;
         }
@@ -1558,7 +1656,7 @@
             pages.forEach((pageBlocks, i) => {
                 const wrap = document.createElement('div');
                 wrap.className = 'pv-page-wrap';
-                const page = buildPage(pageBlocks, i, pages.length);
+                const page = buildPage(pageBlocks, i, pages.length, true);
                 page.classList.add('pv-page');
                 wrap.appendChild(page);
                 fragment.appendChild(wrap);
@@ -1769,7 +1867,8 @@
                 const field = event.target.closest('[data-edit]');
                 if (!field) return;
                 if (field.dataset.edit === 'title') titleOverride = oneLine(field.innerText);
-                else if (field.dataset.edit === 'dateclass') dateClassText = oneLine(field.innerText);
+                else if (field.dataset.edit === 'quote') quoteOverrides[field.dataset.slot] = oneLine(field.innerText);
+                else if (field.dataset.edit in headerText) headerText[field.dataset.edit] = oneLine(field.innerText);
             });
             pagesEl.addEventListener('keydown', event => {
                 const field = event.target.closest('[data-edit]');
@@ -1794,8 +1893,11 @@
                     // Anything that is not a positive number goes back to the automatic time
                     const minutes = parseInt(field.innerText.replace(/\D/g, ''), 10);
                     timeOverride = minutes > 0 ? Math.min(minutes, 999) : null;
-                } else if (kind === 'dateclass') {
-                    dateClassText = dateClassText.trim();
+                } else if (kind === 'quote') {
+                    if (quoteOverrides[field.dataset.slot].trim() === '') delete quoteOverrides[field.dataset.slot];
+                    else quoteOverrides[field.dataset.slot] = quoteOverrides[field.dataset.slot].trim();
+                } else if (kind in headerText) {
+                    headerText[kind] = headerText[kind].trim();
                 }
                 syncPreviewControls();
                 schedulePreview(0);
