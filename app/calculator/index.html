@@ -30,13 +30,14 @@ body{margin:0;background:#e9ecf1;display:flex;flex-direction:column;align-items:
 .inp .fr{font-size:.82em}
 .res{position:absolute;right:10px;bottom:6px;font-size:28px;text-align:right;max-width:340px;white-space:nowrap;font-weight:700}
 .res .fr{font-size:.8em}
-.ph{display:inline-block;min-width:11px;height:15px;border:1.5px dotted #222;vertical-align:middle;margin:0 1px;position:relative}
-.ph .cur{position:absolute;left:0;top:-3px}
-.cur{display:inline-block;width:2.5px;height:22px;background:#000;vertical-align:-4px;animation:bl 1s steps(1) infinite;margin:0 -1px}
+.ph{display:inline-block;width:.6em;height:.85em;border:1.5px dotted #222;vertical-align:middle;margin:0 2px;position:relative;box-sizing:border-box}
+.ph .cur{position:absolute;left:1px;top:1px;bottom:1px;height:auto;margin:0}
+.cur{display:inline-block;width:2px;height:1em;background:#000;vertical-align:-.15em;animation:bl 1s steps(1) infinite;margin:0 -1px}
 .cur.ov{width:12px;height:3px;vertical-align:-5px}
 @keyframes bl{50%{opacity:0}}
-.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.12em;margin:0 3px}
-.fr>span{display:flex;justify-content:center;align-items:center;padding:0 2px}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.15em;margin:0 3px}
+.fr>span{display:flex;justify-content:center;align-items:center;padding:0 3px}
+.fr>span:first-child{padding-bottom:3px}.fr>span:last-child{padding-top:4px}
 .fr>span:first-child{border-bottom:2px solid #111}
 .sq{display:inline-flex;align-items:flex-start;white-space:nowrap}.sqb{border-top:2px solid #111;padding:0 2px;margin-top:3px;display:inline-flex;align-items:center}
 .ri{font-size:.55em;margin-right:-5px;align-self:flex-start}.pw{font-size:.62em;vertical-align:.75em;display:inline-flex;align-items:center}.lb{font-size:.62em}
@@ -219,6 +220,7 @@ body.cartoon .nav,body.cartoon .pb,body.cartoon .scroll,body.cartoon .onk{border
 .tip li.now{background:#e4efff;font-weight:bold}
 .tip li b{display:inline-block;min-width:58px}
 .tip .hint{margin-top:6px;font-size:12px;color:#555}
+.kg{display:block}
 </style>
 </head>
 <body>
@@ -1284,10 +1286,10 @@ const SL={ /* shift legends as printed on the fx-8200 AU II */
 const SMALL=[
   ['tok:x','tok:÷R','<i class="vx">x</i>',SL.QR],
   ['tok:⁄','tok:⌟',FRAC_ICON,SL.MIX],
-  ['tok:√(','tok:ⁿ√','<span class="kf">√▪</span>',SL.NRT],
-  ['tok:^(','tok:⁻¹','<span class="kf">▪<sup>▫</sup></span>',SL.INV],
-  ['tok:²','tok:log(','<span class="kf">▪<sup>2</sup></span>',SL.LOG],
-  ['tok:logb','tok:ln(','<span class="kf sm2">log<sub>▪</sub>▫</span>',SL.LN],
+  ['tok:√(','tok:ⁿ√','<svg class="kg" width="30" height="22" viewBox="0 0 30 22"><path d="M1 13l3-1.5 4 7.5 5-17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-width="2.2" stroke-linejoin="round"/><rect x="15" y="6" width="10" height="12" fill="currentColor"/></svg>',SL.NRT],
+  ['tok:^(','tok:⁻¹','<svg class="kg" width="28" height="22" viewBox="0 0 28 22"><rect x="2" y="8" width="12" height="13" fill="currentColor"/><rect x="17" y="1.5" width="8.5" height="9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',SL.INV],
+  ['tok:²','tok:log(','<svg class="kg" width="28" height="22" viewBox="0 0 28 22"><rect x="2" y="8" width="12" height="13" fill="currentColor"/><text x="16" y="10" font-size="12" font-weight="800" font-family="Arial" fill="currentColor">2</text></svg>',SL.LOG],
+  ['tok:logb','tok:ln(','<svg class="kg" width="42" height="22" viewBox="0 0 42 22"><text x="0" y="16" font-size="14" font-weight="800" font-family="Arial" fill="currentColor">log</text><rect x="24" y="12" width="6" height="8" fill="currentColor"/><rect x="32.5" y="4" width="7.5" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-width="1.6"/></svg>',SL.LN],
   ['tok:Ans','tok:PreAns','<span class="kf">Ans</span>',SL.PRE],
   ['tok:sin(','tok:sin⁻¹(','<span class="kf">sin</span>',SL.SI],
   ['tok:cos(','tok:cos⁻¹(','<span class="kf">cos</span>',SL.CO],
