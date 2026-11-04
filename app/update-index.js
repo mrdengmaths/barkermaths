@@ -10,6 +10,7 @@ const appMeta = {
   'angle-mastery': { icon: '📏', description: 'Name angles and find complementary, supplementary and vertically opposite angles.', keywords: 'angle naming complementary supplementary vertically opposite angles year 7 angle relationships' },
   'angles-in-transversal': { icon: '📐', description: 'Explore and play with corresponding, alternate, co-interior and vertically opposite angles.', keywords: 'transversal parallel lines corresponding alternate co-interior allied vertically opposite angles year 7 geometry' },
   'calculus-cricket': { icon: '🏏', description: 'Explore calculus through a game.', keywords: 'calculus derivative integration limits area motion graph rate change antiderivative function curve' },
+  'calculator': { icon: '🧮', description: 'Use an interactive fx-8200 AU II ClassWiz calculator simulator.', keywords: 'calculator fx-8200 AU II ClassWiz simulator arithmetic fractions decimals powers roots trigonometry statistics' },
   'collecting-like-terms': { icon: '➕', description: 'Simplify expressions by collecting like terms.', keywords: 'like terms simplify algebra expressions combine collect polynomial term expand contract' },
   'congruency-crunch': { icon: '🔺', description: 'Test triangle congruence with quick problems.', keywords: 'congruence triangles congruent sides angles sss sas asa aas rhs geometry proof' },
   'distance-vs-time-graph': { icon: '📈', description: 'Interpret motion graphs and speed.', keywords: 'distance time graph speed velocity acceleration gradient rate motion linear' },
