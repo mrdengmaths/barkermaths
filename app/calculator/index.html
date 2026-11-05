@@ -1111,6 +1111,7 @@ function StatEditor(){
               if(this.r>=n){ if(cols[this.c]!=='x'&&cols[this.c]!=='y'){ this.ed=null; break; } R.push({x:0,y:0,f:1}); }
               R[this.r][cols[this.c]]=v; this.ed=null; this.r++; }
             catch(e){ this.err=e instanceof CalcErr?e.message:'Syntax ERROR'; } }
+          else if(this.r>=n){ if(n){ push(ListView(statResultLines())); return; } }
           else this.r=Math.min(n,this.r+1);
           break;
         case 'OK': if(this.ed){ this.key('EXE'); return; } push(statResultsMenu()); return;
@@ -1132,6 +1133,18 @@ function StatEditor(){
         case 'VARIABLE': push(VarScreen()); return;
       }
       draw(); } };
+}
+function statResultLines(){
+  const s=statVals(), L=(l,k)=>[l+' =',fmtStat(s[k])], H=t=>[`<b>${t}</b>`,''];
+  const X=[L('<i>x̄</i>','x̄'),L('Σ<i>x</i>','Σx'),L('Σ<i>x</i>²','Σx²'),L('σ²<i>x</i>','σ²x'),L('σ<i>x</i>','σx'),
+           L('s²<i>x</i>','s²x'),L('s<i>x</i>','sx'),L('n','n')];
+  if(stat.type==='1') return [H('1-Variable'),...X,
+    L('min(<i>x</i>)','minX'),L('Q₁','Q₁'),L('Med','Med'),L('Q₃','Q₃'),L('max(<i>x</i>)','maxX')];
+  return [H('2-Variable'),...X,
+    L('<i>ȳ</i>','ȳ'),L('Σ<i>y</i>','Σy'),L('Σ<i>y</i>²','Σy²'),L('σ²<i>y</i>','σ²y'),L('σ<i>y</i>','σy'),
+    L('s²<i>y</i>','s²y'),L('s<i>y</i>','sy'),L('Σ<i>xy</i>','Σxy'),
+    L('min(<i>x</i>)','minX'),L('max(<i>x</i>)','maxX'),L('min(<i>y</i>)','minY'),L('max(<i>y</i>)','maxY'),
+    H('<i>y</i>=a+b<i>x</i>'),L('a','a'),L('b','b'),L('r','r')];
 }
 function statResultsMenu(){
   const show=f=>()=>{ try{ push(ListView(f())); }catch(e){ push(ListView([[ 'No data','' ]])); } };

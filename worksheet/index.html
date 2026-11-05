@@ -243,7 +243,7 @@
         </div>
     </header>
 
-    <div id="appShell" class="no-print w-full max-w-[1700px] mx-auto px-4 pb-24 flex-1 flex flex-col gap-4">
+    <div id="appShell" class="no-print w-full max-w-[1700px] mx-auto px-4 pb-4 flex-1 flex flex-col gap-4">
 
     <!-- ================= TOOLBAR (SCREEN ONLY) ================= -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
@@ -290,22 +290,10 @@
                 <button onclick="resetFilters()" class="text-xs font-medium text-barker-700 hover:underline">Reset</button>
             </div>
 
-            <!-- Course Select -->
+            <!-- Course Selection -->
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Course</label>
-                <select id="courseFilter" onchange="onCourseChange()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white font-medium text-slate-800 transition">
-                    <option value="y7">Year 7</option>
-                    <option value="y8">Year 8</option>
-                    <option value="y9-core">Year 9 Core/Standard</option>
-                    <option value="y9-adv">Year 9 Advanced/Extension</option>
-                    <option value="y10-core">Year 10 Core/Standard</option>
-                    <option value="y10-adv">Year 10 Advanced/Extension</option>
-                    <option value="y11-standard" selected>Year 11 Standard</option>
-                    <option value="y11-adv" disabled>Year 11 Advanced (Coming Soon)</option>
-                    <option value="y12-standard" disabled>Year 12 Standard (Coming Soon)</option>
-                    <option value="y12-adv" disabled>Year 12 Advanced (Coming Soon)</option>
-                    <option value="ALL">All courses</option>
-                </select>
+                <div id="courseFilter" class="flex flex-wrap gap-1.5"></div>
             </div>
 
             <!-- Search -->
@@ -318,20 +306,13 @@
                 </div>
             </div>
 
-            <!-- Topic Filter -->
+            <!-- Topic Picker -->
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Topic</label>
-                <select id="topicFilter" onchange="onTopicChange()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white transition">
-                    <option value="ALL">All Topics</option>
-                </select>
-            </div>
-
-            <!-- Subtopic Filter -->
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Subtopic</label>
-                <select id="subtopicFilter" onchange="applyFilters()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white transition">
-                    <option value="ALL">All Subtopics</option>
-                </select>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Topics &amp; Subtopics</label>
+                <button onclick="openTopicPicker()" class="w-full px-3 py-2 text-sm text-left bg-slate-50 border border-slate-200 rounded-lg hover:bg-white focus:outline-none focus:ring-2 focus:ring-barker-700 transition">
+                    <span class="font-semibold text-slate-800">+ Add topics &amp; subtopics</span>
+                    <span id="topicSelectionSummary" class="block text-xs text-slate-500 mt-0.5">All topics</span>
+                </button>
             </div>
 
             <!-- Difficulty Filter -->
@@ -466,38 +447,18 @@
 
     </div><!-- /appShell -->
 
-    <!-- ================= BOTTOM WORKSHEET TRAY (SCREEN ONLY) ================= -->
-    <div id="worksheetTray" class="no-print fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-barker-700 px-6 py-3.5 shadow-2xl z-40">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            
-            <div class="flex items-center gap-4 w-full md:w-auto">
-                <div onclick="openTrayModal()" class="bg-barker-50 border border-barker-200 px-4 py-2 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-barker-100 transition">
-                    <span class="w-8 h-8 rounded-lg bg-barker-700 text-white font-bold flex items-center justify-center text-sm" id="trayCountBadge">
-                        0
-                    </span>
-                    <div>
-                        <div class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1">
-                            Worksheet Tray
-                            <span class="text-[10px] text-barker-700 font-normal">✎ Manage</span>
-                        </div>
-                        <div class="text-xs text-slate-500 font-medium">
-                            <span id="trayMarksTotal">0</span> Marks Total
-                        </div>
-                    </div>
-                </div>
+    <!-- ================= TOPIC PICKER MODAL (SCREEN ONLY) ================= -->
+    <div id="topicPickerModal" class="fixed inset-0 bg-slate-900/50 z-[1100] hidden items-center justify-center p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Topic and subtopic filters">
+        <div class="bg-white rounded-xl max-w-6xl w-full max-h-[88vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="p-3 border-b border-slate-200 flex items-center gap-3">
+                <input id="topicSearchInput" type="search" oninput="renderTopicPicker()" placeholder="Search topics &amp; subtopics..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700">
+                <button onclick="closeTopicPicker()" aria-label="Close topic picker" class="text-slate-500 hover:text-slate-900 font-bold px-1">✕</button>
             </div>
-
-            <div class="flex items-center gap-2.5 w-full md:w-auto justify-end">
-                <button onclick="addRandomFilteredQuestion()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition border border-slate-300 flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                    + Add Random
-                </button>
-                <button onclick="openPrintModal()" class="px-5 py-2 text-xs font-bold text-white bg-barker-700 hover:bg-barker-800 rounded-lg shadow-md transition flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                    Print Worksheet
-                </button>
+            <div id="topicPickerContent" class="flex-1 overflow-y-auto p-3 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3"></div>
+            <div class="p-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+                <span id="topicPickerSelectionCount" class="text-xs text-slate-500"></span>
+                <button onclick="closeTopicPicker()" class="px-4 py-2 text-xs font-bold text-white bg-barker-700 rounded-lg hover:bg-barker-800">Apply filters</button>
             </div>
-
         </div>
     </div>
 
@@ -645,31 +606,173 @@
         let flaggedForRedo = new Set();
         let selectedMCOption = null;
 
-        // --- Course and bank configuration ---
-        // Banks hold questions for one or more courses. A question lists its courses in "courses" (or a single "course").
-        const COURSE_NAMES = {
-            'y7': 'Year 7',
-            'y8': 'Year 8',
-            'y9-core': 'Year 9 Core/Standard',
-            'y9-adv': 'Year 9 Advanced/Extension',
-            'y10-core': 'Year 10 Core/Standard',
-            'y10-adv': 'Year 10 Advanced/Extension',
-            'y11-standard': 'Year 11 Standard'
-        };
+        // --- Course and topic configuration ---
+        const COURSE_GROUPS = [
+            { id: 'stage4', label: 'Stage 4', questionCourses: ['Year 7', 'Year 8'] },
+            { id: 'stage5-core', label: 'Stage 5 Core/Standard', questionCourses: ['Year 9 Core/Standard', 'Year 10 Core/Standard'] },
+            { id: 'stage5-paths', label: 'Stage 5 Adv/Ext', questionCourses: ['Year 9 Advanced/Extension', 'Year 10 Advanced/Extension'] },
+            { id: 'standard-y11', label: 'Standard Y11', questionCourses: ['Year 11 Standard'] },
+            { id: 'standard-y12', label: 'Standard Y12', questionCourses: ['Year 12 Standard'] },
+            { id: 'advanced-y11', label: 'Advanced Y11', questionCourses: ['Year 11 Advanced'] },
+            { id: 'advanced-y12', label: 'Advanced Y12', questionCourses: ['Year 12 Advanced'] },
+            { id: 'extension1-y11', label: 'Extension 1 Y11', questionCourses: ['Year 11 Extension 1'] },
+            { id: 'extension1-y12', label: 'Extension 1 Y12', questionCourses: ['Year 12 Extension 1'] },
+            { id: 'extension2-y12', label: 'Extension 2 Y12', questionCourses: ['Year 12 Extension 2'] }
+        ];
+        const COURSE_IDS = COURSE_GROUPS.map(course => course.id);
+        const S4 = 'stage4', S5C = 'stage5-core', S5P = 'stage5-paths';
+        const STD11 = 'standard-y11', STD12 = 'standard-y12';
+        const ADV11 = 'advanced-y11', ADV12 = 'advanced-y12';
+        const EXT1_11 = 'extension1-y11', EXT1_12 = 'extension1-y12', EXT2_12 = 'extension2-y12';
+        const TOPIC_CATEGORIES = [
+            {
+                name: 'Number and Algebra',
+                topics: [
+                    { name: 'Integers', courses: [S4] },
+                    { name: 'Primes, Multiples and Factors', courses: [S4] },
+                    { name: 'Fractions, Decimals and Percentages', courses: [S4] },
+                    { name: 'Indices', courses: [S4, S5C, S5P, ADV11] },
+                    { name: 'Surds', courses: [S5P, ADV11] },
+                    { name: 'Algebra', courses: [S4, S5C, S5P, ADV11] },
+                    { name: 'Equations', courses: [S4, S5C, S5P, STD11, ADV11] },
+                    { name: 'Linear Relationships', courses: [S4, S5C, S5P, STD11, STD12, ADV11] },
+                    { name: 'Ratios and Rates', courses: [S4, STD12] },
+                    { name: 'Non-linear Relationships', courses: [S5C, STD12, ADV11] },
+                    { name: 'Variation', courses: [S5P, STD11, STD12, ADV11] },
+                    { name: 'Logarithms', courses: [S5P, ADV11] },
+                    { name: 'Sequences and Series', courses: [ADV12] },
+                    { name: 'Financial Maths', courses: [S5C, STD11, STD12, ADV12] },
+                    { name: 'Networks', courses: [STD11, STD12] },
+                    { name: 'Combinatorics', courses: [EXT1_11] },
+                    { name: 'Complex Numbers I', courses: [EXT2_12] },
+                    { name: 'Complex Numbers II: Polynomials and Roots', courses: [EXT2_12] },
+                    { name: 'Proof', courses: [EXT1_12, EXT2_12] }
+                ]
+            },
+            {
+                name: 'Functions and Calculus',
+                topics: [
+                    { name: 'Functions and Graphs', courses: [S5P, ADV11] },
+                    { name: 'Polynomials', courses: [S5P, EXT1_11] },
+                    { name: 'Trigonometric Functions', courses: [S5P, ADV11, ADV12] },
+                    { name: 'Differentiation', courses: [ADV11, ADV12] },
+                    { name: 'Integration', courses: [ADV12, EXT2_12] },
+                    { name: 'Applications of Calculus', courses: [ADV12] },
+                    { name: 'Further Functions', courses: [EXT1_11] },
+                    { name: 'Further Trigonometry', courses: [EXT1_11, EXT1_12] },
+                    { name: 'Trigonometric Identities', courses: [EXT2_12] },
+                    { name: 'Further Calculus', courses: [EXT1_12] },
+                    { name: 'Further Applications of Calculus', courses: [EXT1_12] },
+                    { name: 'Mechanics', courses: [EXT2_12] }
+                ]
+            },
+            {
+                name: 'Geometry and Measure',
+                topics: [
+                    { name: 'Angle Relationships', courses: [S4] },
+                    { name: 'Triangles and Quadrilaterals', courses: [S4] },
+                    { name: 'Angle Sums', courses: [S5P] },
+                    { name: 'Length', courses: [S4, STD11] },
+                    { name: 'Pythagoras Theorem', courses: [S4, S5P, STD11] },
+                    { name: 'Area', courses: [S4, STD11] },
+                    { name: 'Surface Area', courses: [S5C, S5P, STD11] },
+                    { name: 'Volume', courses: [S4, S5P, STD11] },
+                    { name: 'Practicalities of Measurement', courses: [S5C, STD11] },
+                    { name: 'Time', courses: [STD11] },
+                    { name: 'Congruence', courses: [S5P] },
+                    { name: 'Similarity', courses: [S5C, S5P, STD12] },
+                    { name: 'Symmetry', courses: [S5P] },
+                    { name: 'Coordinate Geometry', courses: [S5P] },
+                    { name: 'Trigonometry', courses: [S5C, S5P, STD12, ADV11, EXT1_11] },
+                    { name: 'Circle Geometry', courses: [S5P] },
+                    { name: 'Vectors', courses: [EXT1_12, EXT2_12] }
+                ]
+            },
+            {
+                name: 'Statistics and Probability',
+                topics: [
+                    { name: 'Data', courses: [S4, S5C, STD11, STD12, ADV11] },
+                    { name: 'Box Plots', courses: [S5C, STD11] },
+                    { name: 'Bivariate Data', courses: [S5C, STD12] },
+                    { name: 'Probability', courses: [S4, STD12] },
+                    { name: 'Multistage Probability', courses: [S5C, STD12, ADV11] },
+                    { name: 'Compound Events', courses: [S5P, STD12, ADV11] },
+                    { name: 'Random Variables', courses: [ADV11, ADV12] },
+                    { name: 'Normal Distribution', courses: [STD12, ADV12] },
+                    { name: 'Binomial Distributions', courses: [EXT1_12] }
+                ]
+            }
+        ];
+        // Courses and topic filters cycle through include (green), exclude (red) and off
+        let selectedCourseIds = new Set([STD11]);
+        let excludedCourseIds = new Set();
+        let selectedTopicFilters = new Map();
+        let excludedTopicFilters = new Map();
+        let expandedTopicIds = new Set();
         const EXTRA_BANKS = ['./questions/y7-y8.json', './questions/y9-y10.json'];
         const QUESTIONS_BASE = './questions/';
 
-        function selectedCourse() {
-            return document.getElementById('courseFilter').value;
+        function courseNamesFor(ids) {
+            return COURSE_GROUPS
+                .filter(group => ids.has(group.id))
+                .flatMap(group => group.questionCourses);
         }
 
-        // Questions in the selected course (all questions when "All courses" is chosen).
+        // With no green courses, red ones remove their questions from the whole bank.
         function bankQuestions() {
-            const course = selectedCourse();
-            if (course === 'ALL') return allQuestions;
-            const name = COURSE_NAMES[course];
-            return allQuestions.filter(q => q.courses.includes(name));
+            if (!selectedCourseIds.size && !excludedCourseIds.size) return [];
+            const included = courseNamesFor(selectedCourseIds);
+            const excluded = courseNamesFor(excludedCourseIds);
+            return allQuestions.filter(q =>
+                (!selectedCourseIds.size || q.courses.some(course => included.includes(course))) &&
+                !q.courses.some(course => excluded.includes(course)));
         }
+
+        // Courses whose topics are offered in the picker
+        function visibleCourseIds() {
+            if (selectedCourseIds.size) return selectedCourseIds;
+            return new Set(COURSE_IDS.filter(id => !excludedCourseIds.has(id)));
+        }
+
+        // none -> include (green) -> exclude (red) -> none
+        function cycleState(state) {
+            return state === 'include' ? 'exclude' : state === 'exclude' ? 'none' : 'include';
+        }
+
+        function courseState(id) {
+            return selectedCourseIds.has(id) ? 'include' : excludedCourseIds.has(id) ? 'exclude' : 'none';
+        }
+
+        function topicState(topicName) {
+            if (selectedTopicFilters.get(topicName) === null) return 'include';
+            if (excludedTopicFilters.get(topicName) === null) return 'exclude';
+            return 'none';
+        }
+
+        function subtopicState(topicName, subtopic) {
+            const inc = selectedTopicFilters.get(topicName);
+            const exc = excludedTopicFilters.get(topicName);
+            if (exc === null || (exc && exc.has(subtopic))) return 'exclude';
+            if (inc === null || (inc && inc.has(subtopic))) return 'include';
+            return 'none';
+        }
+
+        function topicMatches(map, q) {
+            if (!map.has(q.topic)) return false;
+            const sel = map.get(q.topic);
+            return sel === null || sel.has(q.subtopic);
+        }
+
+        function stateChipHtml(state, label, onclick, extraClass) {
+            const styles = {
+                include: 'bg-emerald-50 text-emerald-800 border-emerald-300',
+                exclude: 'bg-rose-50 text-rose-700 border-rose-300',
+                none: 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+            };
+            const icon = state === 'include' ? '<span class="text-emerald-600">●</span> ' : state === 'exclude' ? '⊘ ' : '';
+            return `<button type="button" aria-pressed="${state === 'include' ? 'true' : state === 'exclude' ? 'mixed' : 'false'}" title="${state === 'include' ? 'Included' : state === 'exclude' ? 'Excluded' : 'Not selected'}" onclick="${onclick}" class="${extraClass || 'px-2 py-1 text-[10px]'} font-semibold rounded-md border transition focus:outline-none focus:ring-2 focus:ring-emerald-500 ${styles[state]}">${icon}${label}</button>`;
+        }
+
 
         function escapeHtml(text) {
             return String(text).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -699,14 +802,21 @@
             return Promise.all(pending);
         }
 
+        function renderCourseChips() {
+            const container = document.getElementById('courseFilter');
+            const allSelected = selectedCourseIds.size === COURSE_IDS.length;
+            container.innerHTML = COURSE_GROUPS.map(course =>
+                stateChipHtml(courseState(course.id), escapeHtml(course.label), `toggleCourse('${course.id}')`)
+            ).join('') + stateChipHtml(allSelected ? 'include' : 'none', 'All', 'toggleAllCourses()');
+        }
+
         function updateCourseUI() {
-            const courseSelect = document.getElementById('courseFilter');
-            Object.keys(COURSE_NAMES).forEach(value => {
-                const count = allQuestions.filter(q => q.courses.includes(COURSE_NAMES[value])).length;
-                const option = courseSelect.querySelector(`option[value="${value}"]`);
-                if (option) option.innerText = `${COURSE_NAMES[value]} (${count} ${count === 1 ? 'Question' : 'Questions'})`;
-            });
-            document.getElementById('courseBadge').innerText = selectedCourse() === 'ALL' ? 'All courses' : COURSE_NAMES[selectedCourse()];
+            renderCourseChips();
+            const selectedLabels = COURSE_GROUPS.filter(group => selectedCourseIds.has(group.id)).map(group => group.label);
+            const excludedCount = excludedCourseIds.size;
+            let badge = selectedLabels.length === 0 ? (excludedCount ? 'All courses' : 'No courses') : selectedLabels.length === 1 ? selectedLabels[0] : selectedLabels.length === COURSE_GROUPS.length ? 'All courses' : `${selectedLabels.length} courses`;
+            if (excludedCount) badge += ` (−${excludedCount})`;
+            document.getElementById('courseBadge').innerText = badge;
         }
 
         // --- Helper: Render Markdown to HTML without asterisks ---
@@ -776,49 +886,49 @@
                         "criteria": ["1 mark: Selects option B"]
                     },
                     {
-                        "id": "Y11S-MEA-001", "course": "Year 11 Standard", "topic": "Measurement", "subtopic": "Perimeter, Area & Volume",
+                        "id": "Y11S-MEA-001", "course": "Year 11 Standard", "topic": "Volume", "subtopic": "Perimeter, Area & Volume",
                         "difficulty": "Easy", "type": "Short Answer", "marks": 2, "calculator": true, "lines": 4,
                         "question": "A cylindrical water tank has a radius of $r = 1.4\\text{ m}$ and a height of $h = 3.5\\text{ m}$.\n\nCalculate the volume of the tank in cubic metres, correct to $1$ decimal place.",
                         "solution": "Use $V = \\pi r^2 h$:\n$$V = \\pi \\times (1.4)^2 \\times 3.5 \\approx 21.6\\text{ m}^3$$",
                         "criteria": ["1 mark: Correct substitution into $V = \\pi r^2 h$", "1 mark: Obtains $21.6\\text{ m}^3$ rounded to 1 d.p."]
                     },
                     {
-                        "id": "Y11S-MEA-002", "course": "Year 11 Standard", "topic": "Measurement", "subtopic": "Perimeter, Area & Volume",
+                        "id": "Y11S-MEA-002", "course": "Year 11 Standard", "topic": "Surface Area", "subtopic": "Perimeter, Area & Volume",
                         "difficulty": "Medium", "type": "Short Answer", "marks": 3, "calculator": true, "lines": 6,
                         "question": "Use the Trapezoidal Rule with three measurements to estimate the surface area of a pond with parallel widths $d_f = 6\\text{ m}$, $d_m = 10\\text{ m}$, and $d_l = 8\\text{ m}$, spaced equally $h = 4\\text{ m}$ apart.\n\n$$\\text{Formula: } A \\approx \\frac{h}{2} \\Big(d_f + 2d_m + d_l\\Big)$$",
                         "solution": "$$A \\approx \\frac{4}{2}(6 + 2(10) + 8) = 2 \\times 34 = 68\\text{ m}^2$$",
                         "criteria": ["1 mark: Identifies correct values", "1 mark: Correct substitution with $2d_m$", "1 mark: Obtains final answer $68\\text{ m}^2$"]
                     },
                     {
-                        "id": "Y11S-FIN-001", "course": "Year 11 Standard", "topic": "Financial Mathematics", "subtopic": "Earning & Managing Money",
+                        "id": "Y11S-FIN-001", "course": "Year 11 Standard", "topic": "Financial Maths", "subtopic": "Earning & Managing Money",
                         "difficulty": "Easy", "type": "Multiple Choice", "marks": 1, "calculator": true, "lines": 0,
                         "question": "Chloe works $35$ normal hours at $\\$24.00$/h, plus $4$ hours overtime at time-and-a-half ($1.5\\times$).\n\nWhat are Chloe's total gross earnings?\n\n**A.** $\\$840.00$\n\n**B.** $\\$936.00$\n\n**C.** $\\$984.00$\n\n**D.** $\\$1032.00$",
                         "solution": "Normal: $35 \\times 24 = \\$840$\nOvertime: $4 \\times (1.5 \\times 24) = 4 \\times 36 = \\$144$\nTotal: $\\$840 + \\$144 = \\$984$\n\n**Correct Option: C**",
                         "criteria": ["1 mark: Selects option C"]
                     },
                     {
-                        "id": "Y11S-FIN-002", "course": "Year 11 Standard", "topic": "Financial Mathematics", "subtopic": "Investing Money",
+                        "id": "Y11S-FIN-002", "course": "Year 11 Standard", "topic": "Financial Maths", "subtopic": "Investing Money",
                         "difficulty": "Medium", "type": "Short Answer", "marks": 2, "calculator": true, "lines": 4,
                         "question": "Oliver invests $\\$6\\,500$ at a simple interest rate of $4.5\\%$ p.a. for $3$ years.\n\n**(a)** Calculate the interest earned.\n**(b)** Calculate the total value of the investment.",
                         "solution": "(a) $I = Prn = 6500 \\times 0.045 \\times 3 = \\$877.50$\n(b) Total $A = 6500 + 877.50 = \\$7\\,377.50$",
                         "criteria": ["1 mark: Calculates interest $I = \\$877.50$", "1 mark: Calculates total amount $A = \\$7\\,377.50$"]
                     },
                     {
-                        "id": "Y11S-FIN-003", "course": "Year 11 Standard", "topic": "Financial Mathematics", "subtopic": "Investing Money",
+                        "id": "Y11S-FIN-003", "course": "Year 11 Standard", "topic": "Financial Maths", "subtopic": "Investing Money",
                         "difficulty": "Hard", "type": "Short Answer", "marks": 3, "calculator": true, "lines": 6,
                         "question": "A sum of $\\$12\\,000$ is invested at $6\\%$ p.a. compounded quarterly for $4$ years.\n\nCalculate the final amount $A$ and the total compound interest earned to the nearest cent.",
                         "solution": "$r = \\frac{0.06}{4} = 0.015$, $n = 4 \\times 4 = 16$\n$$A = 12000(1.015)^{16} \\approx \\$15\\,227.83$$\n$$\\text{Interest } I = 15227.83 - 12000 = \\$3\\,227.83$$",
                         "criteria": ["1 mark: Adjusts rate ($0.015$) and periods ($16$)", "1 mark: Obtains final amount $\\$15\\,227.83$", "1 mark: Calculates interest $\\$3\\,227.83$"]
                     },
                     {
-                        "id": "Y11S-STA-001", "course": "Year 11 Standard", "topic": "Statistical Analysis", "subtopic": "Data Classification & Summary",
+                        "id": "Y11S-STA-001", "course": "Year 11 Standard", "topic": "Data", "subtopic": "Data Classification & Summary",
                         "difficulty": "Easy", "type": "Multiple Choice", "marks": 1, "calculator": false, "lines": 0,
                         "question": "Which of the following variables is **quantitative continuous**?\n\n**A.** The number of students absent from class today\n\n**B.** The finishing places in a 100m sprint (1st, 2nd, 3rd)\n\n**C.** The time taken (in seconds) to complete a puzzle\n\n**D.** Postcodes of Australian suburbs",
                         "solution": "Time is a continuous measurement.\n\n**Correct Option: C**",
                         "criteria": ["1 mark: Selects option C"]
                     },
                     {
-                        "id": "Y11S-STA-002", "course": "Year 11 Standard", "topic": "Statistical Analysis", "subtopic": "Measures of Spread",
+                        "id": "Y11S-STA-002", "course": "Year 11 Standard", "topic": "Box Plots", "subtopic": "Measures of Spread",
                         "difficulty": "Hard", "type": "Short Answer", "marks": 3, "calculator": true, "lines": 6,
                         "question": "Consider the ordered dataset of test scores for $9$ students:\n\n$$12,\\; 15,\\; 18,\\; 19,\\; 22,\\; 25,\\; 29,\\; 31,\\; 35$$\n\n**(a)** State the median score.\n**(b)** Determine the lower quartile ($Q_1$) and upper quartile ($Q_3$).\n**(c)** Calculate the Interquartile Range (IQR).",
                         "solution": "(a) Median $= 22$\n(b) $Q_1 = \\frac{15+18}{2} = 16.5$, $Q_3 = \\frac{29+31}{2} = 30$\n(c) $\\text{IQR} = 30 - 16.5 = 13.5$",
@@ -852,67 +962,195 @@
                 q.courses = q.courses || [q.course];
             });
 
-            // Select first 3 questions by default
-            selectedQuestionIds = allQuestions.slice(0, 3).map(q => q.id);
+            // The tray starts empty
+            selectedQuestionIds = [];
 
-            populateTopicFilters();
             updateCourseUI();
+            updateTopicSelectionSummary();
             applyFilters();
             updateTrayUI();
         }
 
-        // --- Filters & Dropdowns ---
-        function populateTopicFilters() {
-            const topicSelect = document.getElementById('topicFilter');
-            topicSelect.innerHTML = '<option value="ALL">All Topics</option>';
-            const topics = [...new Set(bankQuestions().map(q => q.topic))];
-            
-            topics.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t;
-                opt.innerText = t;
-                topicSelect.appendChild(opt);
-            });
+        // --- Filters and topic picker ---
+        function toggleCourse(courseId) {
+            const next = cycleState(courseState(courseId));
+            selectedCourseIds.delete(courseId);
+            excludedCourseIds.delete(courseId);
+            if (next === 'include') selectedCourseIds.add(courseId);
+            else if (next === 'exclude') excludedCourseIds.add(courseId);
+            resetTopicSelections();
         }
 
-        function onTopicChange() {
-            const selectedTopic = document.getElementById('topicFilter').value;
-            const subtopicSelect = document.getElementById('subtopicFilter');
-            subtopicSelect.innerHTML = '<option value="ALL">All Subtopics</option>';
-
-            const relevantQuestions = selectedTopic === 'ALL' 
-                ? bankQuestions() 
-                : bankQuestions().filter(q => q.topic === selectedTopic);
-
-            const subtopics = [...new Set(relevantQuestions.map(q => q.subtopic))];
-            subtopics.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s;
-                opt.innerText = s;
-                subtopicSelect.appendChild(opt);
-            });
-
-            applyFilters();
+        function toggleAllCourses() {
+            selectedCourseIds = selectedCourseIds.size === COURSE_IDS.length ? new Set() : new Set(COURSE_IDS);
+            excludedCourseIds = new Set();
+            resetTopicSelections();
         }
 
-        function onCourseChange() {
-            populateTopicFilters();
-            document.getElementById('subtopicFilter').innerHTML = '<option value="ALL">All Subtopics</option>';
+        function resetTopicSelections() {
+            selectedTopicFilters.clear();
+            excludedTopicFilters.clear();
+            expandedTopicIds.clear();
             updateCourseUI();
+            updateTopicSelectionSummary();
+            renderTopicPickerIfOpen();
             applyFilters();
+        }
+
+        function openTopicPicker() {
+            document.getElementById('topicPickerModal').classList.remove('hidden');
+            document.getElementById('topicPickerModal').classList.add('flex');
+            renderTopicPicker();
+        }
+
+        function closeTopicPicker() {
+            document.getElementById('topicPickerModal').classList.add('hidden');
+            document.getElementById('topicPickerModal').classList.remove('flex');
+        }
+
+        function renderTopicPickerIfOpen() {
+            if (!document.getElementById('topicPickerModal').classList.contains('hidden')) renderTopicPicker();
+        }
+
+        function toggleTopicExpansion(topicName) {
+            if (expandedTopicIds.has(topicName)) expandedTopicIds.delete(topicName);
+            else expandedTopicIds.add(topicName);
+            renderTopicPicker();
+        }
+
+        function subtopicsOf(topicName) {
+            return [...new Set(bankQuestions().filter(q => q.topic === topicName).map(q => q.subtopic))];
+        }
+
+        // Cycles the whole topic: green (all subtopics) -> red -> off
+        function toggleTopicSelection(topicName) {
+            const next = cycleState(topicState(topicName));
+            selectedTopicFilters.delete(topicName);
+            excludedTopicFilters.delete(topicName);
+            if (next === 'include') selectedTopicFilters.set(topicName, null);
+            else if (next === 'exclude') excludedTopicFilters.set(topicName, null);
+            refreshTopicFilters();
+        }
+
+        function removeSubtopic(map, topicName, subtopic, all) {
+            if (!map.has(topicName)) return;
+            const current = map.get(topicName);
+            const next = new Set(current === null ? all : current);
+            next.delete(subtopic);
+            if (next.size) map.set(topicName, next);
+            else map.delete(topicName);
+        }
+
+        function addSubtopic(map, topicName, subtopic, all) {
+            const current = map.get(topicName);
+            if (current === null) return;
+            const next = new Set(current || []);
+            next.add(subtopic);
+            if (all.length && next.size === all.length) map.set(topicName, null);
+            else map.set(topicName, next);
+        }
+
+        function toggleSubtopicSelection(topicName, subtopic) {
+            const all = subtopicsOf(topicName);
+            const next = cycleState(subtopicState(topicName, subtopic));
+            removeSubtopic(selectedTopicFilters, topicName, subtopic, all);
+            removeSubtopic(excludedTopicFilters, topicName, subtopic, all);
+            if (next === 'include') addSubtopic(selectedTopicFilters, topicName, subtopic, all);
+            else if (next === 'exclude') addSubtopic(excludedTopicFilters, topicName, subtopic, all);
+            refreshTopicFilters();
+        }
+
+        function refreshTopicFilters() {
+            updateTopicSelectionSummary();
+            renderTopicPicker();
+            applyFilters();
+        }
+
+        function updateTopicSelectionSummary() {
+            const count = map => [...map.values()].reduce((n, subtopics) => n + (subtopics === null ? 1 : subtopics.size), 0);
+            const selectedCount = count(selectedTopicFilters) + count(excludedTopicFilters);
+            const selectionLabel = `${selectedCount} filter${selectedCount === 1 ? '' : 's'} selected`;
+            document.getElementById('topicSelectionSummary').innerText = selectedCount
+                ? selectionLabel
+                : 'All topics';
+            document.getElementById('topicPickerSelectionCount').innerText = selectedCount
+                ? selectionLabel
+                : 'No topic filters selected';
+        }
+
+        function renderTopicPicker() {
+            const content = document.getElementById('topicPickerContent');
+            const searchTerm = document.getElementById('topicSearchInput').value.trim().toLowerCase();
+            const categoryClasses = [
+                'bg-blue-100 text-blue-800',
+                'bg-violet-100 text-violet-800',
+                'bg-emerald-100 text-emerald-800',
+                'bg-rose-100 text-rose-800'
+            ];
+            let visibleTopicCount = 0;
+            content.innerHTML = TOPIC_CATEGORIES.map((category, categoryIndex) => {
+                const visible = visibleCourseIds();
+                const visibleTopics = category.topics.filter(topic =>
+                    visible.size > 0 &&
+                    topic.courses.some(courseId => visible.has(courseId)) &&
+                    (!searchTerm || category.name.toLowerCase().includes(searchTerm) ||
+                        topic.name.toLowerCase().includes(searchTerm) ||
+                        bankQuestions().some(q => q.topic === topic.name && q.subtopic.toLowerCase().includes(searchTerm)))
+                );
+                if (!visibleTopics.length) return '';
+                visibleTopicCount += visibleTopics.length;
+                const topicRows = visibleTopics.map(topic => {
+                    const subtopics = subtopicsOf(topic.name);
+                    const state = topicState(topic.name);
+                    const expanded = expandedTopicIds.has(topic.name) || Boolean(searchTerm);
+                    const subtopicRows = expanded
+                        ? subtopics.filter(subtopic => !searchTerm || category.name.toLowerCase().includes(searchTerm) ||
+                            topic.name.toLowerCase().includes(searchTerm) || subtopic.toLowerCase().includes(searchTerm))
+                            .map(subtopic => {
+                                const chip = stateChipHtml(subtopicState(topic.name, subtopic), '',
+                                    `toggleSubtopicSelection(${escapeHtml(JSON.stringify(topic.name))}, ${escapeHtml(JSON.stringify(subtopic))})`,
+                                    'w-6 h-5 text-[10px] shrink-0');
+                                return `<div class="flex items-start gap-2 px-2 py-1.5 text-[11px] text-slate-600">${chip}<span>${escapeHtml(subtopic)}</span></div>`;
+                            }).join('')
+                        : '';
+                    const subtopicContent = expanded
+                        ? subtopics.length
+                            ? `<div class="ml-5 mt-1 space-y-0.5">${subtopicRows}</div>`
+                            : '<p class="ml-7 mt-1 px-2 text-[10px] text-slate-400">No subtopics in this course bank yet.</p>'
+                        : '';
+                    const partial = state === 'none' && (selectedTopicFilters.has(topic.name) || excludedTopicFilters.has(topic.name));
+                    return `<div class="py-1.5 border-b border-slate-100 last:border-0">
+                        <div class="flex items-center gap-1">
+                            <button type="button" aria-label="${expanded ? 'Collapse' : 'Expand'} ${escapeHtml(topic.name)}" onclick='toggleTopicExpansion(${escapeHtml(JSON.stringify(topic.name))})' class="w-5 h-6 text-slate-400 hover:text-slate-700">${expanded ? '⌄' : '›'}</button>
+                            <span class="flex-1 min-w-0 text-[11px] text-slate-700">${escapeHtml(topic.name)}${partial ? ' <span class="text-[10px] text-slate-400">(some subtopics)</span>' : ''}</span>
+                            ${stateChipHtml(state, 'All', `toggleTopicSelection(${escapeHtml(JSON.stringify(topic.name))})`)}
+                        </div>
+                        ${subtopicContent}
+                    </div>`;
+                }).join('');
+                return `<section class="min-w-0">
+                    <h3 class="inline-flex px-2 py-1 mb-2 rounded-full text-[10px] font-semibold ${categoryClasses[categoryIndex]}">${escapeHtml(category.name)}</h3>
+                    <div class="border border-slate-200 rounded-lg px-2 bg-slate-50">${topicRows}</div>
+                </section>`;
+            }).join('');
+
+            if (!visibleCourseIds().size) {
+                content.innerHTML = '<p class="col-span-full p-6 text-sm text-slate-500 text-center">Select at least one course to browse its topics.</p>';
+            } else if (!visibleTopicCount) {
+                content.innerHTML = '<p class="col-span-full p-6 text-sm text-slate-500 text-center">No topics match your search.</p>';
+            }
+            content.querySelectorAll('input[data-indeterminate="true"]').forEach(input => { input.indeterminate = true; });
         }
 
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-            const topic = document.getElementById('topicFilter').value;
-            const subtopic = document.getElementById('subtopicFilter').value;
             const difficulty = document.getElementById('difficultyFilter').value;
             const mcOnly = document.getElementById('mcToggle').checked;
             const enrichmentOnly = document.getElementById('enrichmentToggle').checked;
 
             filteredQuestions = bankQuestions().filter(q => {
-                if (topic !== 'ALL' && q.topic !== topic) return false;
-                if (subtopic !== 'ALL' && q.subtopic !== subtopic) return false;
+                if (selectedTopicFilters.size && !topicMatches(selectedTopicFilters, q)) return false;
+                if (excludedTopicFilters.size && topicMatches(excludedTopicFilters, q)) return false;
                 if (difficulty !== 'ALL' && q.difficulty !== difficulty) return false;
                 if (mcOnly && q.type !== 'Multiple Choice') return false;
                 if (enrichmentOnly && !q.enrichment) return false;
@@ -920,8 +1158,9 @@
                     const matchQ = q.question.toLowerCase().includes(searchTerm);
                     const matchId = q.id.toLowerCase().includes(searchTerm);
                     const matchTopic = q.topic.toLowerCase().includes(searchTerm);
+                    const matchCategory = TOPIC_CATEGORIES.some(category => category.topics.some(topic => topic.name === q.topic && category.name.toLowerCase().includes(searchTerm)));
                     const matchSource = (q.source || '').toLowerCase().includes(searchTerm);
-                    if (!matchQ && !matchId && !matchTopic && !matchSource) return false;
+                    if (!matchQ && !matchId && !matchTopic && !matchCategory && !matchSource) return false;
                 }
                 return true;
             });
@@ -933,8 +1172,11 @@
 
         function resetFilters() {
             document.getElementById('searchInput').value = '';
-            document.getElementById('topicFilter').value = 'ALL';
-            document.getElementById('subtopicFilter').innerHTML = '<option value="ALL">All Subtopics</option>';
+            selectedTopicFilters.clear();
+            excludedTopicFilters.clear();
+            expandedTopicIds.clear();
+            updateTopicSelectionSummary();
+            renderTopicPickerIfOpen();
             document.getElementById('difficultyFilter').value = 'ALL';
             document.getElementById('mcToggle').checked = false;
             document.getElementById('enrichmentToggle').checked = false;
@@ -1062,31 +1304,8 @@
             updateTrayUI();
         }
 
-        function addRandomFilteredQuestion() {
-            const unselected = filteredQuestions.filter(q => !selectedQuestionIds.includes(q.id));
-            if (unselected.length === 0) {
-                alert("All questions matching current filter are already in your worksheet!");
-                return;
-            }
-            const randomQ = unselected[Math.floor(Math.random() * unselected.length)];
-            selectedQuestionIds.push(randomQ.id);
-            renderQuestionsFeed();
-            updateTrayUI();
-        }
-
         function updateTrayUI() {
-            const count = selectedQuestionIds.length;
-            document.getElementById('trayCountBadge').innerText = count;
-            document.getElementById('topTrayBadge').innerText = count;
-
-            let totalMarks = 0;
-            allQuestions.forEach(q => {
-                if (selectedQuestionIds.includes(q.id)) {
-                    totalMarks += (q.marks || 1);
-                }
-            });
-
-            document.getElementById('trayMarksTotal').innerText = totalMarks;
+            document.getElementById('topTrayBadge').innerText = selectedQuestionIds.length;
 
             syncPreviewControls();
             schedulePreview();
@@ -1156,14 +1375,12 @@
         function switchView(viewName) {
             const builder = document.getElementById('builderView');
             const practice = document.getElementById('practiceView');
-            const tray = document.getElementById('worksheetTray');
             const tabB = document.getElementById('navTabBuilder');
             const tabP = document.getElementById('navTabPractice');
 
             if (viewName === 'builder') {
                 builder.classList.remove('hidden');
                 practice.classList.add('hidden');
-                tray.classList.remove('hidden');
                 fitBuilder();
                 applyPreviewScale();
 
@@ -1173,7 +1390,6 @@
             } else {
                 builder.classList.add('hidden');
                 practice.classList.remove('hidden');
-                tray.classList.add('hidden');
 
                 tabP.className = 'px-4 py-1.5 text-xs font-bold rounded-lg transition text-white bg-barker-700 shadow-sm flex items-center gap-1.5';
                 tabB.className = 'px-4 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition flex items-center gap-1.5';
@@ -1727,8 +1943,7 @@
             if (builder.classList.contains('hidden')) return;
             if (window.matchMedia('(min-width: 1024px)').matches) {
                 const top = builder.getBoundingClientRect().top + window.scrollY;
-                const tray = document.getElementById('worksheetTray').offsetHeight;
-                builder.style.height = `${Math.max(520, window.innerHeight - top - tray - 16)}px`;
+                builder.style.height = `${Math.max(520, window.innerHeight - top - 16)}px`;
             } else {
                 builder.style.height = '';
             }

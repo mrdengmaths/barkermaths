@@ -2,7 +2,7 @@
   {
     "id": "Y910E-GEO-001",
     "courses": ["Year 9 Core/Standard", "Year 9 Advanced/Extension", "Year 10 Core/Standard", "Year 10 Advanced/Extension"],
-    "topic": "Geometry",
+    "topic": "Triangles and Quadrilaterals",
     "subtopic": "Area of Triangles (equal base / height)",
     "difficulty": "Hard",
     "enrichment": true,
@@ -23,7 +23,7 @@
   {
     "id": "Y910E-GEO-002",
     "courses": ["Year 9 Core/Standard", "Year 9 Advanced/Extension", "Year 10 Core/Standard", "Year 10 Advanced/Extension"],
-    "topic": "Geometry",
+    "topic": "Triangles and Quadrilaterals",
     "subtopic": "Area of Triangles (equal base / height)",
     "difficulty": "Hard",
     "enrichment": true,
@@ -44,7 +44,7 @@
   {
     "id": "Y910E-GEO-003",
     "courses": ["Year 9 Core/Standard", "Year 9 Advanced/Extension", "Year 10 Core/Standard", "Year 10 Advanced/Extension"],
-    "topic": "Geometry",
+    "topic": "Triangles and Quadrilaterals",
     "subtopic": "Area of Triangles (equal base / height)",
     "difficulty": "Hard",
     "enrichment": true,

@@ -2,7 +2,7 @@
   {
     "id": "Y78E-MEA-001",
     "courses": ["Year 7", "Year 8"],
-    "topic": "Measurement",
+    "topic": "Area",
     "subtopic": "Perimeter, Area & Volume",
     "difficulty": "Hard",
     "enrichment": true,
@@ -19,6 +19,27 @@
       "1 mark: Writes the side lengths in terms of one variable ($x, 2x, 4x, 8x$) and forms the perimeter equation $46x = 115$ (or equivalent)",
       "1 mark: Solves for the side lengths ($x = 2.5$, so $2.5,\\ 5,\\ 10,\\ 20$)",
       "1 mark: Obtains the total area $531.25$ square units"
+    ]
+  },
+  {
+    "id": "Y78E-GEO-001",
+    "courses": ["Year 7"],
+    "topic": "Triangles and Quadrilaterals",
+    "subtopic": "Angles in Isosceles Triangles and Quadrilaterals",
+    "difficulty": "Hard",
+    "enrichment": true,
+    "type": "Short Answer",
+    "marks": 3,
+    "calculator": false,
+    "lines": 6,
+    "diagram": "diagrams/Y78E-GEO-001.svg",
+    "diagramAlt": "Quadrilateral ABCD with diagonal AC. Triangle ABC has equal sides AB and BC and angle ABC is 50 degrees. In triangle ACD, angle ACD is 55 degrees and angle ADC is 95 degrees.",
+    "question": "In the diagram, $ABCD$ is a quadrilateral with the diagonal $AC$ drawn. $AB = BC$, $\\angle ABC = 50^\\circ$, $\\angle ACD = 55^\\circ$ and $\\angle ADC = 95^\\circ$.\n\nFind the size of $\\angle BAD$.",
+    "solution": "Since $AB = BC$, triangle $ABC$ is isosceles, so its base angles are equal.\n\n$$\\angle BAC = \\angle ACB = \\frac{180^\\circ - 50^\\circ}{2} = 65^\\circ$$\n\nIn triangle $ACD$:\n\n$$\\angle CAD = 180^\\circ - 55^\\circ - 95^\\circ = 30^\\circ$$\n\nThe diagonal $AC$ splits $\\angle BAD$ into $\\angle BAC$ and $\\angle CAD$.\n\n$$\\angle BAD = 65^\\circ + 30^\\circ = 95^\\circ$$",
+    "criteria": [
+      "1 mark: Finds $\\angle BAC = 65^\\circ$ using the equal base angles of isosceles triangle $ABC$",
+      "1 mark: Finds $\\angle CAD = 30^\\circ$ using the angle sum of triangle $ACD$",
+      "1 mark: Adds the adjacent angles to obtain $\\angle BAD = 95^\\circ$"
     ]
   }
 ]
