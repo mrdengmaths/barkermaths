@@ -1,9 +1,11 @@
 [
   {
     "id": "Y11S-ALG-001",
-    "course": "Year 11 Standard",
-    "topic": "Algebra",
-    "subtopic": "Formulae & Equations",
+    "courses": [
+      "Year 11 Standard"
+    ],
+    "topic": "Equations",
+    "subtopic": "Linear, multistep",
     "difficulty": "Easy",
     "type": "Short Answer",
     "marks": 2,
@@ -18,9 +20,11 @@
   },
   {
     "id": "Y11S-ALG-002",
-    "course": "Year 11 Standard",
-    "topic": "Algebra",
-    "subtopic": "Formulae & Equations",
+    "courses": [
+      "Year 11 Standard"
+    ],
+    "topic": "Equations",
+    "subtopic": "Rearrange formulas",
     "difficulty": "Medium",
     "type": "Short Answer",
     "marks": 2,
@@ -35,9 +39,11 @@
   },
   {
     "id": "Y11S-ALG-003",
-    "course": "Year 11 Standard",
-    "topic": "Algebra",
-    "subtopic": "Linear Relationships",
+    "courses": [
+      "Year 11 Standard"
+    ],
+    "topic": "Linear Relationships",
+    "subtopic": "Gradient intercept form (y = mx + c)",
     "difficulty": "Medium",
     "type": "Multiple Choice",
     "marks": 1,
@@ -51,9 +57,11 @@
   },
   {
     "id": "Y11S-MEA-001",
-    "course": "Year 11 Standard",
+    "courses": [
+      "Year 11 Standard"
+    ],
     "topic": "Volume",
-    "subtopic": "Perimeter, Area & Volume",
+    "subtopic": "Cylinders",
     "difficulty": "Easy",
     "type": "Short Answer",
     "marks": 2,
@@ -68,9 +76,11 @@
   },
   {
     "id": "Y11S-MEA-002",
-    "course": "Year 11 Standard",
-    "topic": "Surface Area",
-    "subtopic": "Perimeter, Area & Volume",
+    "courses": [
+      "Year 11 Standard"
+    ],
+    "topic": "Area",
+    "subtopic": "Trapezoidal rule (area)",
     "difficulty": "Medium",
     "type": "Short Answer",
     "marks": 3,
@@ -86,9 +96,11 @@
   },
   {
     "id": "Y11S-FIN-001",
-    "course": "Year 11 Standard",
+    "courses": [
+      "Year 11 Standard"
+    ],
     "topic": "Financial Maths",
-    "subtopic": "Earning & Managing Money",
+    "subtopic": "Earning money",
     "difficulty": "Easy",
     "type": "Multiple Choice",
     "marks": 1,
@@ -102,7 +114,9 @@
   },
   {
     "id": "Y11S-FIN-002",
-    "course": "Year 11 Standard",
+    "courses": [
+      "Year 11 Standard"
+    ],
     "topic": "Financial Maths",
     "subtopic": "Investing Money",
     "difficulty": "Medium",
@@ -119,7 +133,9 @@
   },
   {
     "id": "Y11S-FIN-003",
-    "course": "Year 11 Standard",
+    "courses": [
+      "Year 11 Standard"
+    ],
     "topic": "Financial Maths",
     "subtopic": "Investing Money",
     "difficulty": "Hard",
@@ -137,9 +153,11 @@
   },
   {
     "id": "Y11S-STA-001",
-    "course": "Year 11 Standard",
+    "courses": [
+      "Year 11 Standard"
+    ],
     "topic": "Data",
-    "subtopic": "Data Classification & Summary",
+    "subtopic": "Classify variables",
     "difficulty": "Easy",
     "type": "Multiple Choice",
     "marks": 1,
@@ -153,9 +171,11 @@
   },
   {
     "id": "Y11S-STA-002",
-    "course": "Year 11 Standard",
+    "courses": [
+      "Year 11 Standard"
+    ],
     "topic": "Box Plots",
-    "subtopic": "Measures of Spread",
+    "subtopic": "Five-number summary and IQR",
     "difficulty": "Hard",
     "type": "Short Answer",
     "marks": 3,

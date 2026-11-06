@@ -103,6 +103,10 @@
         .ws-solutions-title { font-size: 14pt; font-weight: 800; color: #005b94; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
         .ws-solution { border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; }
         .ws-solution-wrap { padding-bottom: 14px; }
+        /* Two-column layout: a vertical line between the columns */
+        .ws-cols { display: flex; align-items: stretch; }
+        .ws-col { flex: 0 0 auto; position: relative; }
+        .ws-col + .ws-col { border-left: 1px solid #94a3b8; margin-left: 14px; padding-left: 14px; }
 
         /* ============================================================
            PREVIEW (screen only). Pages are A4 at 96dpi, scaled to fit.
@@ -315,27 +319,10 @@
                 </button>
             </div>
 
-            <!-- Difficulty Filter -->
+            <!-- Difficulty Filter (same chips as Course) -->
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Difficulty</label>
-                <select id="difficultyFilter" onchange="applyFilters()" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white transition">
-                    <option value="ALL">All Difficulties</option>
-                    <option value="Easy">Easy (Foundation)</option>
-                    <option value="Medium">Medium (Development)</option>
-                    <option value="Hard">Hard (Mastery)</option>
-                </select>
-            </div>
-
-            <!-- Checkbox: MC Only -->
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-                <label for="mcToggle" class="text-xs font-semibold text-slate-700 cursor-pointer">Multiple Choice Only</label>
-                <input type="checkbox" id="mcToggle" onchange="applyFilters()" class="w-4 h-4 text-barker-700 border-slate-300 rounded focus:ring-barker-700 cursor-pointer">
-            </div>
-
-            <!-- Checkbox: Enrichment Only -->
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-                <label for="enrichmentToggle" class="text-xs font-semibold text-slate-700 cursor-pointer">Enrichment Only <span class="font-normal text-slate-400">(harder)</span></label>
-                <input type="checkbox" id="enrichmentToggle" onchange="applyFilters()" class="w-4 h-4 text-barker-700 border-slate-300 rounded focus:ring-barker-700 cursor-pointer">
+                <div id="difficultyFilter" class="flex flex-wrap gap-1.5"></div>
             </div>
 
             <!-- Quick Filter Actions -->
@@ -383,6 +370,7 @@
                 <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Worksheet options">
                     <button type="button" id="optSolutions" data-opt="solutions" onclick="toggleOption('solutions')" class="opt-chip" aria-pressed="true" title="Add the worked solutions at the end of the worksheet">Solutions</button>
                     <button type="button" id="optSpace" data-opt="space" onclick="toggleOption('space')" class="opt-chip" aria-pressed="false" title="Add blank working space after every question except multiple choice. Resize or remove it on the preview.">Working space</button>
+                    <button type="button" id="optColumns" data-opt="columns" onclick="toggleOption('columns')" class="opt-chip" aria-pressed="false" title="Show questions and solutions in 2 columns per page, with a line down the middle">2 columns</button>
                     <button type="button" id="optCriteria" data-opt="criteria" onclick="toggleOption('criteria')" class="opt-chip" aria-pressed="false" title="Add the marking criteria to each solution (needs Solutions)">Marking criteria</button>
                 </div>
             </div>
@@ -595,7 +583,7 @@
         }
 
         // Options chosen with the toggles above the preview
-        const options = { solutions: true, space: false, criteria: false };
+        const options = { solutions: true, space: false, criteria: false, columns: false };
 
         // Practice State
         let practiceQueue = [];
@@ -608,16 +596,16 @@
 
         // --- Course and topic configuration ---
         const COURSE_GROUPS = [
-            { id: 'stage4', label: 'Stage 4', questionCourses: ['Year 7', 'Year 8'] },
-            { id: 'stage5-core', label: 'Stage 5 Core/Standard', questionCourses: ['Year 9 Core/Standard', 'Year 10 Core/Standard'] },
-            { id: 'stage5-paths', label: 'Stage 5 Adv/Ext', questionCourses: ['Year 9 Advanced/Extension', 'Year 10 Advanced/Extension'] },
-            { id: 'standard-y11', label: 'Standard Y11', questionCourses: ['Year 11 Standard'] },
-            { id: 'standard-y12', label: 'Standard Y12', questionCourses: ['Year 12 Standard'] },
-            { id: 'advanced-y11', label: 'Advanced Y11', questionCourses: ['Year 11 Advanced'] },
-            { id: 'advanced-y12', label: 'Advanced Y12', questionCourses: ['Year 12 Advanced'] },
-            { id: 'extension1-y11', label: 'Extension 1 Y11', questionCourses: ['Year 11 Extension 1'] },
-            { id: 'extension1-y12', label: 'Extension 1 Y12', questionCourses: ['Year 12 Extension 1'] },
-            { id: 'extension2-y12', label: 'Extension 2 Y12', questionCourses: ['Year 12 Extension 2'] }
+            { id: 'stage4', label: 'Stage 4', titleName: 'Stage 4 Mathematics', questionCourses: ['Year 7', 'Year 8'] },
+            { id: 'stage5-core', label: 'Stage 5 Core/Standard', titleName: 'Stage 5 Mathematics Core/Standard', questionCourses: ['Year 9 Core/Standard', 'Year 10 Core/Standard'] },
+            { id: 'stage5-paths', label: 'Stage 5 Adv/Ext', titleName: 'Stage 5 Mathematics Advanced/Extension', questionCourses: ['Year 9 Advanced/Extension', 'Year 10 Advanced/Extension'] },
+            { id: 'standard-y11', label: 'Standard Y11', titleName: 'Year 11 Mathematics Standard', questionCourses: ['Year 11 Standard'] },
+            { id: 'standard-y12', label: 'Standard Y12', titleName: 'Year 12 Mathematics Standard', questionCourses: ['Year 12 Standard'] },
+            { id: 'advanced-y11', label: 'Advanced Y11', titleName: 'Year 11 Mathematics Advanced', questionCourses: ['Year 11 Advanced'] },
+            { id: 'advanced-y12', label: 'Advanced Y12', titleName: 'Year 12 Mathematics Advanced', questionCourses: ['Year 12 Advanced'] },
+            { id: 'extension1-y11', label: 'Extension 1 Y11', titleName: 'Year 11 Mathematics Extension 1', questionCourses: ['Year 11 Extension 1'] },
+            { id: 'extension1-y12', label: 'Extension 1 Y12', titleName: 'Year 12 Mathematics Extension 1', questionCourses: ['Year 12 Extension 1'] },
+            { id: 'extension2-y12', label: 'Extension 2 Y12', titleName: 'Year 12 Mathematics Extension 2', questionCourses: ['Year 12 Extension 2'] }
         ];
         const COURSE_IDS = COURSE_GROUPS.map(course => course.id);
         const S4 = 'stage4', S5C = 'stage5-core', S5P = 'stage5-paths';
@@ -630,7 +618,7 @@
                 topics: [
                     { name: 'Integers', courses: [S4] },
                     { name: 'Primes, Multiples and Factors', courses: [S4] },
-                    { name: 'Fractions, Decimals and Percentages', courses: [S4] },
+                    { name: 'Fractions, Decimals and Percentages', courses: [S4, STD11] },
                     { name: 'Indices', courses: [S4, S5C, S5P, ADV11] },
                     { name: 'Surds', courses: [S5P, ADV11] },
                     { name: 'Algebra', courses: [S4, S5C, S5P, ADV11] },
@@ -703,9 +691,131 @@
                 ]
             }
         ];
+        // Premade subtopic lists, by course and then topic, in syllabus order. They always show in the
+        // topic picker, even before a subtopic has questions. A question's "subtopic" must match one of
+        // these names exactly. Courses without a list here show the subtopics used by their questions instead.
+        const SUBTOPICS = {
+            [S4]: {
+                "Integers": ["Natural numbers", "Negatives"],
+                "Primes, Multiples and Factors": ["Factors and multiples", "Primes", "Divisibility"],
+                "Fractions, Decimals and Percentages": ["Compare and simplify fractions", "Round decimals", "Recurring decimals", "FDP conversions", "Irrational numbers", "Fraction operations", "Decimal operations", "Percentage operations"],
+                "Indices": ["Index notation", "Prime factorisation", "Squares, cubes and roots", "Index laws with numerical base"],
+                "Algebra": ["Algebraic notation", "Substitution", "Simplify expressions", "Expand brackets", "Factorise using HCF", "Expand brackets and simplify"],
+                "Equations": ["Verify solutions", "Linear, up to 2 steps", "Simple quadratics", "Linear, pronumerals both sides", "Substitute into formulas and evaluate"],
+                "Linear Relationships": ["Plot points", "Patterns and rules", "Construct table from equation and plot lines", "Points and solutions", "Solve linear equations graphically", "Compare lines and equations"],
+                "Ratios and Rates": ["Ratios", "Rates", "Distance-time graphs"],
+                "Angle Relationships": ["Classify angles and lines", "Angles at a point", "Transversals and parallel lines"],
+                "Triangles and Quadrilaterals": ["Classify triangles", "Classify quadrilaterals", "Angle sum of triangles", "Angle sum and properties of quadrilaterals"],
+                "Length": ["Convert units", "Perimeter of rectilinear figures", "Circle features", "Perimeter of circles and sectors"],
+                "Pythagoras Theorem": ["Relating the sides", "Proving right-angled", "Pythagorean triads", "Problems"],
+                "Area": ["Units", "Rectangles, triangles and parallelograms", "Circles and sectors", "Trapeziums, rhombuses and kites"],
+                "Volume": ["3D views and cross-sections", "Prisms", "Cylinders", "Cubic units and capacity"],
+                "Data": ["Classify variables", "Display and interpret charts", "Mean, median, mode and range", "Symmetry and skewness", "Clusters, gaps and outliers", "Frequency tables and graphs"],
+                "Probability": ["Simple probability", "Relative frequency"]
+            },
+            [S5C]: {
+                "Indices": ["Index laws with algebraic base", "Power of products and quotients"],
+                "Algebra": ["Expand binomial products", "Algebraic fractions; single term numerator and denominator"],
+                "Equations": ["Linear, multistep", "Substitute into linear formulas and solve"],
+                "Linear Relationships": ["Compare lines and equations", "Horizontal and vertical lines", "Gradient intercept form (y = mx + c)", "Linear models", "Find x and y intercepts"],
+                "Non-linear Relationships": ["Plot non-linear relationships using table", "Match equations and curves", "Quadratic", "Exponential"],
+                "Financial Maths": ["Earning money", "Tax table", "Buying on terms", "Simple interest", "Compound interest", "Depreciation (declining balance)"],
+                "Surface Area": ["Nets", "Prisms", "Cylinders"],
+                "Practicalities of Measurement": ["Metric prefixes", "Measurement error", "Significant figures and scientific notation"],
+                "Similarity": ["Similar figures", "Scale drawings"],
+                "Trigonometry": ["Right-angled triangles", "Bearings (Right-angled)"],
+                "Data": ["Standard deviation"],
+                "Box Plots": ["Five-number summary and IQR", "Construct and interpret box plots"],
+                "Bivariate Data": ["Scatterplots and line of best fit"],
+                "Multistage Probability": ["Independent", "Dependent"]
+            },
+            [S5P]: {
+                "Indices": ["Negative indices", "Exponential equations", "Factorise exponential expressions"],
+                "Surds": ["Simplify surds", "Rationalise denominator; single term", "Fractional indices"],
+                "Algebra": ["Factorise monic quadratic trinomials", "Algebraic fractions; binomial numerator, numeric denominator", "Expand special products", "Factorise special products", "Factorise by grouping in pairs", "Factorise non-monic quadratic trinomials", "Algebraic fractions; multiply and divide with factorisation", "Algebraic fractions; add and subtract with factorisation"],
+                "Equations": ["Monic quadratic trinomials", "Simple cubics", "Linear inequalities", "Linear, two or more fractions", "Substitute into non-linear formulas and solve", "Rearrange formulas", "Non-monic quadratics", "Completing the square", "Quadratic formula", "Discriminant", "Equations reducible to quadratics", "Graph regions formed by linear inequalities"],
+                "Linear Relationships": ["Simultaneous equations; linear", "Parallel and perpendicular lines", "Problems with coordinate geometry"],
+                "Variation": ["Direct variation", "Inverse variation", "Conversion graphs", "Graphs of rates of change"],
+                "Logarithms": ["Laws of logarithms", "Solve equations using logarithms"],
+                "Functions and Graphs": ["Classify relations", "Function notation", "Domain and range", "Parabolas", "Cubic curves, simple", "Cubic curves, factored form", "Hyperbolas", "Circles", "Points of intersection of curves"],
+                "Polynomials": ["Terminology", "Add, subtract and multiply", "Divide polynomials", "Factor and remainder theorem", "Graph in factored form", "Factorise and graph"],
+                "Trigonometric Functions": ["Unit circle concepts", "Gradient and angle of inclination", "Angles of any magnitude", "Graphs", "Trigonometric equations (no identities)"],
+                "Angle Sums": ["Interior angle sum of polygons", "Exterior angle sum of polygons"],
+                "Pythagoras Theorem": ["3D Pythagoras"],
+                "Surface Area": ["Pyramids", "Cones", "Spheres"],
+                "Volume": ["Pyramids and cones", "Spheres and hemispheres"],
+                "Congruence": ["Congruent figures", "Congruent triangle tests"],
+                "Similarity": ["Similar triangle tests", "Similar areas and volumes"],
+                "Symmetry": ["Line", "Rotational"],
+                "Coordinate Geometry": ["Midpoint, gradient and distance", "Transformations"],
+                "Trigonometry": ["Sine, cosine and area rules", "3D trigonometry"],
+                "Circle Geometry": ["Problems"],
+                "Compound Events": ["Venn diagrams and two-way tables", "Set notation", "Conditional probability"]
+            },
+            [STD11]: {
+                "Fractions, Decimals and Percentages": ["Percentage operations"],
+                "Equations": ["Substitute into formulas and evaluate", "Linear, multistep", "Substitute into linear formulas and solve", "Stopping distance, BAC and medication", "Linear, two or more fractions", "Substitute into non-linear formulas and solve", "Rearrange formulas"],
+                "Linear Relationships": ["Gradient intercept form (y = mx + c)", "Linear models"],
+                "Variation": ["Direct variation", "Conversion graphs"],
+                "Financial Maths": ["Earning money", "Tax table", "Buying on terms", "Vehicle costs", "Budgeting"],
+                "Networks": ["Terminology and diagrams", "Minimum spanning trees", "Shortest path"],
+                "Length": ["Perimeter of rectilinear figures", "Perimeter of circles and sectors"],
+                "Pythagoras Theorem": ["Relating the sides", "Problems"],
+                "Area": ["Units", "Rectangles, triangles and parallelograms", "Circles and sectors", "Trapeziums, rhombuses and kites", "Trapezoidal rule (area)"],
+                "Surface Area": ["Prisms", "Cylinders", "Spheres"],
+                "Volume": ["Prisms", "Cylinders", "Cubic units and capacity", "Pyramids and cones", "Spheres and hemispheres"],
+                "Practicalities of Measurement": ["Metric prefixes", "Significant figures and scientific notation"],
+                "Time": ["Duration problems", "Longitude and latitude"],
+                "Data": ["Classify variables", "Display and interpret charts", "Mean, median, mode and range", "Symmetry and skewness", "Census and sampling", "Clusters, gaps and outliers", "Standard deviation", "Grouped data", "Frequency tables and graphs"],
+                "Box Plots": ["Five-number summary and IQR", "Construct and interpret box plots", "Formal definition of an outlier"]
+            }
+        };
+
         // Courses and topic filters cycle through include (green), exclude (red) and off
-        let selectedCourseIds = new Set([STD11]);
+        let selectedCourseIds = new Set();
         let excludedCourseIds = new Set();
+        // Difficulty chips work like the course chips: green includes, red excludes, none selected shows all
+        const DIFFICULTY_LEVELS = [
+            { id: 'Easy', label: 'Easy' },
+            { id: 'Medium', label: 'Medium' },
+            { id: 'Hard', label: 'Hard' },
+            { id: 'Enrichment', label: '⭐ Enrichment' }
+        ];
+        let selectedDifficulties = new Set();
+        let excludedDifficulties = new Set();
+
+        // Enrichment questions form their own level above Hard
+        function difficultyLevel(q) {
+            return q.enrichment ? 'Enrichment' : q.difficulty;
+        }
+
+        function difficultyState(id) {
+            return selectedDifficulties.has(id) ? 'include' : excludedDifficulties.has(id) ? 'exclude' : 'none';
+        }
+
+        function renderDifficultyChips() {
+            const allSelected = selectedDifficulties.size === DIFFICULTY_LEVELS.length;
+            document.getElementById('difficultyFilter').innerHTML = DIFFICULTY_LEVELS.map(level =>
+                stateChipHtml(difficultyState(level.id), escapeHtml(level.label), `toggleDifficulty('${level.id}')`)
+            ).join('') + stateChipHtml(allSelected ? 'include' : 'none', 'All', 'toggleAllDifficulties()');
+        }
+
+        function toggleDifficulty(id) {
+            const next = cycleState(difficultyState(id));
+            selectedDifficulties.delete(id);
+            excludedDifficulties.delete(id);
+            if (next === 'include') selectedDifficulties.add(id);
+            else if (next === 'exclude') excludedDifficulties.add(id);
+            renderDifficultyChips();
+            applyFilters();
+        }
+
+        function toggleAllDifficulties() {
+            selectedDifficulties = selectedDifficulties.size === DIFFICULTY_LEVELS.length ? new Set() : new Set(DIFFICULTY_LEVELS.map(l => l.id));
+            excludedDifficulties = new Set();
+            renderDifficultyChips();
+            applyFilters();
+        }
         let selectedTopicFilters = new Map();
         let excludedTopicFilters = new Map();
         let expandedTopicIds = new Set();
@@ -784,7 +894,7 @@
         }
 
         function enrichmentBadgeHtml(q) {
-            return q.enrichment ? '<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border bg-violet-100 text-violet-800 border-violet-200" title="Harder than the standard questions, but within the syllabus">⭐ Enrichment</span>' : '';
+            return '';
         }
 
         function sourceHtml(q) {
@@ -865,42 +975,42 @@
                 console.warn("Fetch failed, using embedded dataset fallback:", err);
                 allQuestions = [
                     {
-                        "id": "Y11S-ALG-001", "course": "Year 11 Standard", "topic": "Algebra", "subtopic": "Formulae & Equations",
+                        "id": "Y11S-ALG-001", "course": "Year 11 Standard", "topic": "Equations", "subtopic": "Linear, multistep",
                         "difficulty": "Easy", "type": "Short Answer", "marks": 2, "calculator": true, "lines": 4,
                         "question": "Solve the linear equation for $x$:\n\n$$3(2x - 5) = 21$$",
                         "solution": "Expand or divide by 3 first:\n\n$$\\begin{aligned}\n2x - 5 &= 7 \\\\\n2x &= 12 \\\\\nx &= 6\n\\end{aligned}$$",
                         "criteria": ["1 mark: Correctly expands brackets or divides both sides by 3 ($2x - 5 = 7$)", "1 mark: Obtains the correct solution $x = 6$"]
                     },
                     {
-                        "id": "Y11S-ALG-002", "course": "Year 11 Standard", "topic": "Algebra", "subtopic": "Formulae & Equations",
+                        "id": "Y11S-ALG-002", "course": "Year 11 Standard", "topic": "Equations", "subtopic": "Rearrange formulas",
                         "difficulty": "Medium", "type": "Short Answer", "marks": 2, "calculator": false, "lines": 4,
                         "question": "Make $a$ the subject of the formula:\n\n$$v = u + at$$",
                         "solution": "Subtract $u$ from both sides, then divide by $t$:\n\n$$\\begin{aligned}\nv - u &= at \\\\\na &= \\frac{v - u}{t}\n\\end{aligned}$$",
                         "criteria": ["1 mark: Subtracts $u$ from both sides ($at = v - u$)", "1 mark: Obtains the correct expression $a = \\frac{v - u}{t}$"]
                     },
                     {
-                        "id": "Y11S-ALG-003", "course": "Year 11 Standard", "topic": "Algebra", "subtopic": "Linear Relationships",
+                        "id": "Y11S-ALG-003", "course": "Year 11 Standard", "topic": "Linear Relationships", "subtopic": "Gradient intercept form (y = mx + c)",
                         "difficulty": "Medium", "type": "Multiple Choice", "marks": 1, "calculator": true, "lines": 0,
                         "question": "What is the gradient ($m$) of the line with equation $2x - 4y = 12$?\n\n**A.** $m = 2$\n\n**B.** $m = \\frac{1}{2}$\n\n**C.** $m = -\\frac{1}{2}$\n\n**D.** $m = -3$",
                         "solution": "Rearrange into $y = mx + c$:\n$$-4y = -2x + 12 \\implies y = \\frac{1}{2}x - 3$$\nTherefore $m = \\frac{1}{2}$.\n\n**Correct Option: B**",
                         "criteria": ["1 mark: Selects option B"]
                     },
                     {
-                        "id": "Y11S-MEA-001", "course": "Year 11 Standard", "topic": "Volume", "subtopic": "Perimeter, Area & Volume",
+                        "id": "Y11S-MEA-001", "course": "Year 11 Standard", "topic": "Volume", "subtopic": "Cylinders",
                         "difficulty": "Easy", "type": "Short Answer", "marks": 2, "calculator": true, "lines": 4,
                         "question": "A cylindrical water tank has a radius of $r = 1.4\\text{ m}$ and a height of $h = 3.5\\text{ m}$.\n\nCalculate the volume of the tank in cubic metres, correct to $1$ decimal place.",
                         "solution": "Use $V = \\pi r^2 h$:\n$$V = \\pi \\times (1.4)^2 \\times 3.5 \\approx 21.6\\text{ m}^3$$",
                         "criteria": ["1 mark: Correct substitution into $V = \\pi r^2 h$", "1 mark: Obtains $21.6\\text{ m}^3$ rounded to 1 d.p."]
                     },
                     {
-                        "id": "Y11S-MEA-002", "course": "Year 11 Standard", "topic": "Surface Area", "subtopic": "Perimeter, Area & Volume",
+                        "id": "Y11S-MEA-002", "course": "Year 11 Standard", "topic": "Area", "subtopic": "Trapezoidal rule (area)",
                         "difficulty": "Medium", "type": "Short Answer", "marks": 3, "calculator": true, "lines": 6,
                         "question": "Use the Trapezoidal Rule with three measurements to estimate the surface area of a pond with parallel widths $d_f = 6\\text{ m}$, $d_m = 10\\text{ m}$, and $d_l = 8\\text{ m}$, spaced equally $h = 4\\text{ m}$ apart.\n\n$$\\text{Formula: } A \\approx \\frac{h}{2} \\Big(d_f + 2d_m + d_l\\Big)$$",
                         "solution": "$$A \\approx \\frac{4}{2}(6 + 2(10) + 8) = 2 \\times 34 = 68\\text{ m}^2$$",
                         "criteria": ["1 mark: Identifies correct values", "1 mark: Correct substitution with $2d_m$", "1 mark: Obtains final answer $68\\text{ m}^2$"]
                     },
                     {
-                        "id": "Y11S-FIN-001", "course": "Year 11 Standard", "topic": "Financial Maths", "subtopic": "Earning & Managing Money",
+                        "id": "Y11S-FIN-001", "course": "Year 11 Standard", "topic": "Financial Maths", "subtopic": "Earning money",
                         "difficulty": "Easy", "type": "Multiple Choice", "marks": 1, "calculator": true, "lines": 0,
                         "question": "Chloe works $35$ normal hours at $\\$24.00$/h, plus $4$ hours overtime at time-and-a-half ($1.5\\times$).\n\nWhat are Chloe's total gross earnings?\n\n**A.** $\\$840.00$\n\n**B.** $\\$936.00$\n\n**C.** $\\$984.00$\n\n**D.** $\\$1032.00$",
                         "solution": "Normal: $35 \\times 24 = \\$840$\nOvertime: $4 \\times (1.5 \\times 24) = 4 \\times 36 = \\$144$\nTotal: $\\$840 + \\$144 = \\$984$\n\n**Correct Option: C**",
@@ -921,14 +1031,14 @@
                         "criteria": ["1 mark: Adjusts rate ($0.015$) and periods ($16$)", "1 mark: Obtains final amount $\\$15\\,227.83$", "1 mark: Calculates interest $\\$3\\,227.83$"]
                     },
                     {
-                        "id": "Y11S-STA-001", "course": "Year 11 Standard", "topic": "Data", "subtopic": "Data Classification & Summary",
+                        "id": "Y11S-STA-001", "course": "Year 11 Standard", "topic": "Data", "subtopic": "Classify variables",
                         "difficulty": "Easy", "type": "Multiple Choice", "marks": 1, "calculator": false, "lines": 0,
                         "question": "Which of the following variables is **quantitative continuous**?\n\n**A.** The number of students absent from class today\n\n**B.** The finishing places in a 100m sprint (1st, 2nd, 3rd)\n\n**C.** The time taken (in seconds) to complete a puzzle\n\n**D.** Postcodes of Australian suburbs",
                         "solution": "Time is a continuous measurement.\n\n**Correct Option: C**",
                         "criteria": ["1 mark: Selects option C"]
                     },
                     {
-                        "id": "Y11S-STA-002", "course": "Year 11 Standard", "topic": "Box Plots", "subtopic": "Measures of Spread",
+                        "id": "Y11S-STA-002", "course": "Year 11 Standard", "topic": "Box Plots", "subtopic": "Five-number summary and IQR",
                         "difficulty": "Hard", "type": "Short Answer", "marks": 3, "calculator": true, "lines": 6,
                         "question": "Consider the ordered dataset of test scores for $9$ students:\n\n$$12,\\; 15,\\; 18,\\; 19,\\; 22,\\; 25,\\; 29,\\; 31,\\; 35$$\n\n**(a)** State the median score.\n**(b)** Determine the lower quartile ($Q_1$) and upper quartile ($Q_3$).\n**(c)** Calculate the Interquartile Range (IQR).",
                         "solution": "(a) Median $= 22$\n(b) $Q_1 = \\frac{15+18}{2} = 16.5$, $Q_3 = \\frac{29+31}{2} = 30$\n(c) $\\text{IQR} = 30 - 16.5 = 13.5$",
@@ -1008,6 +1118,19 @@
             document.getElementById('topicPickerModal').classList.remove('flex');
         }
 
+        // Esc or a click on the blurred area outside closes the open window
+        function initModalClosing() {
+            const topic = document.getElementById('topicPickerModal');
+            const tray = document.getElementById('trayModal');
+            topic.addEventListener('click', event => { if (event.target === topic) closeTopicPicker(); });
+            tray.addEventListener('click', event => { if (event.target === tray) closeTrayModal(); });
+            document.addEventListener('keydown', event => {
+                if (event.key !== 'Escape') return;
+                if (!topic.classList.contains('hidden')) closeTopicPicker();
+                else if (!tray.classList.contains('hidden')) closeTrayModal();
+            });
+        }
+
         function renderTopicPickerIfOpen() {
             if (!document.getElementById('topicPickerModal').classList.contains('hidden')) renderTopicPicker();
         }
@@ -1018,8 +1141,11 @@
             renderTopicPicker();
         }
 
+        // Premade subtopics for the courses on show (syllabus order), then any other subtopics used by questions
         function subtopicsOf(topicName) {
-            return [...new Set(bankQuestions().filter(q => q.topic === topicName).map(q => q.subtopic))];
+            const premade = [...visibleCourseIds()].flatMap(courseId => (SUBTOPICS[courseId] || {})[topicName] || []);
+            const used = bankQuestions().filter(q => q.topic === topicName).map(q => q.subtopic);
+            return [...new Set([...premade, ...used])];
         }
 
         // Cycles the whole topic: green (all subtopics) -> red -> off
@@ -1029,6 +1155,34 @@
             excludedTopicFilters.delete(topicName);
             if (next === 'include') selectedTopicFilters.set(topicName, null);
             else if (next === 'exclude') excludedTopicFilters.set(topicName, null);
+            refreshTopicFilters();
+        }
+
+        // Topics of a category offered for the chosen courses (the ones shown in the picker)
+        function categoryTopicNames(categoryIndex) {
+            const visible = visibleCourseIds();
+            return TOPIC_CATEGORIES[categoryIndex].topics
+                .filter(topic => topic.courses.some(courseId => visible.has(courseId)))
+                .map(topic => topic.name);
+        }
+
+        // Green only if every topic is green, red only if every topic is red
+        function categoryState(categoryIndex) {
+            const states = categoryTopicNames(categoryIndex).map(topicState);
+            if (states.length && states.every(s => s === 'include')) return 'include';
+            if (states.length && states.every(s => s === 'exclude')) return 'exclude';
+            return 'none';
+        }
+
+        // The category "All" button sets every topic in it to the same state
+        function toggleCategorySelection(categoryIndex) {
+            const next = cycleState(categoryState(categoryIndex));
+            categoryTopicNames(categoryIndex).forEach(topicName => {
+                selectedTopicFilters.delete(topicName);
+                excludedTopicFilters.delete(topicName);
+                if (next === 'include') selectedTopicFilters.set(topicName, null);
+                else if (next === 'exclude') excludedTopicFilters.set(topicName, null);
+            });
             refreshTopicFilters();
         }
 
@@ -1095,7 +1249,7 @@
                     topic.courses.some(courseId => visible.has(courseId)) &&
                     (!searchTerm || category.name.toLowerCase().includes(searchTerm) ||
                         topic.name.toLowerCase().includes(searchTerm) ||
-                        bankQuestions().some(q => q.topic === topic.name && q.subtopic.toLowerCase().includes(searchTerm)))
+                        subtopicsOf(topic.name).some(subtopic => subtopic.toLowerCase().includes(searchTerm)))
                 );
                 if (!visibleTopics.length) return '';
                 visibleTopicCount += visibleTopics.length;
@@ -1106,30 +1260,30 @@
                     const subtopicRows = expanded
                         ? subtopics.filter(subtopic => !searchTerm || category.name.toLowerCase().includes(searchTerm) ||
                             topic.name.toLowerCase().includes(searchTerm) || subtopic.toLowerCase().includes(searchTerm))
-                            .map(subtopic => {
-                                const chip = stateChipHtml(subtopicState(topic.name, subtopic), '',
-                                    `toggleSubtopicSelection(${escapeHtml(JSON.stringify(topic.name))}, ${escapeHtml(JSON.stringify(subtopic))})`,
-                                    'w-6 h-5 text-[10px] shrink-0');
-                                return `<div class="flex items-start gap-2 px-2 py-1.5 text-[11px] text-slate-600">${chip}<span>${escapeHtml(subtopic)}</span></div>`;
-                            }).join('')
+                            .map(subtopic => stateChipHtml(subtopicState(topic.name, subtopic), escapeHtml(subtopic),
+                                `toggleSubtopicSelection(${escapeHtml(JSON.stringify(topic.name))}, ${escapeHtml(JSON.stringify(subtopic))})`,
+                                'px-2 py-1 text-[11px] text-left leading-snug')).join('')
                         : '';
                     const subtopicContent = expanded
                         ? subtopics.length
-                            ? `<div class="ml-5 mt-1 space-y-0.5">${subtopicRows}</div>`
+                            ? `<div class="ml-6 mt-1 mb-1 flex flex-wrap gap-1.5">${subtopicRows}</div>`
                             : '<p class="ml-7 mt-1 px-2 text-[10px] text-slate-400">No subtopics in this course bank yet.</p>'
                         : '';
                     const partial = state === 'none' && (selectedTopicFilters.has(topic.name) || excludedTopicFilters.has(topic.name));
                     return `<div class="py-1.5 border-b border-slate-100 last:border-0">
                         <div class="flex items-center gap-1">
                             <button type="button" aria-label="${expanded ? 'Collapse' : 'Expand'} ${escapeHtml(topic.name)}" onclick='toggleTopicExpansion(${escapeHtml(JSON.stringify(topic.name))})' class="w-5 h-6 text-slate-400 hover:text-slate-700">${expanded ? '⌄' : '›'}</button>
-                            <span class="flex-1 min-w-0 text-[11px] text-slate-700">${escapeHtml(topic.name)}${partial ? ' <span class="text-[10px] text-slate-400">(some subtopics)</span>' : ''}</span>
+                            <button type="button" aria-expanded="${expanded}" onclick='toggleTopicExpansion(${escapeHtml(JSON.stringify(topic.name))})' class="flex-1 min-w-0 text-left text-[11px] font-semibold text-slate-700 hover:text-barker-700 rounded focus:outline-none focus:ring-2 focus:ring-barker-700">${escapeHtml(topic.name)}${partial ? ' <span class="text-[10px] font-normal text-slate-400">(some subtopics)</span>' : ''}</button>
                             ${stateChipHtml(state, 'All', `toggleTopicSelection(${escapeHtml(JSON.stringify(topic.name))})`)}
                         </div>
                         ${subtopicContent}
                     </div>`;
                 }).join('');
                 return `<section class="min-w-0">
-                    <h3 class="inline-flex px-2 py-1 mb-2 rounded-full text-[10px] font-semibold ${categoryClasses[categoryIndex]}">${escapeHtml(category.name)}</h3>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <h3 class="inline-flex px-2 py-1 rounded-full text-[10px] font-semibold ${categoryClasses[categoryIndex]}">${escapeHtml(category.name)}</h3>
+                        ${stateChipHtml(categoryState(categoryIndex), 'All', `toggleCategorySelection(${categoryIndex})`)}
+                    </div>
                     <div class="border border-slate-200 rounded-lg px-2 bg-slate-50">${topicRows}</div>
                 </section>`;
             }).join('');
@@ -1144,16 +1298,13 @@
 
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-            const difficulty = document.getElementById('difficultyFilter').value;
-            const mcOnly = document.getElementById('mcToggle').checked;
-            const enrichmentOnly = document.getElementById('enrichmentToggle').checked;
 
             filteredQuestions = bankQuestions().filter(q => {
                 if (selectedTopicFilters.size && !topicMatches(selectedTopicFilters, q)) return false;
                 if (excludedTopicFilters.size && topicMatches(excludedTopicFilters, q)) return false;
-                if (difficulty !== 'ALL' && q.difficulty !== difficulty) return false;
-                if (mcOnly && q.type !== 'Multiple Choice') return false;
-                if (enrichmentOnly && !q.enrichment) return false;
+                const level = difficultyLevel(q);
+                if (selectedDifficulties.size && !selectedDifficulties.has(level)) return false;
+                if (excludedDifficulties.has(level)) return false;
                 if (searchTerm) {
                     const matchQ = q.question.toLowerCase().includes(searchTerm);
                     const matchId = q.id.toLowerCase().includes(searchTerm);
@@ -1168,6 +1319,8 @@
             renderQuestionsFeed();
             document.getElementById('filterCountDisplay').innerText = filteredQuestions.length;
             document.getElementById('totalBankCountDisplay').innerText = bankQuestions().length;
+            // The automatic title follows the course and topic filters
+            if (titleOverride === null && selectedQuestionIds.length) schedulePreview();
         }
 
         function resetFilters() {
@@ -1177,9 +1330,9 @@
             expandedTopicIds.clear();
             updateTopicSelectionSummary();
             renderTopicPickerIfOpen();
-            document.getElementById('difficultyFilter').value = 'ALL';
-            document.getElementById('mcToggle').checked = false;
-            document.getElementById('enrichmentToggle').checked = false;
+            selectedDifficulties.clear();
+            excludedDifficulties.clear();
+            renderDifficultyChips();
             applyFilters();
         }
 
@@ -1225,7 +1378,7 @@
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">${q.id}</span>
                             <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">${q.topic} › ${q.subtopic}</span>
-                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>
+                            ${q.enrichment ? '<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border bg-violet-100 text-violet-800 border-violet-200" title="Harder than the standard questions, but within the syllabus">⭐ Enrichment</span>' : `<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>`}
                             ${enrichmentBadgeHtml(q)}
                             <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100">${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}</span>
                             ${q.calculator ? '<span class="text-xs text-slate-400 font-medium" title="Calculator Allowed">🧮 Calc</span>' : ''}
@@ -1344,7 +1497,7 @@
                         <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center">${index + 1}</span>
                         <div>
                             <div class="font-bold text-xs text-slate-800">${q.id} <span class="font-normal text-slate-500">(${q.topic})</span></div>
-                            <div class="text-[11px] text-slate-500">${q.marks} Marks • ${q.difficulty}${q.enrichment ? ' • ⭐ Enrichment' : ''}</div>
+                            <div class="text-[11px] text-slate-500">${q.marks} Marks • ${q.enrichment ? '⭐ Enrichment' : q.difficulty}</div>
                         </div>
                     </div>
 
@@ -1460,7 +1613,7 @@
                     <!-- Top tags -->
                     <div class="flex items-center gap-2 pb-4 border-b border-slate-100 mb-5">
                         <span class="font-mono text-xs font-bold px-2.5 py-1 rounded bg-slate-100 text-slate-700">${q.id}</span>
-                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>
+                        ${q.enrichment ? '<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border bg-violet-100 text-violet-800 border-violet-200" title="Harder than the standard questions, but within the syllabus">⭐ Enrichment</span>' : `<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>`}
                         ${enrichmentBadgeHtml(q)}
                         ${q.calculator ? '<span class="text-xs font-medium text-slate-500">🧮 Calculator Allowed</span>' : '<span class="text-xs font-medium text-slate-400">🚫 Non-Calculator</span>'}
                     </div>
@@ -1621,6 +1774,8 @@
         const PAGE_PAD_TOP = 38;       // 10mm
         const PAGE_PAD_BOTTOM = 46;    // leaves room for the page number
         const CONTENT_H = Math.floor(PAGE_H - PAGE_PAD_TOP - PAGE_PAD_BOTTOM);
+        const COL_GAP = 29;            // 14px + 1px line + 14px
+        const COL_W = Math.floor((PAGE_W - 114 - COL_GAP) / 2);
         const DEFAULT_SPACE_PX = 120;
         const MIN_SPACE_PX = 24;
 
@@ -1632,29 +1787,33 @@
             return list.reduce((sum, q) => sum + (q.marks || 1), 0);
         }
 
+        // Course part of the title: the course the questions belong to, preferring the course chosen in the filter
+        function titleCourse(list) {
+            const groupsOf = q => COURSE_GROUPS.filter(g => q.courses.some(c => g.questionCourses.includes(c)));
+            const shared = groupsOf(list[0]).filter(g => list.every(q => groupsOf(q).includes(g)));
+            if (shared.length) {
+                const chosen = shared.filter(g => selectedCourseIds.has(g.id));
+                return (chosen.length === 1 ? chosen[0] : shared[0]).titleName;
+            }
+            const used = COURSE_GROUPS.filter(g => list.some(q => groupsOf(q).includes(g)));
+            if (used.length === 2) return `${used[0].titleName} & ${used[1].titleName}`;
+            return 'Mathematics';
+        }
+
+        // Topic part of the title: the subtopic or topic the questions cover
+        function titleFocus(list) {
+            const subtopics = [...new Set(list.map(q => `${q.topic}|${q.subtopic}`))];
+            const topics = [...new Set(list.map(q => q.topic))];
+            if (subtopics.length === 1) return list[0].subtopic;
+            if (topics.length === 1) return topics[0];
+            if (topics.length === 2) return topics.join(' & ');
+            return 'Mixed Topics';
+        }
+
         function autoTitle(list) {
             if (list.length === 0) return 'Mathematics Worksheet';
-
-            const common = list[0].courses.filter(c => list.every(q => q.courses.includes(c)));
-            let course = '';
-            if (common.length && common.length <= 2) {
-                course = `${common.join(' / ')} `;
-            } else if (common.length) {
-                // e.g. all four Year 9 and 10 courses become "Year 9 & Year 10"
-                const years = [...new Set(common.map(c => (c.match(/^Year \d+/) || [c])[0]))];
-                if (years.length <= 2) course = `${years.join(' & ')} `;
-            }
-
-            const subtopics = [...new Set(list.map(q => q.subtopic))];
-            const topics = [...new Set(list.map(q => q.topic))];
-            let focus;
-            if (subtopics.length === 1) focus = subtopics[0];
-            else if (topics.length === 1) focus = topics[0];
-            else if (topics.length === 2) focus = topics.join(' & ');
-            else focus = 'Mixed Topics';
-
             const enrichment = list.every(q => q.enrichment) ? ' Enrichment' : '';
-            return `${course}Mathematics — ${focus}${enrichment} Worksheet`;
+            return `${titleCourse(list)} — ${titleFocus(list)}${enrichment} Worksheet`;
         }
 
         function currentTitle(list) {
@@ -1719,6 +1878,7 @@
             `;
             // The head block is padded like the others but its rule already separates it from the questions
             head.style.paddingBottom = '12px';
+            head.dataset.full = '1';
             blocks.push(head);
 
             list.forEach((q, index) => {
@@ -1736,7 +1896,7 @@
                             Question ${index + 1}
                             <span style="font-size: 8.5pt; font-weight: normal; color: #64748b; margin-left: 8px;">${escapeHtml(q.topic)} › ${escapeHtml(q.subtopic)}</span>
                         </span>
-                        <span style="font-weight: 700; font-size: 10pt; color: #005b94;">[${markLabel(q.marks)}]</span>
+                        <span style="font-weight: 700; font-size: 10pt; color: #005b94; white-space: nowrap;">[${markLabel(q.marks)}]</span>
                     </div>
 
                     <div style="font-size: 10.5pt; line-height: 1.5;">
@@ -1756,6 +1916,7 @@
                 title.dataset.pageBreak = 'before';
                 title.innerHTML = '<div class="ws-solutions-title">WORKED SOLUTIONS</div>';
                 title.style.paddingBottom = '14px';
+                title.dataset.full = '1';
                 blocks.push(title);
 
                 list.forEach((q, index) => {
@@ -1776,7 +1937,7 @@
                                     <strong style="color: #005b94; font-size: 10.5pt;">Question ${index + 1}</strong>
                                     <span style="font-size: 7pt; color: #a1acbb; margin-left: 6px;">${escapeHtml(q.id)}</span>
                                 </span>
-                                <span style="font-weight: bold; font-size: 9.5pt;">${markLabel(q.marks)}</span>
+                                <span style="font-weight: bold; font-size: 9.5pt; white-space: nowrap;">${markLabel(q.marks)}</span>
                             </div>
                             <div style="font-size: 9.5pt; line-height: 1.4;">
                                 ${formatMarkdown(q.solution)}
@@ -1790,6 +1951,8 @@
                 });
             }
 
+            // In two columns, every block except the header and the solutions heading is one column wide
+            if (options.columns) blocks.forEach(b => { if (!b.dataset.full) b.style.width = `${COL_W}px`; });
             return blocks;
         }
 
@@ -1818,7 +1981,10 @@
         }
 
         // Places blocks on pages. A block is never split, matching "break-inside: avoid" when printing.
+        // One column: each page is an array of blocks. Two columns: each page is
+        // { full: [...], cols: [[...], [...]], colH } with full-width blocks (header, headings) on top.
         function paginate(blocks, heights) {
+            if (options.columns) return paginateColumns(blocks, heights);
             const pages = [];
             let current = null;
             let used = 0;
@@ -1835,11 +2001,59 @@
             return pages;
         }
 
+        function paginateColumns(blocks, heights) {
+            const pages = [];
+            let page = null, fullUsed = 0, col = 0, colUsed = 0;
+            const newPage = () => {
+                page = { full: [], cols: [[], []], colH: 0 };
+                pages.push(page);
+                fullUsed = 0; col = 0; colUsed = 0;
+            };
+            const hasCols = () => page.cols[0].length || page.cols[1].length;
+            blocks.forEach((block, i) => {
+                const h = heights[i];
+                const forced = block.dataset.pageBreak === 'before';
+                if (block.dataset.full) {
+                    if (!page || forced || hasCols() || (fullUsed + h > CONTENT_H && page.full.length)) newPage();
+                    page.full.push(block);
+                    fullUsed += h;
+                    return;
+                }
+                if (!page || forced) newPage();
+                const room = CONTENT_H - fullUsed;
+                if (colUsed + h > room && page.cols[col].length) {
+                    if (col === 0) { col = 1; colUsed = 0; }
+                    else newPage();
+                }
+                page.cols[col].push(block);
+                colUsed += h;
+            });
+            pages.forEach(p => { p.colH = CONTENT_H - p.full.reduce((sum, b) => sum + heights[blocks.indexOf(b)], 0); });
+            return pages;
+        }
+
         // One A4 page: the blocks plus its page number
         function buildPage(pageBlocks, index, total, preview) {
             const page = document.createElement('div');
             page.className = 'doc-page';
-            pageBlocks.forEach(b => page.appendChild(b));
+            if (Array.isArray(pageBlocks)) {
+                pageBlocks.forEach(b => page.appendChild(b));
+            } else {
+                pageBlocks.full.forEach(b => page.appendChild(b));
+                if (pageBlocks.cols[0].length) {
+                    const cols = document.createElement('div');
+                    cols.className = 'ws-cols';
+                    cols.style.height = `${Math.max(0, pageBlocks.colH - 4)}px`;
+                    pageBlocks.cols.forEach(colBlocks => {
+                        const col = document.createElement('div');
+                        col.className = 'ws-col';
+                        col.style.width = `${COL_W}px`;
+                        colBlocks.forEach(b => col.appendChild(b));
+                        cols.appendChild(col);
+                    });
+                    page.appendChild(cols);
+                }
+            }
             const footer = document.createElement('div');
             footer.className = 'doc-footer';
             footer.appendChild(document.createTextNode(`Page ${index + 1} of ${total}`));
@@ -2008,18 +2222,25 @@
             grip.setPointerCapture(event.pointerId);
 
             let pointerY = event.clientY;
+            let pointerX = event.clientX;
             let beforeId = null; // id of the question to insert before; null means "at the end"
             let frame = null;
 
             const update = () => {
+                // Blocks are in reading order: page by page, left column then right column
                 const target = others.find(b => {
                     const r = b.getBoundingClientRect();
+                    const pr = b.closest('.pv-page').getBoundingClientRect();
+                    if (pr.bottom < pointerY) return false;
+                    if (pr.top > pointerY) return true;
+                    if (r.right < pointerX) return false;
+                    if (r.left > pointerX) return true;
                     return pointerY < r.top + r.height / 2;
                 });
                 beforeId = target ? target.dataset.qid : null;
                 const anchor = target || others[others.length - 1];
                 const rect = anchor.getBoundingClientRect();
-                const page = anchor.closest('.pv-page').getBoundingClientRect();
+                const page = (anchor.closest('.ws-col') || anchor.closest('.pv-page')).getBoundingClientRect();
                 const y = target ? rect.top : rect.bottom;
                 const view = scroller.getBoundingClientRect();
                 line.style.display = y >= view.top && y <= view.bottom ? 'block' : 'none';
@@ -2037,7 +2258,7 @@
                 frame = requestAnimationFrame(autoScroll);
             };
 
-            const onMove = e => { pointerY = e.clientY; update(); };
+            const onMove = e => { pointerY = e.clientY; pointerX = e.clientX; update(); };
             const finish = commit => {
                 cancelAnimationFrame(frame);
                 grip.removeEventListener('pointermove', onMove);
@@ -2199,6 +2420,8 @@
         // Initialize on DOM load
         document.addEventListener('DOMContentLoaded', () => {
             initPreviewInteractions();
+            initModalClosing();
+            renderDifficultyChips();
             syncOptionButtons();
             fitBuilder();
             loadQuestions();
