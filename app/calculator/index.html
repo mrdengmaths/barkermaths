@@ -12,23 +12,23 @@ body{margin:0;background:#e9ecf1;display:flex;flex-direction:column;align-items:
   box-shadow:0 16px 36px rgba(0,0,0,.45),inset 0 0 0 3px #4a4c52,inset 0 2px 0 #66686e;user-select:none;-webkit-user-select:none}
 .grip{position:absolute;right:-6px;bottom:-6px;width:36px;height:36px;z-index:10;cursor:nwse-resize;touch-action:none;
   background:linear-gradient(135deg,transparent 45%,#666 45%,#666 52%,transparent 52%,transparent 62%,#666 62%,#666 69%,transparent 69%,transparent 79%,#666 79%,#666 86%,transparent 86%)}
-.brand{color:#fff;font-weight:900;font-size:24px;letter-spacing:1px;margin-left:8px;font-family:"Arial Black",Arial,sans-serif}
-.model{color:#e6e6e6;font-size:12.5px;font-weight:bold;margin:3px 0 12px 8px;letter-spacing:.4px}
-.bezel{background:#1a1b1e;border-radius:10px;padding:12px 12px 8px}
-.cw{color:#d0d0d0;text-align:right;font-size:12px;letter-spacing:5px;margin-top:7px;font-weight:bold}
+.brand{color:#fff;font-weight:900;font-size:17px;line-height:18px;letter-spacing:1.5px;margin-left:8px;font-family:"Arial Black",Arial,sans-serif;transform:scaleY(.86);transform-origin:left bottom}
+.model{color:#e6e6e6;font-size:10.5px;line-height:12px;font-weight:bold;margin:1px 0 7px 8px;letter-spacing:.4px}
+.bezel{background:#1a1b1e;border-radius:10px;padding:9px 12px 6px}
+.cw{color:#d0d0d0;text-align:right;font-size:11px;letter-spacing:5px;margin-top:5px;font-weight:bold;line-height:13px}
 
 /* ---------- LCD ---------- */
-.lcd{background:linear-gradient(#d4dbcc,#c7cfbd);height:170px;border-radius:3px;box-shadow:inset 0 2px 6px rgba(0,0,0,.45);color:#0d0d0d;position:relative;overflow:hidden;
+.lcd{background:linear-gradient(#d4dbcc,#c7cfbd);height:132px;border-radius:3px;box-shadow:inset 0 2px 6px rgba(0,0,0,.45);color:#0d0d0d;position:relative;overflow:hidden;
   font-family:"Segoe UI",Roboto,Arial,sans-serif;font-weight:600}
 .lcd.off{background:#b8bfb0}
 .st{height:16px;font-size:10px;padding:2px 6px 0;display:flex;align-items:center;font-weight:700;position:relative;border-bottom:none!important}
 .st .sl{display:flex;gap:4px;align-items:center}.st .sm{flex:1;text-align:center;font-size:10px}.st .sr{position:absolute;left:74%;top:2px;font-size:9px;line-height:12px}
 .st .inv{background:#111;color:#d4dbcc;padding:0 2px;border-radius:1px;line-height:11px;font-size:9px}
 .st .ic{font-size:9px;letter-spacing:-.5px}
-.main{position:relative;height:152px;padding:4px 9px;font-size:19px;line-height:24px}
-.inp{font-size:24px;line-height:1.5;max-height:92px;overflow:hidden;display:block;letter-spacing:.3px;padding-top:2px}
+.main{position:relative;height:114px;padding:2px 9px;font-size:19px;line-height:24px}
+.inp{font-size:24px;line-height:1.4;max-height:68px;overflow:hidden;display:block;letter-spacing:.3px;padding-top:2px}
 .inp .fr{font-size:.82em}
-.res{position:absolute;right:10px;bottom:6px;font-size:28px;text-align:right;max-width:340px;white-space:nowrap;font-weight:700}
+.res{position:absolute;right:10px;bottom:3px;font-size:28px;text-align:right;max-width:340px;white-space:nowrap;font-weight:700}
 .res .fr{font-size:.8em}
 .ph{display:inline-block;width:.6em;height:.85em;border:1.5px dotted #222;vertical-align:middle;margin:0 2px;position:relative;box-sizing:border-box}
 .ph .cur{position:absolute;left:1px;top:1px;bottom:1px;height:auto;margin:0}
@@ -52,7 +52,7 @@ body{margin:0;background:#e9ecf1;display:flex;flex-direction:column;align-items:
 .pc{font-weight:700}
 sup{font-size:.62em}
 .mt{font-size:15px;font-weight:800;border-bottom:1.5px solid #333;margin-bottom:2px;height:23px;line-height:22px}
-.mi,.li{height:30px;line-height:30px;padding:0 4px;white-space:nowrap;overflow:hidden;display:flex;align-items:center;font-size:19px;margin-right:9px}
+.mi,.li{height:27px;line-height:27px;padding:0 4px;white-space:nowrap;overflow:hidden;display:flex;align-items:center;font-size:19px;margin-right:9px}
 .mi.sel{background:#111;color:#d4dbcc}
 .mn{margin-right:5px;font-size:17px}
 .ml{overflow:hidden;text-overflow:ellipsis}
@@ -70,8 +70,8 @@ sup{font-size:.62em}
 .tile.sel{background:#111;color:#d4dbcc}
 .tile .tn{position:absolute;right:6px;top:2px;font-size:15px}
 .tile svg{width:34px;height:26px;display:block;margin:0 auto 4px}
-table.dt{border-collapse:collapse;font-size:17px;width:calc(100% - 4px)}
-table.dt td,table.dt th{border:1px solid #555;padding:0 5px;height:25px;text-align:right;white-space:nowrap;overflow:hidden;max-width:130px}
+table.dt{border-collapse:collapse;font-size:16px;width:calc(100% - 4px)}
+table.dt td,table.dt th{border:1px solid #555;padding:0 5px;height:21px;line-height:19px;text-align:right;white-space:nowrap;overflow:hidden;max-width:130px}
 table.dt th{text-align:center;font-size:15px}
 table.dt td.sel{background:#111;color:#d4dbcc}
 table.dt td.n{width:26px;text-align:center;font-size:13px}
@@ -83,13 +83,13 @@ table.dt td.n{width:26px;text-align:center;font-size:13px}
 .cc{height:24px;line-height:24px;padding:0 3px;white-space:nowrap;overflow:hidden}
 .cc.sel{background:#111;color:#d4dbcc}
 .pgn{position:absolute;right:6px;bottom:2px;font-size:11px}
-.none{font-size:18px;line-height:30px;padding-top:6px}
+.none{font-size:18px;line-height:26px;padding-top:2px}
 .none small{font-size:14px}
 /* large text option */
 .lcd.big .main{font-size:22px}
 .lcd.big .inp{font-size:30px}.lcd.big .res{font-size:34px}
-.lcd.big .mi,.lcd.big .li{height:40px;line-height:40px;font-size:23px}
-.lcd.big table.dt{font-size:20px}.lcd.big table.dt td{height:32px}
+.lcd.big .mi,.lcd.big .li{height:36px;line-height:36px;font-size:23px}
+.lcd.big table.dt{font-size:20px}.lcd.big table.dt td{height:26px}
 .lcd.big .tile{font-size:15px}
 
 /* ---------- keys ---------- */
@@ -274,7 +274,7 @@ body.deco-mac .calc{border-radius:14px 14px 18px 18px;box-shadow:0 0 0 2px #000,
 body.deco-mac .bezel{border-radius:8px;box-shadow:inset 3px 3px 0 #bdb49b,inset -2px -2px 0 #fffaf0;padding:16px 16px 8px}
 body.deco-mac .lcd{border-radius:6px;box-shadow:0 0 0 2px #000,inset 0 0 18px rgba(0,0,0,.12);font-family:Chicago,"ChicagoFLF",Charcoal,Geneva,"Courier New",monospace;font-weight:700}
 body.deco-mac .lcd::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(transparent 0 2px,rgba(0,0,0,.05) 2px 3px)}
-body.deco-mac .brand{font:italic 400 26px "Apple Garamond",Garamond,"Times New Roman",serif;letter-spacing:-.5px}
+body.deco-mac .brand{font:italic 400 19px "Apple Garamond",Garamond,"Times New Roman",serif;letter-spacing:-.5px}
 body.deco-mac .model{font-family:Geneva,Verdana,sans-serif}
 body.deco-mac .cw{font:400 17px "Apple Garamond",Garamond,"Times New Roman",serif;color:#222}
 body.deco-mac .btn,body.deco-mac .pb,body.deco-mac .scroll{border:2px solid #000!important;box-shadow:2px 2px 0 #000!important;border-radius:7px!important}
@@ -354,38 +354,6 @@ body.deco-glassd .tile .tn::after{background:#ffd60a;color:#05060c}
 body.deco-glassd .tile.sel .tn::after{background:#0d1838;color:#fff}
 body.deco-ios6 .tile .tn::after{background:#1d2a1a;color:#e6eedf}
 @media (prefers-reduced-motion:reduce){body.apple *,body.apple{animation:none!important}}
-
-/* ===== Sunny Sky doodle skins (static + animated) ===== */
-body.deco-sky .calc,body.deco-skyanim .calc{background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22320%22%3E%3Cpath%20d%3D%22M18%2040a9%209%200%200%201%2014-7%2012%2012%200%200%201%2022%202%208%208%200%200%201%204%2015h-38a7%207%200%200%201-2-10z%22%20fill%3D%22%23fff%22%20stroke%3D%22%23222%22%20stroke-width%3D%221.6%22%2F%3E%3Cpath%20d%3D%22M300%20120a9%209%200%200%201%2014-7%2012%2012%200%200%201%2022%202%208%208%200%200%201%204%2015h-38a7%207%200%200%201-2-10z%22%20fill%3D%22%23fff%22%20stroke%3D%22%23222%22%20stroke-width%3D%221.6%22%2F%3E%3Cpath%20d%3D%22M120%20250a9%209%200%200%201%2014-7%2012%2012%200%200%201%2022%202%208%208%200%200%201%204%2015h-38a7%207%200%200%201-2-10z%22%20fill%3D%22%23fff%22%20stroke%3D%22%23222%22%20stroke-width%3D%221.6%22%2F%3E%3Cg%20fill%3D%22%23222%22%3E%3Cpath%20d%3D%22M352%2026v12a3%203%200%201%201-1.6-2.6V26z%22%2F%3E%3Cpath%20d%3D%22M60%20180v10a3%203%200%201%201-1.6-2.6V182l8-2v8a3%203%200%201%201-1.6-2.6V180z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") 0 0/400px 320px repeat,url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2240%22%20height%3D%2226%22%3E%3Cpath%20d%3D%22M0%202l10%2010%2010-10%2010%2010%2010-10v12l-10%2010-10-10-10%2010L0%2014z%22%20fill%3D%22%23141414%22%2F%3E%3C%2Fsvg%3E") 0 calc(100% - 64px)/40px 26px repeat-x,
-  linear-gradient(180deg,#fdf0a6 0%,#c7e8f6 30%,#d4ecf4 58%,#fbe68f 80%,#f5d457 100%);box-shadow:0 16px 36px rgba(0,0,0,.35),inset 0 0 0 3px #222;overflow:hidden}
-body.deco-sky .bezel,body.deco-skyanim .bezel{background:#1d1e21;box-shadow:0 0 0 2px #111}
-body.deco-sky .cw,body.deco-skyanim .cw{color:#d6d6d6;opacity:1}
-body.deco-sky .brand,body.deco-skyanim .brand{text-shadow:0 0 3px #fff8d0,0 0 3px #fff8d0}
-body.deco-sky .tl,body.deco-sky .st2,body.deco-skyanim .tl,body.deco-skyanim .st2{text-shadow:0 0 3px #fff,0 0 3px #fff}
-body.deco-sky .pb,body.deco-sky .scroll,body.deco-skyanim .pb,body.deco-skyanim .scroll{background:#f6c92e;color:#111;border:2px solid #111}
-body.deco-sky #top>.k:nth-child(3) .btn,body.deco-skyanim #top>.k:nth-child(3) .btn{background:#e5484d;color:#111}
-body.deco-sky #top>.k:nth-child(12) .btn,body.deco-skyanim #top>.k:nth-child(12) .btn{background:#f6c92e;color:#111}
-body.deco-sky #g5 .cell:nth-child(10) .btn,body.deco-sky #g5 .cell:nth-child(15) .btn,
-body.deco-skyanim #g5 .cell:nth-child(10) .btn,body.deco-skyanim #g5 .cell:nth-child(15) .btn{background:#4f8fe0;color:#111}
-body.deco-sky .chips button,body.deco-skyanim .chips button{border:2px solid #111;color:#111}
-body.deco-sky .chips [data-c=ang],body.deco-skyanim .chips [data-c=ang]{background:#e5484d}
-body.deco-sky .chips [data-c=io],body.deco-skyanim .chips [data-c=io]{background:#f6c92e}
-body.deco-sky .chips [data-c=fr],body.deco-skyanim .chips [data-c=fr]{background:#93ccef}
-body.deco-sky .chips [data-c=nf],body.deco-skyanim .chips [data-c=nf]{background:#4f8fe0}
-body.deco-sky .chips .ico,body.deco-skyanim .chips .ico{border:none;background:transparent}
-/* animated version */
-body.deco-skyanim .calc{animation:skyDrift 40s linear infinite}
-@keyframes skyDrift{to{background-position:400px 0,0 calc(100% - 64px),0 0}}
-body.deco-skyanim .calc::after{content:"";position:absolute;top:30px;left:-50px;width:34px;height:28px;pointer-events:none;z-index:5;
-  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2234%22%20height%3D%2228%22%20viewBox%3D%220%200%2034%2028%22%3E%3Cellipse%20cx%3D%2216%22%20cy%3D%2216%22%20rx%3D%2210%22%20ry%3D%228.5%22%20fill%3D%22%23ffd93b%22%20stroke%3D%22%23222%22%20stroke-width%3D%221.5%22%2F%3E%3Ccircle%20cx%3D%2221%22%20cy%3D%2212%22%20r%3D%221.6%22%20fill%3D%22%23222%22%2F%3E%3Cpath%20d%3D%22M26%2015l6%201.5-6%202z%22%20fill%3D%22%23f28a1c%22%20stroke%3D%22%23222%22%20stroke-width%3D%221%22%2F%3E%3Cpath%20d%3D%22M13%2014c-4-8-10-6-11-3%203%200%206%202%209%206z%22%20fill%3D%22%23ffe680%22%20stroke%3D%22%23222%22%20stroke-width%3D%221.3%22%3E%3CanimateTransform%20attributeName%3D%22transform%22%20type%3D%22rotate%22%20values%3D%220%2013%2015%3B-35%2013%2015%3B0%2013%2015%22%20dur%3D%22.35s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M10%207l2%203M14%205l1%204%22%20stroke%3D%22%23222%22%20stroke-width%3D%221.3%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat;animation:skyBird 11s linear infinite}
-@keyframes skyBird{0%{transform:translate(0,0)}25%{transform:translate(130px,-14px)}50%{transform:translate(250px,6px)}75%{transform:translate(370px,-10px)}100%{transform:translate(520px,0)}}
-body.deco-skyanim .calc::before{content:"";position:absolute;right:28px;top:330px;width:60px;height:40px;pointer-events:none;z-index:5;
-  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2260%22%20height%3D%2240%22%3E%3Cg%20fill%3D%22%23222%22%3E%3Cpath%20d%3D%22M8%206v20a4%204%200%201%201-2-3.4V6z%22%2F%3E%3Cpath%20d%3D%22M34%202v18a4%204%200%201%201-2-3.4V6l14-3v14a4%204%200%201%201-2-3.4V2z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/contain no-repeat;animation:skyNotes 3.2s ease-in-out infinite}
-@keyframes skyNotes{0%{transform:translateY(10px) rotate(-6deg);opacity:0}30%{opacity:1}100%{transform:translateY(-40px) rotate(8deg);opacity:0}}
-body.deco-skyanim .okb{animation:skyBop 2.4s ease-in-out infinite}
-@keyframes skyBop{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px) rotate(-4deg)}}
-body.deco-skyanim .btn.pr{transform:translateY(2px) scale(.94)}
-@media (prefers-reduced-motion:reduce){body.deco-skyanim *,body.deco-skyanim .calc,body.deco-skyanim .calc::before,body.deco-skyanim .calc::after{animation:none!important}}
 </style>
 </head>
 <body>
@@ -410,7 +378,7 @@ body.deco-skyanim .btn.pr{transform:translateY(2px) scale(.94)}
 </div><div class="grip" id="grip" title="Drag to resize"></div></div>
 <div id="tip" class="tip"></div>
 <div id="skinmodal" class="skmodal"></div>
-<div class="foot">For classroom learning purposes only · Nov 2026<br>Drag the ◢ corner to resize · Larger screen text: SETTINGS ❷ System Settings<br>
+<div class="foot">For classroom learning purposes only · Nov 2026<br>Drag the ◢ corner to resize (double-click it to fit the window again) · Larger screen text: SETTINGS ❷ System Settings<br>
 Keyboard: digits + - * / ^ ( ) . &nbsp;Enter = EXE &nbsp;Backspace = DEL &nbsp;Esc = AC &nbsp;arrows &nbsp;O = OK &nbsp;H = HOME &nbsp;S = SHIFT</div>
 <script>
 /* =====================================================================
@@ -815,7 +783,9 @@ function formatChoices(v,kind){
 const STRUCT={'⁄':()=>({type:'frac',k:[[],[]]}),'⌟':()=>({type:'mixed',k:[[],[],[]]}),'√(':()=>({type:'sqrt',k:[[]]}),
   'ⁿ√':()=>({type:'nroot',k:[[],[]]}),'^(':()=>({type:'pow',k:[[]]}),'logb':()=>({type:'log',k:[[],[]]}),
   'SCI':()=>({type:'sci',k:[[]]}),'Σ':()=>({type:'sum',k:[[],[],[]]}),'Π':()=>({type:'prod',k:[[],[],[]]}),
-  'REC':()=>({type:'rec',k:[[]]}),'Abs':()=>({type:'abs',k:[[]]})};
+  'REC':()=>({type:'rec',k:[[]]}),'Abs':()=>({type:'abs',k:[[]]}),'BASE':()=>({type:'base',k:[[]]})};
+const POSTFIX=new Set(['²','³','⁻¹','!','%','^(']);
+const NOOPND=new Set(['+','−','×','÷','(−)','nPr','nCr',',','=','≠','<','>','≤','≥','∠','÷R','⌟']);
 function flat(row){ const o=[]; for(const it of row){
   if(typeof it==='string'){ o.push(it); continue; } const [a,b,c]=it.k.map(flat);
   switch(it.type){
@@ -830,6 +800,7 @@ function flat(row){ const o=[]; for(const it of row){
     case 'prod': o.push('Π(',...a,',',...b,',',...c,')'); break;
     case 'rec': o.push('REC(',...a,')'); break;
     case 'abs': o.push('Abs(',...a,')'); break;
+    case 'base': o.push('(',...a,')'); break;
   } }
   return o; }
 const DISP={'(−)':'<span class="neg">−</span>','nPr':'<b class="pc">P</b>','nCr':'<b class="pc">C</b>','i':'<i>i</i>','x':'<i>x</i>','y':'<i>y</i>','z':'<i>z</i>',
@@ -857,7 +828,8 @@ function rowHTML(row,ed){
       case 'sum': s+=`Σ(${k[0]},${k[1]},${k[2]})`; break;
       case 'prod': s+=`Π(${k[0]},${k[1]},${k[2]})`; break;
       case 'rec': s+=`[${k[0]}]`; break;
-      case 'abs': s+=`Abs(${k[0]})`; break; }
+      case 'abs': s+=`Abs(${k[0]})`; break;
+      case 'base': s+=it.k[0].length>1?`(${k[0]})`:k[0]; break; }
       return; }
     switch(it.type){
       case 'frac': s+=`<span class="fr"><span>${k[0]}</span><span>${k[1]}</span></span>`; break;
@@ -869,7 +841,8 @@ function rowHTML(row,ed){
       case 'sci': s+=`<span class="x10">×10<sup class="pw">${k[0]}</sup></span>`; break;
       case 'sum': case 'prod': s+=`<span class="bop"><span class="bu">${k[2]}</span><span class="bs">${it.type==='sum'?'Σ':'Π'}</span><span class="bl"><i>x</i>=${k[1]}</span></span>(${k[0]})`; break;
       case 'rec': s+=`<span class="ovl">${k[0]}</span>`; break;
-      case 'abs': s+=`|${k[0]}|`; break; } });
+      case 'abs': s+=`|${k[0]}|`; break;
+      case 'base': s+=it.k[0].length>1&&it.k[0].some(t=>typeof t!=='string'||!/^[0-9.A-Fxyzπe]$/.test(t))?`(${k[0]})`:k[0]; break; } });
   return s+C_(row.length); }
 class Ed{
   constructor(root){ this.load(root||[]); this.ov=false; }
@@ -878,7 +851,8 @@ class Ed{
   pos(){ const o=[]; const w=r=>{ for(let i=0;i<=r.length;i++){ o.push([r,i]); const it=r[i]; if(it&&typeof it==='object') it.k.forEach(w);} }; w(this.root); return o; }
   idx(P){ return P.findIndex(p=>p[0]===this.cr&&p[1]===this.ci); }
   left(){ const P=this.pos(); let k=this.idx(P)-1; if(k<0) k=P.length-1; [this.cr,this.ci]=P[k]; }
-  right(){ const P=this.pos(); let k=this.idx(P)+1; if(k>=P.length) k=0; [this.cr,this.ci]=P[k]; }
+  right(){ const P=this.pos(); let k=this.idx(P)+1; if(k>=P.length) k=0; [this.cr,this.ci]=P[k];
+    const pv=this.cr[this.ci-1], nx=this.cr[this.ci]; if(pv&&pv.type==='base'&&nx&&nx.type==='pow'){ this.cr=nx.k[0]; this.ci=0; } }
   findParent(row){ let f=null; const w=r=>{ for(const it of r) if(it&&typeof it==='object'){ if(it.k.includes(row)) f=it; it.k.forEach(w);} }; w(this.root); return f; }
   rowOf(item){ let f=null; const w=r=>{ if(r.includes(item)) f=r; for(const it of r) if(it&&typeof it==='object') it.k.forEach(w); }; w(this.root); return f; }
   vmove(d){
@@ -894,6 +868,11 @@ class Ed{
     }
     return false; }
   ins(tok){
+    if(POSTFIX.has(tok)&&!(S.io==='LL'||S.io==='LD')){ const pv=this.cr[this.ci-1];
+      if(pv===undefined||(typeof pv==='string'&&(NOOPND.has(pv)||pv.endsWith('(')))){
+        const b=STRUCT.BASE(); const row=this.cr, at=this.ci;
+        row.splice(at,0,b); this.cr=row; this.ci=at+1; this.ins(tok);
+        this.cr=b.k[0]; this.ci=0; return; } }
     if(STRUCT[tok]){ const it=STRUCT[tok]();
       if(tok==='⁄'){ const R=this.cr, isD=t=>typeof t==='string'&&/^[0-9.]$/.test(t);
         /* take the whole term before the cursor as the numerator, including x², x³, x⁻¹, x!, % and powers */
@@ -1538,12 +1517,15 @@ function build(){
 /* ---------- resize by dragging the corner ---------- */
 function initResize(){
   const calc=document.getElementById('calc'), grip=document.getElementById('grip');
-  let z=1; try{ z=parseFloat(localStorage.getItem('fxzoom'))||1; }catch(e){}
-  const apply=()=>{ calc.style.zoom=z; try{ localStorage.setItem('fxzoom',z); }catch(e){} };
-  apply();
+  let z=1, manual=false; try{ const sv=parseFloat(localStorage.getItem('fxzoom2')); if(sv){ z=sv; manual=true; } }catch(e){}
+  const apply=(save)=>{ calc.style.zoom=z; if(save){ manual=true; try{ localStorage.setItem('fxzoom2',z); }catch(e){} } };
+  const fit=()=>{ if(manual){ apply(false); return; } calc.style.zoom=1; const r=calc.getBoundingClientRect();
+    z=Math.max(0.5,Math.min(1,(window.innerHeight-28)/r.height,(window.innerWidth-24)/r.width)); z=Math.floor(z*100)/100; apply(false); };
+  fit(); window.addEventListener('resize',fit);
+  grip.addEventListener('dblclick',()=>{ manual=false; try{ localStorage.removeItem('fxzoom2'); }catch(e){} fit(); });
   let drag=null;
   const start=(x,y)=>{ drag={x,y,z0:z,w:calc.offsetWidth,h:calc.offsetHeight}; document.body.style.cursor='nwse-resize'; };
-  const move=(x,y)=>{ if(!drag) return; const dz=Math.max((x-drag.x)/drag.w,(y-drag.y)/drag.h); z=Math.min(2.5,Math.max(0.5,drag.z0+dz)); apply(); };
+  const move=(x,y)=>{ if(!drag) return; const dz=Math.max((x-drag.x)/drag.w,(y-drag.y)/drag.h); z=Math.min(2.5,Math.max(0.5,drag.z0+dz)); apply(true); };
   const end=()=>{ drag=null; document.body.style.cursor=''; };
   grip.addEventListener('mousedown',e=>{ e.preventDefault(); e.stopPropagation(); start(e.clientX,e.clientY); });
   window.addEventListener('mousemove',e=>{ if(drag){ e.preventDefault(); move(e.clientX,e.clientY); } });
