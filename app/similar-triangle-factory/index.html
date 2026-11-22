@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Clone Factory</title>
-    
+    <title>The Clone Factory – Similar Triangles</title>
+
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,267 +19,888 @@
 
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #111827; /* gray-900 */
-            height: 100vh;
+            margin: 0; padding: 0;
+            background-color: #0b1120;
+            background-image:
+                radial-gradient(circle at 20% 0%, rgba(59,130,246,0.10), transparent 40%),
+                radial-gradient(circle at 80% 100%, rgba(34,197,94,0.08), transparent 40%);
+            min-height: 100vh;
             overflow-y: auto;
         }
-        /* Custom font classes to match the React code's style injection */
         .math-font { font-family: 'JetBrains Mono', monospace; }
         .title-font { font-family: 'Russo One', sans-serif; }
         .crt-scanline {
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%),
+                        linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06));
             background-size: 100% 2px, 3px 100%;
             pointer-events: none;
         }
-        @keyframes slideIn {
-            0% { transform: translateX(-100%); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
+        @keyframes slideIn { 0% { transform: translateX(-60px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+        .slide-in { animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.6) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.1) rotate(-10deg); opacity: 1; } 100% { transform: scale(1) rotate(-12deg); opacity: 1; } }
+        .stamp { animation: popIn 0.45s ease-out forwards; }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
+        .shake { animation: shake 0.4s ease-in-out; }
+
+        /* ---------- Blueprint & factory surfaces ---------- */
+        .blueprint-bg {
+            background-color: #0c2a52;
+            background-image:
+                linear-gradient(rgba(147,197,253,0.18) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(147,197,253,0.18) 1px, transparent 1px),
+                linear-gradient(rgba(147,197,253,0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(147,197,253,0.07) 1px, transparent 1px);
+            background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
         }
-        .slide-in {
-            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .bay-bg {
+            background-color: #111827;
+            background-image:
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 9px),
+                radial-gradient(circle at 50% 40%, rgba(74,222,128,0.07), transparent 65%);
         }
+        .hazard { background: repeating-linear-gradient(45deg, #facc15 0 10px, #111827 10px 20px); }
+        .conveyor {
+            height: 16px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.12), transparent 40%, rgba(0,0,0,0.4)),
+                repeating-linear-gradient(90deg, #374151 0 14px, #1f2937 14px 28px);
+            border-top: 2px solid #4b5563;
+            border-bottom: 2px solid #030712;
+            animation: belt 1.2s linear infinite;
+        }
+        .conveyor.fast { animation-duration: 0.35s; }
+        @keyframes belt { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 28px 0; } }
+
+        /* ---------- Inventory parts ---------- */
+        .steel {
+            background:
+                repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 1px, transparent 1px 3px),
+                linear-gradient(180deg, #f3f4f6 0%, #cbd5e1 30%, #94a3b8 52%, #64748b 56%, #cbd5e1 100%);
+            border: 1px solid #334155;
+            color: #0f172a;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -2px 0 rgba(0,0,0,0.25), 0 3px 0 #0f172a, 0 6px 10px rgba(0,0,0,0.45);
+        }
+        .brass {
+            background:
+                repeating-radial-gradient(circle at 50% 120%, rgba(255,255,255,0.08) 0 1px, transparent 1px 3px),
+                linear-gradient(180deg, #fef3c7 0%, #fbbf24 35%, #b45309 60%, #f59e0b 100%);
+            border: 1px solid #78350f;
+            color: #451a03;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -2px 0 rgba(0,0,0,0.25), 0 3px 0 #451a03, 0 6px 10px rgba(0,0,0,0.45);
+        }
+        .copper {
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,0.10) 0 2px, transparent 2px 6px),
+                linear-gradient(160deg, #fed7aa 0%, #ea580c 45%, #9a3412 70%, #fb923c 100%);
+            border: 1px solid #7c2d12;
+            color: #1c0a00;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 3px 0 #431407, 0 6px 10px rgba(0,0,0,0.45);
+        }
+        .bolt-hole {
+            width: 9px; height: 9px; border-radius: 9999px; flex-shrink: 0;
+            background: radial-gradient(circle at 40% 35%, #475569 0%, #0f172a 70%);
+            box-shadow: inset 0 1px 2px #000, 0 1px 0 rgba(255,255,255,0.7);
+        }
+        .socket { background: #030712; box-shadow: inset 0 2px 6px #000, 0 0 0 1px rgba(255,255,255,0.05); }
+        .part-btn { transition: transform 0.15s ease, opacity 0.2s ease, filter 0.2s ease; }
+        .part-btn:not(:disabled):hover { transform: translateY(-3px); }
+        .part-used { opacity: 0.28; filter: grayscale(1); }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect, useRef, useMemo } = React;
 
-        // --- UTILITY FUNCTIONS ---
-
+        // =====================================================================
+        // UTILITIES
+        // =====================================================================
         const shuffleArray = (array) => {
-            const newArray = [...array];
-            for (let i = newArray.length - 1; i > 0; i--) {
+            const a = [...array];
+            for (let i = a.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+                [a[i], a[j]] = [a[j], a[i]];
             }
-            return newArray;
+            return a;
         };
-
-        const getRandomInt = (min, max) => {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        };
-
+        const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
         const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        const fmt = (n) => String(Math.round(n * 100) / 100);
+        const deg = (n) => `${n}°`;
 
-        // --- COMPONENTS ---
+        const coefTerm = (c, v) => (c === 1 ? v : `${fmt(c)}${v}`);
+        const pow = (v, e) => (e === 1 ? v : `${v}^${e}`);
+        const idxTerm = (c, v, e) => `${c === 1 ? '' : c}${pow(v, e)}`;
+        const signed = (n) => (n < 0 ? `(−${Math.abs(n)})` : `${n}`);
 
-        const MathText = ({ text, className = "" }) => {
-            if (!text) return null;
-            const parts = text.toString().split('^');
+        // Vertices: A bottom-left, B bottom-right, C top. base = AB, right = BC, left = AC
+        const SIDE_KEYS = ['base', 'right', 'left'];
+        const ANGLE_KEYS = ['A', 'B', 'C'];
+        const slotType = (slot) => (ANGLE_KEYS.includes(slot) ? 'ang' : slot === 'area' ? 'area' : 'len');
+        const partType = (v) => (v.includes('°') ? 'ang' : v.includes('A') ? 'area' : 'len');
+        const SLOT_NAMES = {
+            base: "side A′B′", right: "side B′C′", left: "side A′C′",
+            A: "angle A′", B: "angle B′", C: "angle C′", area: "area"
+        };
+        const PROTO_NAMES = { base: "AB", right: "BC", left: "AC", A: "∠A", B: "∠B", C: "∠C", area: "area" };
+
+        const PROTOCOLS = {
+            SSS: { name: "SSS", full: "Side–Side–Side", rule: "All three sides are multiplied by the scale factor." },
+            SAS: { name: "SAS", full: "Side–Angle–Side", rule: "Two sides are multiplied by the scale factor. The angle between them stays the same." },
+            RHS: { name: "RHS", full: "Right angle–Hypotenuse–Side", rule: "The right angle stays 90°. The hypotenuse and one other side are multiplied by the scale factor." },
+            AA:  { name: "AA",  full: "Angle–Angle", rule: "Angles never change when a shape is enlarged or reduced. Angles in a triangle add to 180°." },
+            AREA:{ name: "AREA", full: "Area scaling", rule: "Lengths are multiplied by k. Areas are multiplied by k²." }
+        };
+
+        // ---- question builders ----------------------------------------------
+        const sideScaleNumeric = (q, key, n, k) => {
+            const v = n * k;
+            q.target[key] = fmt(v);
+            q.working[key] = `${fmt(n)} × ${fmt(k)} = ${fmt(v)}`;
+            q.hint[key] = `Multiply ${PROTO_NAMES[key]} by the scale factor: ${fmt(n)} × ${fmt(k)} = ?`;
+            q.distractors.push(fmt(n + k), fmt(v + 1), fmt(v - 1));
+            if (k < 1) q.distractors.push(fmt(n / k)); else q.distractors.push(fmt(n * (k + 1)));
+        };
+        const angleKeep = (q, key, a, k) => {
+            q.target[key] = deg(a);
+            q.working[key] = `${deg(a)} stays ${deg(a)} (angles don't change)`;
+            q.hint[key] = `When a shape is enlarged, do its angles get bigger? Look at ${PROTO_NAMES[key]} on the prototype.`;
+            if (Number.isInteger(k) && a * k <= 360) q.distractors.push(deg(a * k));
+            if (a !== 90) q.distractors.push(deg(180 - a));
+        };
+
+        const finalize = (q) => {
+            const correct = q.slots.map(s => q.target[s]);
+            const pool = shuffleArray([...new Set(q.distractors.map(String))])
+                .filter(d => d && !correct.includes(d) && !d.startsWith('-') && d !== '0');
+            const total = Math.max(correct.length + 4, 8);
+            return { ...q, inventory: shuffleArray([...correct, ...pool.slice(0, total - correct.length)]) };
+        };
+
+        const blank = (extra) => ({ proto: {}, target: {}, working: {}, hint: {}, distractors: [], rightAt: null, ...extra });
+
+        // 3 integer sides: valid, clearly non-flat, scalene, NOT right-angled
+        const randomScalene = (lo, hi) => {
+            for (let t = 0; t < 500; t++) {
+                const s = [getRandomInt(lo, hi), getRandomInt(lo, hi), getRandomInt(lo, hi)].sort((a, b) => a - b);
+                if (s[0] === s[1] || s[1] === s[2]) continue;
+                if (s[0] + s[1] <= s[2] * 1.2) continue;
+                if (s[0] * s[0] + s[1] * s[1] === s[2] * s[2]) continue;
+                return s;
+            }
+            return [5, 7, 8];
+        };
+
+        // =====================================================================
+        // LEVEL GENERATION  (geom = true proportions used for drawing)
+        // =====================================================================
+        const generateLevelData = (round) => {
+            const serial = () => `CF-${round}${getRandomInt(100, 999)}`;
+            const qs = [];
+
+            if (round === 1) {
+                {   // SSS – right triangle (Pythagorean triple)
+                    const [p, b, h] = getRandomItem([[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17], [9, 12, 15]]);
+                    const k = getRandomInt(2, 4);
+                    const q = blank({ test: 'SSS', geom: { left: p, base: b, right: h }, rightAt: 'A',
+                        slots: ['left', 'base', 'right'], scaleText: `${k}`, scaleNum: k,
+                        brief: "Multiply every side by the scale factor. The hypotenuse (opposite the right angle) is still the longest side." });
+                    q.proto = { left: `${p}`, base: `${b}`, right: `${h}` };
+                    sideScaleNumeric(q, 'left', p, k); sideScaleNumeric(q, 'base', b, k); sideScaleNumeric(q, 'right', h, k);
+                    qs.push(q);
+                }
+                {   // SSS – scalene, enlargement or reduction
+                    const k = Math.random() > 0.5 ? 2 : 0.5;
+                    const s = randomScalene(4, 10);
+                    const [l, r] = Math.random() > 0.5 ? [s[0], s[1]] : [s[1], s[0]];
+                    const q = blank({ test: 'SSS', geom: { left: l, right: r, base: s[2] },
+                        slots: ['left', 'right', 'base'], scaleText: `${k}`, scaleNum: k,
+                        brief: k < 1 ? "A scale factor less than 1 makes a smaller copy. Multiply each side by 0.5 (halve it)." : "Multiply every side by the scale factor." });
+                    q.proto = { left: `${l}`, right: `${r}`, base: `${s[2]}` };
+                    sideScaleNumeric(q, 'left', l, k); sideScaleNumeric(q, 'right', r, k); sideScaleNumeric(q, 'base', s[2], k);
+                    qs.push(q);
+                }
+                {   // SAS – included angle at A
+                    const k = getRandomInt(2, 3);
+                    let ang = getRandomInt(4, 12) * 10;
+                    if (ang === 90) ang = 100;
+                    let s1 = getRandomInt(4, 9), s2 = getRandomInt(5, 11);
+                    if (s1 === s2) s2 += 1;
+                    if (s2 > 2 * s1) s2 = 2 * s1 - 1;
+                    const third = Math.sqrt(s1 * s1 + s2 * s2 - 2 * s1 * s2 * Math.cos(ang * Math.PI / 180));
+                    const q = blank({ test: 'SAS', geom: { left: s1, base: s2, right: third },
+                        slots: ['left', 'base', 'A'], scaleText: `${k}`, scaleNum: k,
+                        brief: "The marked angle is between the two given sides (the included angle). Sides scale, the angle does not." });
+                    q.proto = { left: `${s1}`, base: `${s2}`, A: deg(ang) };
+                    sideScaleNumeric(q, 'left', s1, k); sideScaleNumeric(q, 'base', s2, k); angleKeep(q, 'A', ang, k);
+                    qs.push(q);
+                }
+                {   // RHS – right angle at A, hypotenuse BC
+                    const [p, b, h] = getRandomItem([[5, 12, 13], [3, 4, 5], [8, 15, 17], [7, 24, 25], [20, 21, 29], [12, 35, 37]]);
+                    const k = getRandomInt(2, 4);
+                    const q = blank({ test: 'RHS', geom: { left: p, base: b, right: h }, rightAt: 'A',
+                        slots: ['left', 'right', 'A'], scaleText: `${k}`, scaleNum: k,
+                        brief: "BC is the hypotenuse – it is opposite the right angle and is the longest side." });
+                    q.proto = { left: `${p}`, right: `${h}`, A: '90°' };
+                    sideScaleNumeric(q, 'left', p, k); sideScaleNumeric(q, 'right', h, k);
+                    q.target.A = '90°';
+                    q.working.A = '90° stays 90° (a right angle stays a right angle)';
+                    q.hint.A = 'Does a right angle stay a right angle when the triangle gets bigger?';
+                    q.distractors.push('180°', deg(90 * k), '45°');
+                    qs.push(q);
+                }
+                {   // AA – angle sum
+                    let a, b, c;
+                    do { a = getRandomInt(7, 15) * 5; b = getRandomInt(8, 16) * 5; c = 180 - a - b; }
+                    while (c < 35 || a === b || b === c || a === c || a === 90 || b === 90 || c === 90);
+                    const k = getRandomInt(2, 4);
+                    const sr = (d) => Math.sin(d * Math.PI / 180) * 10; // sine rule
+                    const q = blank({ test: 'AA', geom: { right: sr(a), left: sr(b), base: sr(c) },
+                        slots: ['A', 'B', 'C'], scaleText: `${k}`, scaleNum: k,
+                        brief: "Angles are matched by their arc marks. Use the angle sum of a triangle to find ∠C′." });
+                    q.proto = { A: deg(a), B: deg(b) };
+                    angleKeep(q, 'A', a, k); angleKeep(q, 'B', b, k);
+                    q.target.C = deg(c);
+                    q.working.C = `180° − ${a}° − ${b}° = ${c}°`;
+                    q.hint.C = `Angles in a triangle add to 180°: 180° − ${a}° − ${b}° = ?`;
+                    q.distractors.push(deg(c * k), deg(a + b), deg(c + 10));
+                    qs.push(q);
+                }
+            } else if (round === 2) {
+                {
+                    const v = getRandomItem(['a', 'x', 'm', 'p']);
+                    const k = getRandomInt(2, 5);
+                    const [p, b, h] = getRandomItem([[3, 4, 5], [5, 12, 13]]);
+                    const q = blank({ test: 'SSS', geom: { left: p, base: b, right: h }, rightAt: 'A',
+                        slots: ['left', 'base', 'right'], scaleText: `${k}`, scaleNum: k,
+                        brief: `Multiply the number in front of ${v} (the coefficient) by the scale factor.` });
+                    q.proto = { left: coefTerm(p, v), base: coefTerm(b, v), right: coefTerm(h, v) };
+                    [['left', p], ['base', b], ['right', h]].forEach(([key, c]) => {
+                        q.target[key] = coefTerm(c * k, v);
+                        q.working[key] = `${coefTerm(c, v)} × ${k} = ${coefTerm(c * k, v)}`;
+                        q.hint[key] = `${coefTerm(c, v)} × ${k} = ?  (multiply the coefficient ${c} by ${k})`;
+                        q.distractors.push(coefTerm(c + k, v), `${coefTerm(c, v)}^${k}`, `${coefTerm(c, v)}+${k}`);
+                    });
+                    qs.push(q);
+                }
+                {
+                    const v = getRandomItem(['b', 'y', 'n']);
+                    const k = getRandomInt(3, 6);
+                    const q = blank({ test: 'SSS', geom: { left: 2, right: 3, base: 4 },
+                        slots: ['left', 'right', 'base'], scaleText: `${k}`, scaleNum: k,
+                        brief: "This triangle has an obtuse angle at C, so the longest side is AB, opposite it." });
+                    q.proto = { left: coefTerm(2, v), right: coefTerm(3, v), base: coefTerm(4, v) };
+                    [['left', 2], ['right', 3], ['base', 4]].forEach(([key, c]) => {
+                        q.target[key] = coefTerm(c * k, v);
+                        q.working[key] = `${coefTerm(c, v)} × ${k} = ${coefTerm(c * k, v)}`;
+                        q.hint[key] = `${coefTerm(c, v)} × ${k} = ?`;
+                        q.distractors.push(coefTerm(c + k, v), `${c}${v}^${k}`);
+                    });
+                    qs.push(q);
+                }
+                {
+                    const v = getRandomItem(['m', 't', 'h']);
+                    const k = getRandomInt(2, 4);
+                    const q = blank({ test: 'SAS', geom: { left: 4, base: 5, right: Math.sqrt(16 + 25 - 40 * Math.cos(65 * Math.PI / 180)) },
+                        slots: ['left', 'base', 'A'], scaleText: `${k}`, scaleNum: k,
+                        brief: "Even when the angle is a pronumeral, it still stays the same in a similar shape." });
+                    q.proto = { left: coefTerm(4, v), base: coefTerm(5, v), A: 'θ°' };
+                    [['left', 4], ['base', 5]].forEach(([key, c]) => {
+                        q.target[key] = coefTerm(c * k, v);
+                        q.working[key] = `${coefTerm(c, v)} × ${k} = ${coefTerm(c * k, v)}`;
+                        q.hint[key] = `${coefTerm(c, v)} × ${k} = ?`;
+                        q.distractors.push(coefTerm(c + k, v), `${coefTerm(c, v)}^2`);
+                    });
+                    q.target.A = 'θ°';
+                    q.working.A = 'θ° stays θ° (angles don\'t change)';
+                    q.hint.A = 'Angles never get multiplied by the scale factor.';
+                    q.distractors.push(`${k}θ°`, '2θ°', `(θ+${k})°`, '(180−θ)°');
+                    qs.push(q);
+                }
+                {
+                    const v = getRandomItem(['w', 'd', 'r']);
+                    const k = getRandomInt(4, 8);
+                    const q = blank({ test: 'RHS', geom: { left: 3, base: 4, right: 5 }, rightAt: 'A',
+                        slots: ['left', 'right', 'A'], scaleText: `${k}`, scaleNum: k,
+                        brief: "Find the hypotenuse first: it is opposite the right angle." });
+                    q.proto = { left: coefTerm(3, v), right: coefTerm(5, v), A: '90°' };
+                    [['left', 3], ['right', 5]].forEach(([key, c]) => {
+                        q.target[key] = coefTerm(c * k, v);
+                        q.working[key] = `${coefTerm(c, v)} × ${k} = ${coefTerm(c * k, v)}`;
+                        q.hint[key] = `${coefTerm(c, v)} × ${k} = ?`;
+                        q.distractors.push(coefTerm(c + k, v), `${c}${v}^${k}`);
+                    });
+                    q.distractors.push(coefTerm(4 * k, v));
+                    q.target.A = '90°';
+                    q.working.A = '90° stays 90°';
+                    q.hint.A = 'Does a right angle stay a right angle?';
+                    q.distractors.push(deg(90 * k), '180°');
+                    qs.push(q);
+                }
+                {
+                    const v = getRandomItem(['x', 'k', 'a']);
+                    const s = randomScalene(3, 9);
+                    const q = blank({ test: 'SSS', geom: { left: s[0], right: s[1], base: s[2] },
+                        slots: ['left', 'right', 'base'], scaleText: v, scaleNum: 2,
+                        brief: `The scale factor is ${v}. Multiplying a number by ${v} is written with the number first, e.g. 5 × ${v} = 5${v}.` });
+                    q.proto = { left: `${s[0]}`, right: `${s[1]}`, base: `${s[2]}` };
+                    [['left', s[0]], ['right', s[1]], ['base', s[2]]].forEach(([key, n]) => {
+                        q.target[key] = `${n}${v}`;
+                        q.working[key] = `${n} × ${v} = ${n}${v}`;
+                        q.hint[key] = `${n} × ${v} = ?`;
+                        q.distractors.push(`${n}+${v}`, `${v}^${n}`, `${n + 1}${v}`);
+                    });
+                    qs.push(q);
+                }
+            } else {
+                const idxSide = (q, key, c, v, e, k) => {
+                    q.target[key] = idxTerm(c, v, e + k);
+                    q.working[key] = `${idxTerm(c, v, e)} × ${pow(v, k)} = ${idxTerm(c, v, e + k)}   (add indices: ${e} + ${signed(k)} = ${e + k})`;
+                    q.hint[key] = `${idxTerm(c, v, e)} × ${pow(v, k)}: same base, so ADD the indices.`;
+                    [e * k, e - k, e + k + 1].filter(x => x !== 0).forEach(x => q.distractors.push(idxTerm(c, v, x)));
+                };
+                {
+                    const v = 'x', e = getRandomInt(2, 4), k = getRandomInt(2, 4);
+                    const q = blank({ test: 'SSS', geom: { left: 3, base: 4, right: 5 }, rightAt: 'A',
+                        slots: ['left', 'base', 'right'], scaleText: pow(v, k), scaleNum: 2,
+                        brief: "Multiplying powers with the same base: keep the base, add the indices." });
+                    q.proto = { left: idxTerm(3, v, e), base: idxTerm(4, v, e), right: idxTerm(5, v, e) };
+                    idxSide(q, 'left', 3, v, e, k); idxSide(q, 'base', 4, v, e, k); idxSide(q, 'right', 5, v, e, k);
+                    qs.push(q);
+                }
+                {
+                    const v = 'y', e = getRandomInt(4, 8), k = -getRandomInt(1, 3);
+                    const q = blank({ test: 'SSS', geom: { left: 2, right: 3, base: 4 },
+                        slots: ['left', 'right', 'base'], scaleText: pow(v, k), scaleNum: 0.5,
+                        brief: "Adding a negative index makes the index smaller." });
+                    q.proto = { left: idxTerm(2, v, e), right: idxTerm(3, v, e), base: idxTerm(4, v, e) };
+                    idxSide(q, 'left', 2, v, e, k); idxSide(q, 'right', 3, v, e, k); idxSide(q, 'base', 4, v, e, k);
+                    qs.push(q);
+                }
+                {
+                    const v = 'm', e = getRandomInt(2, 5), k = getRandomInt(2, 4);
+                    let ang = getRandomInt(5, 11) * 10;
+                    if (ang === 90) ang = 100;
+                    const q = blank({ test: 'SAS', geom: { left: 3, base: 5, right: Math.sqrt(9 + 25 - 30 * Math.cos(ang * Math.PI / 180)) },
+                        slots: ['left', 'base', 'A'], scaleText: pow(v, k), scaleNum: 2,
+                        brief: "Sides: add the indices. Angle: unchanged." });
+                    q.proto = { left: idxTerm(3, v, e), base: idxTerm(5, v, e), A: deg(ang) };
+                    idxSide(q, 'left', 3, v, e, k); idxSide(q, 'base', 5, v, e, k);
+                    q.target.A = deg(ang);
+                    q.working.A = `${deg(ang)} stays ${deg(ang)}`;
+                    q.hint.A = 'Angles are not affected by any scale factor – even one with indices.';
+                    q.distractors.push(deg(ang * k), deg(180 - ang));
+                    qs.push(q);
+                }
+                {
+                    const v = 'p', e = getRandomInt(2, 4), k = getRandomInt(2, 4);
+                    const q = blank({ test: 'AREA', geom: { left: 4, right: 5, base: 6 },
+                        slots: ['base', 'area'], scaleText: pow(v, k), scaleNum: 2,
+                        brief: "Length scale factor k → area scale factor k². Use (aᵐ)ⁿ = aᵐⁿ." });
+                    q.proto = { base: pow(v, e), area: 'A' };
+                    q.target.base = pow(v, e + k);
+                    q.working.base = `${pow(v, e)} × ${pow(v, k)} = ${pow(v, e + k)}   (add indices)`;
+                    q.hint.base = `${pow(v, e)} × ${pow(v, k)}: add the indices.`;
+                    q.target.area = `${v}^${2 * k}A`;
+                    q.working.area = `A × (${pow(v, k)})^2 = ${v}^${2 * k}A   (multiply indices: ${k} × 2 = ${2 * k})`;
+                    q.hint.area = `Area is multiplied by k². Here k = ${pow(v, k)}, so work out (${pow(v, k)})^2.`;
+                    q.distractors.push(pow(v, e * k), pow(v, e + k + 1), `${pow(v, k)}A`, `${v}^${k + 2}A`, `${v}^${k * k}A`, `${2 * k}A`, 'A^2');
+                    qs.push(q);
+                }
+            }
+            return qs.map(q => ({ ...finalize(q), serial: serial(), shrink: q.scaleNum < 1 }));
+        };
+
+        // =====================================================================
+        // GEOMETRY – exact layout from the side lengths (cosine rule)
+        // =====================================================================
+        const VB = { x: -38, y: -26, w: 176, h: 156 };
+        const vAdd = (a, b) => [a[0] + b[0], a[1] + b[1]];
+        const vSub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+        const vMul = (a, s) => [a[0] * s, a[1] * s];
+        const vLen = (a) => Math.hypot(a[0], a[1]);
+        const vNorm = (a) => { const l = vLen(a) || 1; return [a[0] / l, a[1] / l]; };
+
+        const computeLayout = (geom) => {
+            const { left, right, base } = geom;
+            const cx = (base * base + left * left - right * right) / (2 * base);
+            const cy = Math.sqrt(Math.max(0, left * left - cx * cx));
+            const raw = { A: [0, 0], B: [base, 0], C: [cx, -cy] };
+            const xs = [0, base, cx], ys = [0, 0, -cy];
+            const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+            const w = maxX - minX, h = maxY - minY;
+            const s = Math.min(100 / w, 92 / h);          // one uniform scale keeps true proportions
+            const ox = (100 - w * s) / 2, oy = (100 - h * s) / 2 + 2;
+            const T = (p) => [(p[0] - minX) * s + ox, (p[1] - minY) * s + oy];
+            const P = { A: T(raw.A), B: T(raw.B), C: T(raw.C) };
+
+            const a = vLen(vSub(P.B, P.C)), b = vLen(vSub(P.C, P.A)), c = vLen(vSub(P.A, P.B));
+            const per = a + b + c;
+            const I = [(a * P.A[0] + b * P.B[0] + c * P.C[0]) / per, (a * P.A[1] + b * P.B[1] + c * P.C[1]) / per];
+            const area = Math.abs((P.B[0] - P.A[0]) * (P.C[1] - P.A[1]) - (P.C[0] - P.A[0]) * (P.B[1] - P.A[1])) / 2;
+            const r = 2 * area / per;
+            const G = [(P.A[0] + P.B[0] + P.C[0]) / 3, (P.A[1] + P.B[1] + P.C[1]) / 3];
+
+            const sideEnds = { base: ['A', 'B'], right: ['B', 'C'], left: ['A', 'C'] };
+            const sides = {};
+            Object.entries(sideEnds).forEach(([key, [p, q]]) => {
+                const p1 = P[p], p2 = P[q];
+                const mid = vMul(vAdd(p1, p2), 0.5);
+                const dir = vNorm(vSub(p2, p1));
+                let n = [-dir[1], dir[0]];
+                if ((mid[0] - G[0]) * n[0] + (mid[1] - G[1]) * n[1] < 0) n = vMul(n, -1);
+                sides[key] = { p1, p2, mid, dir, n, len: vLen(vSub(p2, p1)) };
+            });
+
+            const angleNbrs = { A: ['B', 'C'], B: ['C', 'A'], C: ['A', 'B'] };
+            const angles = {};
+            Object.entries(angleNbrs).forEach(([key, [p, q]]) => {
+                const V = P[key];
+                const d1 = vSub(P[p], V), d2 = vSub(P[q], V);
+                const u1 = vNorm(d1), u2 = vNorm(d2);
+                const theta = Math.acos(Math.max(-1, Math.min(1, u1[0] * u2[0] + u1[1] * u2[1])));
+                const bis = vNorm(vAdd(u1, u2));
+                const toI = vLen(vSub(I, V));
+                const arcR = Math.max(5, Math.min(10, 0.28 * Math.min(vLen(d1), vLen(d2))));
+                const lblD = Math.min(Math.max(arcR + 7, 5.2 / Math.sin(theta / 2)), toI * 1.05);
+                angles[key] = {
+                    V, u1, u2, theta, bis, arcR, toI,
+                    degrees: theta * 180 / Math.PI,
+                    label: vAdd(V, vMul(bis, lblD)),
+                    letter: vAdd(V, vMul(bis, -7))
+                };
+            });
+
+            const inset = (d) => {
+                const f = Math.max(0, (r - d) / r);
+                return ['A', 'B', 'C'].map(k => vAdd(I, vMul(vSub(P[k], I), f)));
+            };
+            return { P, I, r, G, sides, angles, inset };
+        };
+
+        const arcPath = (ang, radius) => {
+            const { V, u1, u2 } = ang;
+            const s = vAdd(V, vMul(u1, radius)), e = vAdd(V, vMul(u2, radius));
+            const cross = u1[0] * u2[1] - u1[1] * u2[0];
+            return `M ${s[0]} ${s[1]} A ${radius} ${radius} 0 0 ${cross > 0 ? 1 : 0} ${e[0]} ${e[1]}`;
+        };
+        const sectorPath = (ang, radius) => `M ${ang.V[0]} ${ang.V[1]} L ${arcPath(ang, radius).slice(2)} Z`;
+        const rightAnglePath = (ang, size = 6) => {
+            const { V, u1, u2 } = ang;
+            const p1 = vAdd(V, vMul(u1, size)), p2 = vAdd(V, vMul(vAdd(u1, u2), size)), p3 = vAdd(V, vMul(u2, size));
+            return `M ${p1[0]} ${p1[1]} L ${p2[0]} ${p2[1]} L ${p3[0]} ${p3[1]}`;
+        };
+        const pts = (arr) => arr.map(p => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(' ');
+        const toPct = (p) => ({ left: `${((p[0] - VB.x) / VB.w) * 100}%`, top: `${((p[1] - VB.y) / VB.h) * 100}%` });
+
+        // =====================================================================
+        // SOUND (tiny synth, no files needed)
+        // =====================================================================
+        let audioCtx = null;
+        const beep = (muted, freq = 440, dur = 0.1, type = 'square', vol = 0.035, delay = 0) => {
+            if (muted) return;
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                const t = audioCtx.currentTime + delay;
+                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.type = type; o.frequency.setValueAtTime(freq, t);
+                g.gain.setValueAtTime(vol, t);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                o.connect(g); g.connect(audioCtx.destination);
+                o.start(t); o.stop(t + dur + 0.02);
+            } catch (e) { /* audio not available */ }
+        };
+        const sfx = {
+            click: (m) => beep(m, 900, 0.04, 'square', 0.02),
+            place: (m) => { beep(m, 220, 0.06, 'sawtooth', 0.03); beep(m, 660, 0.05, 'square', 0.02, 0.05); },
+            error: (m) => { beep(m, 140, 0.25, 'sawtooth', 0.05); beep(m, 110, 0.25, 'sawtooth', 0.05, 0.12); },
+            success: (m) => [523, 659, 784, 1047].forEach((f, i) => beep(m, f, 0.12, 'triangle', 0.05, i * 0.09)),
+            deny: (m) => beep(m, 180, 0.12, 'square', 0.03)
+        };
+
+        // =====================================================================
+        // TEXT HELPERS – powers written as x^3 or y^-2
+        // =====================================================================
+        const splitPowers = (text) => {
+            const parts = String(text).split('^');
+            const out = [{ t: parts[0], sup: false }];
+            parts.slice(1).forEach(part => {
+                const m = part.match(/^([-0-9.]+|[a-z]+)/);
+                const exp = m ? m[0] : '';
+                out.push({ t: exp.replace('-', '−'), sup: true });
+                out.push({ t: part.slice(exp.length), sup: false });
+            });
+            return out.filter(p => p.t !== '');
+        };
+
+        const MathText = ({ text, className = "", wrap = false }) => {
+            if (text === undefined || text === null || text === '') return null;
             return (
-                <span className={`inline-block ${className}`}>
-                    {parts.map((part, index) => {
-                        if (index === 0) return part;
-                        const match = part.match(/^([-0-9.]+|[a-z]+)/); 
-                        const exponent = match ? match[0] : '';
-                        const rest = part.slice(exponent.length);
-                        return (
-                            <span key={index}>
-                                <sup>{exponent}</sup>{rest}
-                            </span>
-                        );
-                    })}
+                <span className={`${wrap ? 'inline' : 'inline-block whitespace-nowrap'} ${className}`}>
+                    {splitPowers(text).map((p, i) => p.sup
+                        ? <sup key={i} className="text-[0.7em] ml-[1px]">{p.t}</sup>
+                        : <span key={i}>{p.t}</span>)}
                 </span>
             );
         };
 
-        // Restored Fireworks for Victory
-        const Fireworks = ({ onComplete }) => {
-            const canvasRef = useRef(null);
-            const [opacity, setOpacity] = useState(1);
-
-            useEffect(() => {
-                const canvas = canvasRef.current;
-                const ctx = canvas.getContext('2d');
-                let particles = [];
-                let animationId;
-                let active = true;
-
-                const createParticle = (x, y) => {
-                    const hue = Math.random() * 360;
-                    const count = 40; 
-                    for (let i = 0; i < count; i++) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const speed = Math.random() * 6 + 2;
-                        particles.push({
-                            x, y,
-                            vx: Math.cos(angle) * speed,
-                            vy: Math.sin(angle) * speed,
-                            alpha: 1,
-                            color: `hsl(${hue}, 100%, 60%)`,
-                            decay: Math.random() * 0.02 + 0.015
-                        });
-                    }
-                };
-
-                const interval = setInterval(() => {
-                    if (active) {
-                        createParticle(
-                            Math.random() * canvas.width, 
-                            Math.random() * canvas.height
-                        );
-                    }
-                }, 500);
-
-                const stopTimeout = setTimeout(() => {
-                    active = false;
-                    setOpacity(0.2);
-                    if (onComplete) onComplete();
-                }, 6000);
-
-                const animate = () => {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    particles.forEach((p, index) => {
-                        p.x += p.vx;
-                        p.y += p.vy;
-                        p.vy += 0.08; 
-                        p.alpha -= p.decay;
-                        
-                        ctx.globalAlpha = Math.max(0, p.alpha);
-                        ctx.fillStyle = p.color;
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
-                        ctx.fill();
-
-                        if (p.alpha <= 0) particles.splice(index, 1);
-                    });
-                    ctx.globalAlpha = 1;
-                    if (particles.length > 0 || active) {
-                        animationId = requestAnimationFrame(animate);
-                    }
-                };
-
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                animate();
-
-                return () => {
-                    clearInterval(interval);
-                    clearTimeout(stopTimeout);
-                    cancelAnimationFrame(animationId);
-                };
-            }, [onComplete]);
-
-            return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000" style={{opacity}} />;
+        const SvgMath = ({ text, x, y, size = 7, anchor = 'middle', fill = '#fff', weight = 700, stroke }) => {
+            const parts = splitPowers(text);
+            let shifted = false;
+            return (
+                <text x={x} y={y} fontSize={size} textAnchor={anchor} dominantBaseline="middle" fill={fill}
+                      fontWeight={weight} fontFamily="'JetBrains Mono', monospace"
+                      stroke={stroke} strokeWidth={stroke ? 2.4 : 0} paintOrder="stroke" strokeLinejoin="round">
+                    {parts.map((p, i) => {
+                        if (p.sup) { shifted = true; return <tspan key={i} dy={-size * 0.42} fontSize={size * 0.68}>{p.t}</tspan>; }
+                        const dy = shifted ? size * 0.42 : 0; shifted = false;
+                        return <tspan key={i} dy={dy}>{p.t}</tspan>;
+                    })}
+                </text>
+            );
         };
 
-        const TriangleSVG = ({ sides, angle, labels, shapeType, color }) => {
-            let pathD = "";
-            let labelPos = {}; 
-            let anglePath = "";
+        // =====================================================================
+        // TRIANGLE PLATE – accurate geometry rendered as a machined part
+        // =====================================================================
+        const TrianglePlate = ({ q, mode, values = {}, selectedSlot, wrongSlots = [], success, onSlot }) => {
+            const L = useMemo(() => computeLayout(q.geom), [q]);
+            const isClone = mode === 'clone';
+            const id = mode;
+            const prime = isClone ? '′' : '';
 
-            if (shapeType === 'right') {
-                pathD = "M 15 85 L 85 85 L 15 15 Z";
-                anglePath = "M 15 75 L 25 75 L 25 85";
-                labelPos = { 
-                    bottom: {x: 50, y: 100},
-                    left: {x: -10, y: 50},
-                    right: {x: 65, y: 35},
-                    angle: {x: 40, y: 75}
-                }; 
-            } else if (shapeType === 'obtuse') {
-                pathD = "M 5 85 L 95 85 L 30 20 Z";
-                anglePath = "M 13 80 Q 20 75 27 85";
-                labelPos = { 
-                    bottom: {x: 50, y: 100}, 
-                    left: {x: -5, y: 45},
-                    right: {x: 85, y: 40},
-                    angle: {x: 30, y: 75}
-                };
-            } else { 
-                pathD = "M 10 85 L 90 85 L 50 10 Z";
-                anglePath = "M 18 80 Q 23 75 28 80"; 
-                labelPos = { 
-                    bottom: {x: 50, y: 100}, 
-                    left: {x: 5, y: 40},
-                    right: {x: 95, y: 40},
-                    angle: {x: 35, y: 72}
-                };
-            }
+            const markedAngles = ANGLE_KEYS.filter(k => q.slots.includes(k) || (!isClone && q.proto[k]));
+            const arcCount = (k) => (markedAngles.length > 1 ? ANGLE_KEYS.indexOf(k) + 1 : 1);
+            const angleSocketPos = (k) => {
+                const a = L.angles[k];
+                const d = Math.min(a.toI * 1.15, Math.max(a.arcR + 12, 9 / Math.sin(a.theta / 2)));
+                return vAdd(a.V, vMul(a.bis, d));
+            };
+
+            const plateOpacity = isClone ? (success ? 1 : 0.16) : 1;
+            const outer = [L.P.A, L.P.B, L.P.C];
+
+            // rivets: kept away from corners and labels so they never hide angle marks
+            const avoid = [
+                ...markedAngles.map(k => (isClone ? angleSocketPos(k) : L.angles[k].label)),
+                ...(q.rightAt ? [vAdd(L.angles[q.rightAt].V, vMul(L.angles[q.rightAt].bis, 14.5))] : []),
+                ...(q.slots.includes('area') || q.proto.area ? [L.G, vAdd(L.G, [-9, 0]), vAdd(L.G, [9, 0])] : [])
+            ];
+            const rivets = [];
+            Object.values(L.sides).forEach(sd => {
+                [0.3, 0.5, 0.7].forEach(t => {
+                    const along = Math.min(t, 1 - t) * sd.len;
+                    if (t === 0.5 ? sd.len > 22 : along >= 30) {
+                        const p = vAdd(vAdd(sd.p1, vMul(vSub(sd.p2, sd.p1), t)), vMul(sd.n, -5.2));
+                        if (avoid.every(a => vLen(vSub(a, p)) > 10)) rivets.push(p);
+                    }
+                });
+            });
+
+            const highlight = selectedSlot;
+            const labelColour = isClone ? '#bbf7d0' : '#e0f2fe';
+
+            const sideLabelProps = (sd, off = 5) => {
+                const anchor = sd.n[0] > 0.45 ? 'start' : sd.n[0] < -0.45 ? 'end' : 'middle';
+                const p = vAdd(sd.mid, vMul(sd.n, anchor === 'middle' ? off + 2 : off));
+                return { x: p[0], y: p[1], anchor };
+            };
 
             return (
-                <div className="relative w-full h-full mx-auto transition-all duration-500 flex items-center justify-center">
-                    <svg viewBox="-20 -20 140 140" className="w-full h-full drop-shadow-lg">
-                        <path 
-                            d={pathD} 
-                            fill="none" 
-                            stroke={color} 
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                            strokeLinecap="round"
-                        />
-                        {angle && <path d={anglePath} fill="none" stroke={color} strokeWidth="1" opacity="0.6" />}
-                        
-                        <foreignObject x={labelPos.bottom.x - 20} y={labelPos.bottom.y - 10} width="40" height="20">
-                            <div className={`text-center text-xs font-bold ${color === '#4ade80' ? 'text-green-400' : 'text-blue-300'}`}>
-                                <MathText text={labels.bottom} />
-                            </div>
-                        </foreignObject>
-                         <foreignObject x={labelPos.left.x - 15} y={labelPos.left.y - 10} width="40" height="20">
-                            <div className={`text-right text-xs font-bold ${color === '#4ade80' ? 'text-green-400' : 'text-blue-300'}`}>
-                                <MathText text={labels.left} />
-                            </div>
-                        </foreignObject>
-                         <foreignObject x={labelPos.right.x} y={labelPos.right.y - 10} width="40" height="20">
-                            <div className={`text-left text-xs font-bold ${color === '#4ade80' ? 'text-green-400' : 'text-blue-300'}`}>
-                                <MathText text={labels.right} />
-                            </div>
-                        </foreignObject>
+                <div className="relative w-full" style={{ aspectRatio: `${VB.w} / ${VB.h}` }}>
+                    <svg viewBox={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`} className="absolute inset-0 w-full h-full overflow-visible">
+                        <defs>
+                            <linearGradient id={`${id}-metal`} x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0" stopColor="#e2e8f0" />
+                                <stop offset="0.3" stopColor="#94a3b8" />
+                                <stop offset="0.48" stopColor="#f8fafc" />
+                                <stop offset="0.62" stopColor="#a8b3c2" />
+                                <stop offset="1" stopColor="#64748b" />
+                            </linearGradient>
+                            <pattern id={`${id}-brush`} width="5" height="1.4" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)">
+                                <rect width="5" height="0.45" fill="#ffffff" opacity="0.18" />
+                                <rect y="0.8" width="5" height="0.3" fill="#0f172a" opacity="0.08" />
+                            </pattern>
+                            <radialGradient id={`${id}-rivet`} cx="0.35" cy="0.35" r="0.75">
+                                <stop offset="0" stopColor="#ffffff" />
+                                <stop offset="0.45" stopColor="#cbd5e1" />
+                                <stop offset="1" stopColor="#334155" />
+                            </radialGradient>
+                            <filter id={`${id}-shadow`} x="-30%" y="-30%" width="160%" height="160%">
+                                <feGaussianBlur in="SourceAlpha" stdDeviation="1.6" />
+                                <feOffset dx="1.6" dy="2.6" result="off" />
+                                <feComponentTransfer><feFuncA type="linear" slope="0.55" /></feComponentTransfer>
+                                <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+                            </filter>
+                        </defs>
 
-                        {angle && (
-                            <foreignObject x={labelPos.angle.x} y={labelPos.angle.y} width="30" height="20">
-                                 <div className="text-center text-[10px] text-yellow-500">{angle}</div>
-                            </foreignObject>
+                        {/* ---- The machined plate ---- */}
+                        <g opacity={plateOpacity} style={{ transition: 'opacity 0.8s ease' }} filter={`url(#${id}-shadow)`}>
+                            <polygon points={pts(outer)} fill={`url(#${id}-metal)`} stroke="#1e293b" strokeWidth="1.1" strokeLinejoin="round" />
+                            <polygon points={pts(outer)} fill={`url(#${id}-brush)`} />
+                            <polygon points={pts(L.inset(1.6))} fill="none" stroke="#ffffff" strokeOpacity="0.6" strokeWidth="0.7" strokeLinejoin="round" />
+                            <polygon points={pts(L.inset(2.6))} fill="none" stroke="#0f172a" strokeOpacity="0.28" strokeWidth="0.5" strokeLinejoin="round" />
+                            {rivets.map((p, i) => (
+                                <g key={i}>
+                                    <circle cx={p[0]} cy={p[1] + 0.35} r="1.9" fill="#0f172a" opacity="0.35" />
+                                    <circle cx={p[0]} cy={p[1]} r="1.7" fill={`url(#${id}-rivet)`} stroke="#334155" strokeWidth="0.25" />
+                                </g>
+                            ))}
+                            {L.r > 12 && q.test !== 'AREA' && (
+                                <text x={L.I[0]} y={L.I[1]} fontSize="3.6" textAnchor="middle" dominantBaseline="middle"
+                                      fill="#1e293b" opacity="0.4" fontFamily="'JetBrains Mono', monospace" letterSpacing="0.4"
+                                      stroke="#ffffff" strokeOpacity="0.5" strokeWidth="0.25">{q.serial}</text>
+                            )}
+                        </g>
+
+                        {/* ---- Clone: ghost outline + installed edges ---- */}
+                        {isClone && !success && (
+                            <polygon points={pts(outer)} fill="none" stroke="#4ade80" strokeWidth="1.1" strokeDasharray="3 2.5" strokeLinejoin="round" opacity="0.8" />
+                        )}
+                        {isClone && SIDE_KEYS.filter(k => q.slots.includes(k) && values[k]).map(k => {
+                            const sd = L.sides[k];
+                            const bad = wrongSlots.includes(k);
+                            return (
+                                <g key={k}>
+                                    <line x1={sd.p1[0]} y1={sd.p1[1]} x2={sd.p2[0]} y2={sd.p2[1]} stroke="#0f172a" strokeWidth="3.6" strokeLinecap="round" />
+                                    <line x1={sd.p1[0]} y1={sd.p1[1]} x2={sd.p2[0]} y2={sd.p2[1]} stroke={bad ? '#f87171' : '#cbd5e1'} strokeWidth="2.2" strokeLinecap="round" />
+                                </g>
+                            );
+                        })}
+
+                        {/* ---- Highlight of the selected side / angle (shown on BOTH triangles) ---- */}
+                        {highlight && SIDE_KEYS.includes(highlight) && (
+                            <line x1={L.sides[highlight].p1[0]} y1={L.sides[highlight].p1[1]} x2={L.sides[highlight].p2[0]} y2={L.sides[highlight].p2[1]}
+                                  stroke="#facc15" strokeWidth="3" strokeLinecap="round" opacity="0.9">
+                                <animate attributeName="opacity" values="0.95;0.35;0.95" dur="1.2s" repeatCount="indefinite" />
+                            </line>
+                        )}
+                        {highlight && ANGLE_KEYS.includes(highlight) && (
+                            <path d={sectorPath(L.angles[highlight], L.angles[highlight].arcR + 3)} fill="#facc15" opacity="0.55">
+                                <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.2s" repeatCount="indefinite" />
+                            </path>
+                        )}
+                        {highlight === 'area' && (
+                            <polygon points={pts(L.inset(3))} fill="#facc15" opacity="0.3">
+                                <animate attributeName="opacity" values="0.35;0.1;0.35" dur="1.2s" repeatCount="indefinite" />
+                            </polygon>
+                        )}
+
+                        {/* ---- Angle marks: square for 90°, matching arcs elsewhere ---- */}
+                        {q.rightAt && (
+                            <path d={rightAnglePath(L.angles[q.rightAt], 6)} fill="none"
+                                  stroke={isClone && !success ? '#4ade80' : '#b45309'} strokeWidth="0.9" />
+                        )}
+                        {markedAngles.filter(k => k !== q.rightAt).map(k => {
+                            const a = L.angles[k];
+                            const bad = wrongSlots.includes(k);
+                            const col = bad ? '#ef4444' : isClone && !success ? '#fb923c' : '#b45309';
+                            return Array.from({ length: arcCount(k) }).map((_, i) => (
+                                <path key={`${k}${i}`} d={arcPath(a, a.arcR - i * 1.6)} fill="none" stroke={col} strokeWidth="0.9" />
+                            ));
+                        })}
+
+                        {/* ---- Vertex letters ---- */}
+                        {ANGLE_KEYS.map(k => (
+                            <text key={k} x={L.angles[k].letter[0]} y={L.angles[k].letter[1]} fontSize="5.5" textAnchor="middle" dominantBaseline="middle"
+                                  fill={isClone ? '#86efac' : '#93c5fd'} fontWeight="700" fontFamily="'JetBrains Mono', monospace" opacity="0.85">
+                                {k}{prime}
+                            </text>
+                        ))}
+
+                        {/* ---- Prototype labels ---- */}
+                        {!isClone && SIDE_KEYS.filter(k => q.proto[k]).map(k => {
+                            const lp = sideLabelProps(L.sides[k]);
+                            return <SvgMath key={k} text={q.proto[k]} x={lp.x} y={lp.y} anchor={lp.anchor} size={7.2} fill={highlight === k ? '#fde047' : labelColour} />;
+                        })}
+                        {!isClone && ANGLE_KEYS.filter(k => q.proto[k] && k !== q.rightAt).map(k => (
+                            <SvgMath key={k} text={q.proto[k]} x={L.angles[k].label[0]} y={L.angles[k].label[1]} size={5.6} fill="#7c2d12" stroke="#f8fafc" />
+                        ))}
+                        {!isClone && q.rightAt && q.proto[q.rightAt] && (() => {
+                            const a = L.angles[q.rightAt];
+                            const p = vAdd(a.V, vMul(a.bis, 14));
+                            return <SvgMath text={q.proto[q.rightAt]} x={p[0]} y={p[1]} size={5.6} fill="#7c2d12" stroke="#f8fafc" />;
+                        })()}
+                        {!isClone && q.proto.area && (
+                            <SvgMath text={`Area = ${q.proto.area}`} x={L.G[0]} y={L.G[1] + 2} size={6} fill="#1e293b" stroke="#f8fafc" />
                         )}
                     </svg>
+
+                    {/* ---- Clone sockets (positioned from the exact geometry) ---- */}
+                    {isClone && q.slots.map(slot => {
+                        let p;
+                        if (SIDE_KEYS.includes(slot)) {
+                            const sd = L.sides[slot];
+                            p = vAdd(sd.mid, vMul(sd.n, 8 + 12 * Math.abs(sd.n[0]) + 4 * Math.abs(sd.n[1])));
+                        } else if (slot === 'area') {
+                            p = L.G;
+                        } else {
+                            p = angleSocketPos(slot);
+                        }
+                        const val = values[slot];
+                        const type = slotType(slot);
+                        const sel = selectedSlot === slot;
+                        const bad = wrongSlots.includes(slot);
+                        const filledStyle = type === 'ang' ? 'brass' : type === 'area' ? 'copper' : 'steel';
+                        return (
+                            <button key={slot} onClick={() => onSlot && onSlot(slot)} title={SLOT_NAMES[slot]}
+                                    style={{ ...toPct(p), transform: 'translate(-50%, -50%)' }}
+                                    className={`absolute z-10 min-w-[54px] h-8 px-2 rounded-md text-sm font-bold flex items-center justify-center transition-all
+                                        ${val ? filledStyle : `socket border-2 border-dashed ${type === 'ang' ? 'border-orange-400/70 text-orange-300' : type === 'area' ? 'border-purple-400/70 text-purple-300' : 'border-green-400/70 text-green-300'}`}
+                                        ${sel ? 'ring-4 ring-yellow-300 scale-110' : ''}
+                                        ${bad ? 'ring-4 ring-red-500 animate-pulse' : ''}
+                                        ${success ? 'ring-2 ring-green-400' : 'hover:scale-110'}`}>
+                                {val ? <MathText text={val} /> : (type === 'ang' ? '∠ ?' : type === 'area' ? 'Area ?' : '?')}
+                            </button>
+                        );
+                    })}
                 </div>
             );
         };
 
-        const RoundTransition = ({ round, cash, onNext }) => {
-            const [displayCash, setDisplayCash] = useState(0);
+        // =====================================================================
+        // INVENTORY PARTS
+        // =====================================================================
+        const AngleIcon = ({ value }) => {
+            const m = String(value).match(/^(\d+)°$/);
+            const d = m ? Math.min(parseInt(m[1], 10), 359) : 50;
+            const r = 9, rad = d * Math.PI / 180;
+            const ex = 2 + r * Math.cos(-rad), ey = 12 + r * Math.sin(-rad);
+            const large = d > 180 ? 1 : 0;
+            return (
+                <svg viewBox="0 -1 22 15" className="w-6 h-5 shrink-0">
+                    {d === 90 ? (
+                        <>
+                            <path d="M 2 12 L 13 12 M 2 12 L 2 1" stroke="#451a03" strokeWidth="1.4" fill="none" />
+                            <path d="M 2 8 L 6 8 L 6 12" stroke="#451a03" strokeWidth="1" fill="none" />
+                        </>
+                    ) : (
+                        <>
+                            <path d={`M 2 12 L ${2 + r} 12 A ${r} ${r} 0 ${large} 0 ${ex} ${ey} Z`} fill="#451a03" opacity="0.3" />
+                            <path d={`M 14 12 L 2 12 L ${2 + 12 * Math.cos(-rad)} ${12 + 12 * Math.sin(-rad)}`} stroke="#451a03" strokeWidth="1.4" fill="none" />
+                        </>
+                    )}
+                </svg>
+            );
+        };
+
+        const PartChip = ({ value, used, selected, disabled, onClick }) => {
+            const type = partType(value);
+            const base = `part-btn relative rounded-md font-bold text-base flex items-center justify-center gap-2 min-w-[92px] h-11 px-2
+                ${used ? 'part-used cursor-not-allowed' : 'cursor-pointer'}
+                ${selected ? 'ring-4 ring-yellow-300 -translate-y-1' : ''}`;
+            if (type === 'len') {
+                return (
+                    <button onClick={onClick} disabled={disabled} className={`${base} steel`} title="Length beam">
+                        <span className="bolt-hole" />
+                        <MathText text={value} className="flex-1 text-center" />
+                        <span className="bolt-hole" />
+                    </button>
+                );
+            }
+            if (type === 'ang') {
+                return (
+                    <button onClick={onClick} disabled={disabled} className={`${base} brass rounded-full`} title="Angle gauge">
+                        <AngleIcon value={value} />
+                        <MathText text={value} />
+                    </button>
+                );
+            }
+            return (
+                <button onClick={onClick} disabled={disabled} className={`${base} copper`} title="Area panel">
+                    <span className="w-3 h-3 border border-black/50 bg-black/10 rotate-45" />
+                    <MathText text={value} />
+                </button>
+            );
+        };
+
+        // =====================================================================
+        // FIREWORKS (victory)
+        // =====================================================================
+        const Fireworks = ({ onComplete }) => {
+            const canvasRef = useRef(null);
+            const doneRef = useRef(onComplete);
+            const [opacity, setOpacity] = useState(1);
+            useEffect(() => { doneRef.current = onComplete; }, [onComplete]);
 
             useEffect(() => {
-                let start = 0;
-                const duration = 1500;
-                const increment = cash / (duration / 16);
-                
-                const timer = setInterval(() => {
-                    start += increment;
-                    if (start >= cash) {
-                        setDisplayCash(cash);
-                        clearInterval(timer);
-                    } else {
-                        setDisplayCash(Math.floor(start));
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                let particles = [], animationId, active = true;
+                canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+                const burst = (x, y) => {
+                    const hue = Math.random() * 360;
+                    for (let i = 0; i < 45; i++) {
+                        const a = Math.random() * Math.PI * 2, sp = Math.random() * 6 + 2;
+                        particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, alpha: 1,
+                            color: `hsl(${hue}, 100%, 60%)`, decay: Math.random() * 0.02 + 0.012 });
                     }
+                };
+                const interval = setInterval(() => active && burst(Math.random() * canvas.width, Math.random() * canvas.height * 0.7), 450);
+                const stop = setTimeout(() => { active = false; setOpacity(0.25); doneRef.current && doneRef.current(); }, 4000);
+                const animate = () => {
+                    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    particles = particles.filter(p => p.alpha > 0);
+                    particles.forEach(p => {
+                        p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.alpha -= p.decay;
+                        ctx.globalAlpha = Math.max(0, p.alpha);
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2); ctx.fill();
+                    });
+                    ctx.globalAlpha = 1;
+                    if (particles.length || active) animationId = requestAnimationFrame(animate);
+                };
+                animate();
+                return () => { clearInterval(interval); clearTimeout(stop); cancelAnimationFrame(animationId); };
+            }, []);
+
+            return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000" style={{ opacity }} />;
+        };
+
+        // =====================================================================
+        // ROUND TRANSITION
+        // =====================================================================
+        const ROUND_INFO = {
+            1: { name: 'Numeric Calibration', colour: 'text-green-400' },
+            2: { name: 'Algebraic Variables', colour: 'text-yellow-400' },
+            3: { name: 'Index Law Protocols', colour: 'text-red-400' }
+        };
+
+        const RoundTransition = ({ round, cash, roundStats, onNext }) => {
+            const [displayCash, setDisplayCash] = useState(0);
+            useEffect(() => {
+                let start = 0;
+                const inc = Math.max(1, cash / (1200 / 16));
+                const timer = setInterval(() => {
+                    start += inc;
+                    if (start >= cash) { setDisplayCash(cash); clearInterval(timer); } else setDisplayCash(Math.floor(start));
                 }, 16);
                 return () => clearInterval(timer);
             }, [cash]);
 
             return (
-                <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-900/95 backdrop-blur text-white">
-                    <div className="bg-gray-800 p-12 rounded-2xl border-4 border-green-500 shadow-[0_0_50px_rgba(34,197,94,0.3)] text-center slide-in">
-                        <h2 className="text-2xl text-green-400 font-bold tracking-widest mb-2">SEQUENCE COMPLETE</h2>
-                        <h1 className="text-6xl title-font mb-8">ROUND {round}</h1>
-                        
-                        <div className="mb-8">
-                            <div className="text-gray-400 text-sm uppercase tracking-widest mb-2">Total Earnings</div>
-                            <div className="text-5xl font-bold text-yellow-400 font-mono">
-                                ${displayCash}
-                            </div>
+                <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-950/95 backdrop-blur text-white font-mono p-4">
+                    <div className="bg-gray-800 p-8 sm:p-12 rounded-2xl border-4 border-green-500 shadow-[0_0_50px_rgba(34,197,94,0.3)] text-center slide-in max-w-lg w-full">
+                        <h2 className="text-xl text-green-400 font-bold tracking-widest mb-2">SHIFT COMPLETE</h2>
+                        <h1 className="text-5xl title-font mb-6">ROUND {round}</h1>
+                        <div className="grid grid-cols-3 gap-3 mb-6 text-sm">
+                            <div className="bg-gray-900 rounded p-3"><div className="text-gray-400 text-xs">First-try parts</div><div className="text-2xl font-bold text-green-400">{roundStats.firstTry}/{roundStats.total}</div></div>
+                            <div className="bg-gray-900 rounded p-3"><div className="text-gray-400 text-xs">Mismatches</div><div className="text-2xl font-bold text-red-400">{roundStats.mistakes}</div></div>
+                            <div className="bg-gray-900 rounded p-3"><div className="text-gray-400 text-xs">Hints</div><div className="text-2xl font-bold text-yellow-400">{roundStats.hints}</div></div>
                         </div>
-
-                        <button 
-                            onClick={onNext}
-                            className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xl shadow-lg transition-all hover:scale-105 flex items-center gap-2 mx-auto"
-                        >
-                            <span>INITIALIZE ROUND {round + 1}</span>
+                        <div className="mb-8">
+                            <div className="text-gray-400 text-sm uppercase tracking-widest mb-1">Total earnings</div>
+                            <div className="text-5xl font-bold text-yellow-400">${displayCash}</div>
+                        </div>
+                        <div className="text-gray-300 mb-4 text-sm">Next: <span className={ROUND_INFO[round + 1].colour}>Round {round + 1} – {ROUND_INFO[round + 1].name}</span></div>
+                        <button onClick={onNext}
+                            className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xl shadow-lg transition-all hover:scale-105 flex items-center gap-2 mx-auto">
+                            <span>START ROUND {round + 1}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                         </button>
                     </div>
@@ -290,389 +908,242 @@
             );
         };
 
-        // --- DYNAMIC DATA GENERATION ---
+        // =====================================================================
+        // MAIN APP
+        // =====================================================================
+        const REWARD = 100, FIRST_TRY_BONUS = 50, MISMATCH_COST = 30, HINT_COST = 20;
+        const emptyStats = () => ({ firstTry: 0, mistakes: 0, hints: 0, total: 0 });
 
-        const generateLevelData = (round) => {
-            const emojis = ["🤖", "🚀", "💎", "👾", "🛸", "🪐", "🌌", "⚙️"];
-            const randomEmoji = () => emojis[Math.floor(Math.random() * emojis.length)];
-            
-            let questions = [];
-
-            if (round === 1) {
-                // ROUND 1: Numbers Only
-                const triples = [[3,4,5], [5,12,13], [6,8,10], [8,15,17]];
-                const baseTriple = getRandomItem(triples);
-                const scale1 = getRandomInt(2, 4);
-                const q1Targets = baseTriple.map(n => n * scale1);
-                
-                const base2 = [getRandomInt(4,8), getRandomInt(4,8), getRandomInt(6,10)];
-                const scale2 = Math.random() > 0.5 ? 2 : 0.5;
-                const q2Targets = base2.map(n => n * scale2);
-                
-                const s3a = getRandomInt(5, 10);
-                const s3b = getRandomInt(6, 12);
-                const scale3 = getRandomInt(2, 3);
-                const angle3 = getRandomInt(3, 15) * 10; 
-
-                const baseRHS = getRandomItem([[5,13], [3,5], [8,17], [7,25], [20,29], [12,37]]);
-                const scale4 = getRandomInt(2, 5);
-
-                questions = [
-                    {
-                        test: "SSS",
-                        proto: { left: `${baseTriple[0]}`, right: `${baseTriple[1]}`, bottom: `${baseTriple[2]}`, angle: "" },
-                        scaleFactor: `Scale: ${scale1}`,
-                        target: { left: `${q1Targets[0]}`, right: `${q1Targets[1]}`, bottom: `${q1Targets[2]}` },
-                        inventory: [
-                            `${q1Targets[0]}`, `${q1Targets[1]}`, `${q1Targets[2]}`, 
-                            `${baseTriple[0]+scale1}`, `${baseTriple[1]+scale1}`,
-                            `${q1Targets[0]*2}`, `${q1Targets[1]-1}`
-                        ],
-                        slots: ['left', 'right', 'bottom'],
-                        shape: 'right'
-                    },
-                    {
-                        test: "SSS",
-                        proto: { left: `${base2[0]}`, right: `${base2[1]}`, bottom: `${base2[2]}`, angle: "" },
-                        scaleFactor: `Scale: ${scale2}`,
-                        target: { left: `${q2Targets[0]}`, right: `${q2Targets[1]}`, bottom: `${q2Targets[2]}` },
-                        inventory: [
-                            `${q2Targets[0]}`, `${q2Targets[1]}`, `${q2Targets[2]}`,
-                            `${base2[0] * (scale2 === 2 ? 3 : 2)}`, 
-                            `${base2[1] + 2}`, `${base2[2] - 1}`,
-                            `${scale2 === 0.5 ? base2[0]*2 : base2[0]/2}`
-                        ],
-                        slots: ['left', 'right', 'bottom'],
-                        shape: 'normal'
-                    },
-                    {
-                        test: "SAS",
-                        proto: { left: `${s3a}`, right: `${s3b}`, bottom: "", angle: `${angle3}°` },
-                        scaleFactor: `Scale: ${scale3}`,
-                        target: { left: `${s3a * scale3}`, right: `${s3b * scale3}`, angle: `${angle3}°` },
-                        inventory: [
-                            `${s3a * scale3}`, `${s3b * scale3}`, `${angle3}°`, 
-                            `${s3a + scale3}`, `${angle3 * scale3}°`,
-                            `${s3b * scale3 + 2}`, `${180 - angle3}°`
-                        ],
-                        slots: ['left', 'right', 'angle'],
-                        shape: 'obtuse'
-                    },
-                    {
-                        test: "RHS",
-                        proto: { left: `${baseRHS[0]}`, right: `${baseRHS[1]}`, bottom: "", angle: "90°" },
-                        scaleFactor: `Scale: ${scale4}`,
-                        target: { left: `${baseRHS[0] * scale4}`, right: `${baseRHS[1] * scale4}`, angle: "90°" },
-                        inventory: [
-                            `${baseRHS[0] * scale4}`, `${baseRHS[1] * scale4}`, "90°",
-                            `${baseRHS[0] + scale4}`, `${baseRHS[1] + scale4}`,
-                            "180°", `${scale4 * 10}`
-                        ],
-                        slots: ['left', 'right', 'angle'],
-                        shape: 'right'
-                    }
-                ];
-            } else if (round === 2) {
-                // ROUND 2: Algebra
-                const v = getRandomItem(['a', 'x', 'm', 'k', 'p']);
-                const scale1 = getRandomInt(2, 5);
-                
-                const v2 = getRandomItem(['b', 'y', 'n']);
-                const scale2 = getRandomInt(3, 6);
-                
-                const v3 = getRandomItem(['m', 't', 'h']);
-                const scale3 = getRandomInt(2, 4);
-                const angle3 = "x";
-
-                const v4 = "k";
-                const scale4 = getRandomInt(4, 8);
-
-                questions = [
-                    {
-                        test: "SSS",
-                        proto: { left: `${v}`, right: `2${v}`, bottom: `3${v}`, angle: "" },
-                        scaleFactor: `Scale: ${scale1}`,
-                        target: { left: `${scale1}${v}`, right: `${2*scale1}${v}`, bottom: `${3*scale1}${v}` },
-                        inventory: [
-                            `${scale1}${v}`, `${2*scale1}${v}`, `${3*scale1}${v}`,
-                            `${v}^${scale1}`, `${scale1+2}${v}`, `${v}+${scale1}`, `${scale1 * 10}${v}`
-                        ],
-                        slots: ['left', 'right', 'bottom'],
-                        shape: 'normal'
-                    },
-                    {
-                        test: "SSS",
-                        // Adjusted 2n, 3n, 5n to 2n, 3n, 4n for validity and fixed target calculation
-                        proto: { left: `2${v2}`, right: `3${v2}`, bottom: `4${v2}`, angle: "" },
-                        scaleFactor: `Scale: ${scale2}`,
-                        target: { left: `${2*scale2}${v2}`, right: `${3*scale2}${v2}`, bottom: `${4*scale2}${v2}`, angle: "" },
-                        inventory: [
-                            `${2*scale2}${v2}`, `${3*scale2}${v2}`, `${4*scale2}${v2}`,
-                            `${2}${v2}^${scale2}`, `${2+scale2}${v2}`, `${scale2}${v2}`, `10${v2}`
-                        ],
-                        slots: ['left', 'right', 'bottom'],
-                        shape: 'obtuse'
-                    },
-                    {
-                        test: "SAS",
-                        proto: { left: `4${v3}`, right: `5${v3}`, bottom: "", angle: `${angle3}°` },
-                        scaleFactor: `Scale: ${scale3}`,
-                        target: { left: `${4*scale3}${v3}`, right: `${5*scale3}${v3}`, angle: `${angle3}°` },
-                        inventory: [
-                            `${4*scale3}${v3}`, `${5*scale3}${v3}`, `${angle3}°`,
-                            `${4+scale3}${v3}`, `${scale3}${angle3}°`,
-                            `${4*scale3}${v3}^2`, `2${angle3}°`
-                        ],
-                        slots: ['left', 'right', 'angle'],
-                        shape: 'normal'
-                    },
-                    {
-                        test: "RHS",
-                        proto: { left: `3${v4}`, right: `5${v4}`, bottom: "", angle: "90°" },
-                        scaleFactor: `Scale: ${scale4}`,
-                        target: { left: `${3*scale4}${v4}`, right: `${5*scale4}${v4}`, angle: "90°" },
-                        inventory: [
-                            `${3*scale4}${v4}`, `${5*scale4}${v4}`, "90°",
-                            `${3}${v4}^${scale4}`, `${3+scale4}${v4}`, `450°`, `${scale4}${v4}`
-                        ],
-                        slots: ['left', 'right', 'angle'],
-                        shape: 'right'
-                    }
-                ];
-            } else {
-                // ROUND 3: Index Laws
-                const v = "x";
-                const baseExp1 = getRandomInt(2, 4);
-                const scaleExp1 = getRandomInt(2, 4);
-                
-                const v2 = "y";
-                const baseExp2 = getRandomInt(4, 8);
-                const scaleExp2 = -1 * getRandomInt(1, 3);
-
-                const v3 = "m";
-                const lenExp = getRandomInt(2, 4);
-                const scaleExp3 = getRandomInt(2, 4);
-
-                questions = [
-                    {
-                        test: "SSS",
-                        proto: { left: `${v}^${baseExp1}`, right: `${v}^${baseExp1+1}`, bottom: `${v}^${baseExp1+2}`, angle: "" },
-                        scaleFactor: `Scale: ${v}^${scaleExp1}`,
-                        target: { left: `${v}^${baseExp1+scaleExp1}`, right: `${v}^${baseExp1+1+scaleExp1}`, bottom: `${v}^${baseExp1+2+scaleExp1}` },
-                        inventory: [
-                            `${v}^${baseExp1+scaleExp1}`, `${v}^${baseExp1+1+scaleExp1}`, `${v}^${baseExp1+2+scaleExp1}`,
-                            `${v}^${baseExp1*scaleExp1}`, `${v}^${scaleExp1}`,
-                            `${scaleExp1}${v}^${baseExp1}`,
-                            `${v}^${baseExp1+scaleExp1+1}`
-                        ],
-                        slots: ['left', 'right', 'bottom'],
-                        shape: 'normal'
-                    },
-                    {
-                        test: "SSS",
-                        proto: { left: `${v2}^${baseExp2}`, right: `${v2}^${baseExp2+1}`, bottom: `${v2}^${baseExp2+2}`, angle: "" },
-                        scaleFactor: `Scale: ${v2}^${scaleExp2}`,
-                        target: { left: `${v2}^${baseExp2+scaleExp2}`, right: `${v2}^${baseExp2+1+scaleExp2}`, bottom: `${v2}^${baseExp2+2+scaleExp2}` },
-                        inventory: [
-                            `${v2}^${baseExp2+scaleExp2}`, `${v2}^${baseExp2+1+scaleExp2}`, `${v2}^${baseExp2+2+scaleExp2}`,
-                            `${v2}^${baseExp2 * Math.abs(scaleExp2)}`, 
-                            `${v2}^${baseExp2 - scaleExp2}`,
-                            `-${v2}^${baseExp2+scaleExp2}`
-                        ],
-                        slots: ['left', 'right', 'bottom'],
-                        shape: 'obtuse'
-                    },
-                    {
-                        test: "Area Scale",
-                        proto: { left: `${v3}^${lenExp}`, right: "Area=A", bottom: "", angle: "" },
-                        scaleFactor: `Scale: ${v3}^${scaleExp3}`,
-                        target: { left: `${v3}^${lenExp+scaleExp3}`, right: `${v3}^${scaleExp3*2}A` }, 
-                        inventory: [
-                            `${v3}^${lenExp+scaleExp3}`, `${v3}^${scaleExp3*2}A`,
-                            `${v3}^${scaleExp3}A`,
-                            `${v3}^${scaleExp3+2}A`,
-                            `${v3}^${lenExp*scaleExp3}`, `A^2`
-                        ],
-                        slots: ['left', 'right'],
-                        shape: 'right'
-                    }
-                ];
-            }
-
-            return questions.map(q => ({
-                ...q,
-                inventory: shuffleArray(q.inventory),
-                emoji: randomEmoji()
-            }));
-        };
-
-        // --- MAIN APP COMPONENT ---
+        const RulesCard = () => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-sm">
+                {['SSS', 'SAS', 'RHS', 'AA'].map(k => (
+                    <div key={k} className="bg-gray-900/70 border border-gray-700 rounded p-2">
+                        <div className="font-bold text-blue-300">{k} <span className="text-gray-400 font-normal text-xs">({PROTOCOLS[k].full})</span></div>
+                        <div className="text-gray-300 text-xs mt-1">{PROTOCOLS[k].rule}</div>
+                    </div>
+                ))}
+                <div className="sm:col-span-2 bg-gray-900/70 border border-gray-700 rounded p-2 text-xs text-gray-300">
+                    <span className="font-bold text-purple-300">Area: </span>{PROTOCOLS.AREA.rule}
+                    <span className="block mt-1"><span className="font-bold text-yellow-300">Hypotenuse: </span>the longest side of a right-angled triangle, opposite the right angle (marked with a small square).</span>
+                </div>
+            </div>
+        );
 
         function App() {
-            const [gameState, setGameState] = useState('intro'); // intro, playing, roundSummary, victory
+            const [gameState, setGameState] = useState('intro');
             const [currentRound, setCurrentRound] = useState(1);
             const [roundData, setRoundData] = useState([]);
-            const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
-            
+            const [qIdx, setQIdx] = useState(0);
+
+            const [placed, setPlaced] = useState({});
             const [selectedSlot, setSelectedSlot] = useState(null);
-            const [placedParts, setPlacedParts] = useState({});
-            const [feedback, setFeedback] = useState(null);
+            const [selectedPart, setSelectedPart] = useState(null);
+            const [status, setStatus] = useState(null);
+            const [wrongSlots, setWrongSlots] = useState([]);
+            const [message, setMessage] = useState(null);
+            const [attempts, setAttempts] = useState(0);
+            const [shakeKey, setShakeKey] = useState(0);
+
             const [cash, setCash] = useState(0);
-            const [animateCash, setAnimateCash] = useState(false);
+            const [cashFlash, setCashFlash] = useState(null);
+            const [roundStats, setRoundStats] = useState(emptyStats());
+            const [allStats, setAllStats] = useState(emptyStats());
+            const [muted, setMuted] = useState(false);
+            const [showRules, setShowRules] = useState(false);
             const [showVictoryCard, setShowVictoryCard] = useState(false);
-            const [isProcessing, setIsProcessing] = useState(false);
 
-            // Moved data generation out of useEffect to prevent race conditions/sync issues
-            // when switching rounds.
+            const q = roundData[qIdx];
+            const values = useMemo(() => {
+                const v = {};
+                if (q) Object.entries(placed).forEach(([s, i]) => { v[s] = q.inventory[i]; });
+                return v;
+            }, [placed, q]);
+            const usedIdx = Object.values(placed);
+            const success = status === 'success';
 
-            const currentLevel = roundData[currentQuestionIdx];
+            const flashCash = (amount) => {
+                setCashFlash({ amount, id: Date.now() });
+                setTimeout(() => setCashFlash(null), 1100);
+            };
+            const bumpStats = (fn) => { setRoundStats(fn); setAllStats(fn); };
 
-            const handleSlotClick = (slot) => {
-                setFeedback(null);
-                setSelectedSlot(slot);
+            const resetQuestionState = () => {
+                setPlaced({}); setSelectedSlot(null); setSelectedPart(null);
+                setStatus(null); setWrongSlots([]); setMessage(null); setAttempts(0);
             };
 
-            const handlePartClick = (part) => {
-                if (!selectedSlot) return;
-                setPlacedParts(prev => ({ ...prev, [selectedSlot]: part }));
-                setSelectedSlot(null);
+            const loadRound = (r) => {
+                setRoundData(generateLevelData(r)); setCurrentRound(r); setQIdx(0);
+                setRoundStats(emptyStats());
+                resetQuestionState();
+                setGameState('playing');
+            };
+
+            const nextEmptySlot = (afterPlaced) => q.slots.find(s => afterPlaced[s] === undefined) || null;
+
+            const install = (slot, idx, base = placed) => {
+                const part = q.inventory[idx];
+                if (partType(part) !== slotType(slot)) {
+                    sfx.deny(muted);
+                    const need = { len: 'a length beam', ang: 'an angle gauge', area: 'an area panel' }[slotType(slot)];
+                    setMessage({ tone: 'warn', text: `That part won't fit. ${SLOT_NAMES[slot][0].toUpperCase() + SLOT_NAMES[slot].slice(1)} needs ${need}.` });
+                    return;
+                }
+                sfx.place(muted);
+                const np = { ...base, [slot]: idx };
+                setPlaced(np);
+                setWrongSlots(w => w.filter(s => s !== slot));
+                setSelectedPart(null);
+                setSelectedSlot(nextEmptySlot(np));
+                setStatus(null);
+                setMessage(null);
+            };
+
+            const handleSlotClick = (slot) => {
+                if (success) return;
+                if (placed[slot] !== undefined) {
+                    sfx.click(muted);
+                    const np = { ...placed }; delete np[slot];
+                    setPlaced(np);
+                    setWrongSlots(w => w.filter(s => s !== slot));
+                    if (selectedPart !== null) { install(slot, selectedPart, np); return; }
+                    setSelectedSlot(slot);
+                    return;
+                }
+                if (selectedPart !== null) { install(slot, selectedPart); return; }
+                sfx.click(muted);
+                setSelectedSlot(prev => (prev === slot ? null : slot));
+                setMessage(null);
+            };
+
+            const handlePartClick = (idx) => {
+                if (success || usedIdx.includes(idx)) return;
+                if (selectedSlot) { install(selectedSlot, idx); return; }
+                sfx.click(muted);
+                setSelectedPart(prev => (prev === idx ? null : idx));
+            };
+
+            const giveHint = () => {
+                if (success || !q) return;
+                const slot = selectedSlot || wrongSlots[0] || q.slots.find(s => values[s] !== q.target[s]);
+                if (!slot) { setMessage({ tone: 'info', text: 'Everything looks installed – press FABRICATE to test it.' }); return; }
+                setCash(c => Math.max(0, c - HINT_COST)); flashCash(-HINT_COST);
+                bumpStats(s => ({ ...s, hints: s.hints + 1 }));
+                setSelectedSlot(slot);
+                setMessage({ tone: 'hint', text: `Hint for ${SLOT_NAMES[slot]}: ${q.hint[slot]}` });
             };
 
             const checkSimilarity = () => {
-                // Block multiple clicks if already processing or already success
-                if (isProcessing || feedback === 'success') return;
-
-                if (!currentLevel) return;
-
-                const requiredSlots = currentLevel.slots;
-                const isFilled = requiredSlots.every(slot => placedParts[slot]);
-                if (!isFilled) {
-                    setFeedback('incomplete');
+                if (!q || success) return;
+                if (!q.slots.every(s => placed[s] !== undefined)) {
+                    setStatus('incomplete');
+                    setSelectedSlot(nextEmptySlot(placed));
+                    setMessage({ tone: 'warn', text: 'Some sockets are still empty. The flashing one needs a part.' });
+                    sfx.deny(muted);
                     return;
                 }
-
-                let isCorrect = true;
-                requiredSlots.forEach(slot => {
-                    if (placedParts[slot] !== currentLevel.target[slot]) {
-                        isCorrect = false;
-                    }
-                });
-
-                if (isCorrect) {
-                    setIsProcessing(true); // Start blocking
-                    setFeedback('success');
-                    const cashReward = 150 * currentRound;
-                    setCash(prev => prev + cashReward);
-                    setAnimateCash(true);
-                    setTimeout(() => setAnimateCash(false), 1000);
-
-                    setTimeout(() => {
-                        if (currentQuestionIdx < roundData.length - 1) {
-                            setCurrentQuestionIdx(prev => prev + 1);
-                            setPlacedParts({});
-                            setFeedback(null);
-                            setIsProcessing(false); // Unblock for next question
-                        } else {
-                            if (currentRound < 3) {
-                                setGameState('roundSummary');
-                                setIsProcessing(false);
-                            } else {
-                                setGameState('victory');
-                                setIsProcessing(false);
-                            }
-                        }
-                    }, 1500);
+                const wrong = q.slots.filter(s => values[s] !== q.target[s]);
+                if (wrong.length === 0) {
+                    const reward = REWARD * currentRound + (attempts === 0 ? FIRST_TRY_BONUS : 0);
+                    setStatus('success'); setWrongSlots([]); setSelectedSlot(null); setSelectedPart(null);
+                    setCash(c => c + reward); flashCash(reward);
+                    bumpStats(s => ({ ...s, total: s.total + 1, firstTry: s.firstTry + (attempts === 0 ? 1 : 0) }));
+                    setMessage({ tone: 'success', text: attempts === 0 ? `Perfect clone on the first try! +$${reward} (includes $${FIRST_TRY_BONUS} bonus)` : `Clone passed quality control. +$${reward}` });
+                    sfx.success(muted);
                 } else {
-                    setFeedback('error');
-                    setCash(prev => Math.max(0, prev - 50));
+                    setStatus('error'); setWrongSlots(wrong);
+                    setAttempts(a => a + 1);
+                    setCash(c => Math.max(0, c - MISMATCH_COST)); flashCash(-MISMATCH_COST);
+                    bumpStats(s => ({ ...s, mistakes: s.mistakes + 1 }));
+                    setShakeKey(k => k + 1);
+                    sfx.error(muted);
+                    const types = new Set(wrong.map(slotType));
+                    let text = `${wrong.length} part${wrong.length > 1 ? 's' : ''} failed inspection (shown in red). `;
+                    if (types.has('ang')) text += 'Remember: angles stay the same in similar triangles. ';
+                    if (types.has('len')) text += q.test === 'AREA' ? 'Lengths are multiplied by k. ' : 'Each side must be multiplied by the scale factor – not added to it. ';
+                    if (types.has('area')) text += 'Area is multiplied by k², not k. ';
+                    if (attempts + 1 >= 2) text += 'Stuck? Try the HINT button.';
+                    setMessage({ tone: 'error', text });
                 }
             };
 
-            const startRound = () => {
-                // Initialize Round 1 Data explicitly
-                const data = generateLevelData(1);
-                setRoundData(data);
-                setCurrentRound(1);
-                setCurrentQuestionIdx(0);
-                setPlacedParts({});
-                setFeedback(null);
-                setGameState('playing');
+            const nextPart = () => {
+                if (qIdx < roundData.length - 1) { setQIdx(i => i + 1); resetQuestionState(); }
+                else if (currentRound < 3) setGameState('roundSummary');
+                else { setShowVictoryCard(false); setGameState('victory'); }
             };
 
-            const nextRound = () => {
-                // Initialize Next Round Data explicitly before rendering 'playing'
-                const nextR = currentRound + 1;
-                const data = generateLevelData(nextR);
-                setRoundData(data);
-                setCurrentRound(nextR);
-                setCurrentQuestionIdx(0); 
-                setPlacedParts({});
-                setFeedback(null);
-                setGameState('playing');
-            };
+            const restart = () => { setCash(0); setAllStats(emptyStats()); loadRound(1); };
 
-            const getRequiredSpecs = (level) => {
-                if (!level) return [];
-                const specs = [];
-                if (level.slots.some(s => ['left', 'right', 'bottom'].includes(s))) specs.push('SIDES');
-                if (level.slots.includes('angle')) specs.push('ANGLE');
-                if (level.test === 'Area Scale') specs.push('AREA');
-                return specs;
-            };
-
-            // --- RENDERERS ---
-
+            // ---------- screens ----------
             if (gameState === 'intro') {
                 return (
-                    <div className="min-h-screen flex items-center justify-center bg-gray-900 relative overflow-hidden p-4 font-mono text-white">
-                        
+                    <div className="min-h-screen flex items-center justify-center relative overflow-hidden p-4 font-mono text-white">
                         <div className="crt-scanline absolute inset-0 z-50 opacity-20 pointer-events-none"></div>
-                        <div className="max-w-2xl w-full bg-gray-800 border-2 border-blue-500 p-8 rounded-lg shadow-2xl text-center relative z-10">
-                            <h1 className="text-5xl title-font text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-6">THE CLONE FACTORY</h1>
-                            <div className="space-y-4 text-gray-300 mb-8 text-lg">
-                                <p>Welcome, Engineer.</p>
-                                <p>Your mission: Fabricate 3 rounds of mathematically similar components.</p>
-                                <ul className="text-left w-fit mx-auto space-y-2 bg-gray-900/50 p-4 rounded border border-gray-700">
-                                    <li className="flex items-center gap-2"><span className="text-green-400">Round 1:</span> Numeric Calibration</li>
-                                    <li className="flex items-center gap-2"><span className="text-yellow-400">Round 2:</span> Algebraic Variables</li>
-                                    <li className="flex items-center gap-2"><span className="text-red-400">Round 3:</span> Index Law Protocols</li>
-                                </ul>
-                                <p className="text-sm text-gray-500 italic">Reward: Cash Bonuses & Promotion.</p>
+                        <div className="max-w-3xl w-full bg-gray-800 border-2 border-blue-500 rounded-lg shadow-2xl relative z-10 overflow-hidden">
+                            <div className="hazard h-3" />
+                            <div className="p-6 sm:p-8 text-center">
+                                <h1 className="text-4xl sm:text-5xl title-font text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 mb-2">THE CLONE FACTORY</h1>
+                                <p className="text-gray-400 mb-6">Similar triangles · Scale factors · Index laws</p>
+                                <div className="grid sm:grid-cols-2 gap-4 mb-6 text-left">
+                                    <div className="bg-gray-900/60 p-4 rounded border border-gray-700">
+                                        <h3 className="text-yellow-300 font-bold mb-2">How to play</h3>
+                                        <ol className="list-decimal list-inside space-y-1 text-sm text-gray-300">
+                                            <li>Study the <span className="text-blue-300">prototype</span> and its scale factor.</li>
+                                            <li>Tap a socket on the <span className="text-green-300">clone</span> – the matching side or angle lights up on both triangles.</li>
+                                            <li>Tap a part from the parts bin to install it (or tap the part first, then the socket).</li>
+                                            <li>Press <span className="text-green-300 font-bold">FABRICATE</span> to test your clone.</li>
+                                        </ol>
+                                        <div className="mt-3 text-xs text-gray-400">Steel beams = lengths · Brass gauges = angles · Copper panels = areas</div>
+                                    </div>
+                                    <div className="bg-gray-900/60 p-4 rounded border border-gray-700">
+                                        <h3 className="text-yellow-300 font-bold mb-2">Your shift</h3>
+                                        <ul className="space-y-2 text-sm">
+                                            <li><span className="text-green-400 font-bold">Round 1:</span> Numeric Calibration</li>
+                                            <li><span className="text-yellow-400 font-bold">Round 2:</span> Algebraic Variables</li>
+                                            <li><span className="text-red-400 font-bold">Round 3:</span> Index Law Protocols</li>
+                                        </ul>
+                                        <div className="mt-3 text-xs text-gray-400 space-y-1">
+                                            <div>✓ Correct part: +$100 × round number</div>
+                                            <div>★ First-try bonus: +${FIRST_TRY_BONUS}</div>
+                                            <div>✗ Mismatch: −${MISMATCH_COST} · Hint: −${HINT_COST}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <details className="mb-6 text-left">
+                                    <summary className="cursor-pointer text-blue-300 text-sm font-bold mb-2">Engineer's manual: similarity tests</summary>
+                                    <RulesCard />
+                                </details>
+                                <button onClick={restart}
+                                    className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.5)] hover:scale-105">
+                                    START SHIFT
+                                </button>
                             </div>
-                            <button 
-                                onClick={startRound}
-                                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded text-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.5)] hover:scale-105"
-                            >
-                                START SHIFT
-                            </button>
                         </div>
                     </div>
                 );
             }
 
             if (gameState === 'roundSummary') {
-                return (
-                    <RoundTransition 
-                        round={currentRound} 
-                        cash={cash} 
-                        onNext={nextRound} 
-                    />
-                );
+                return <RoundTransition round={currentRound} cash={cash} roundStats={roundStats} onNext={() => loadRound(currentRound + 1)} />;
             }
 
             if (gameState === 'victory') {
+                const acc = allStats.total ? Math.round((allStats.firstTry / allStats.total) * 100) : 0;
+                const rank = acc >= 90 ? 'MASTER ENGINEER' : acc >= 65 ? 'SENIOR ENGINEER' : 'ENGINEER';
                 return (
-                    <div className="min-h-screen flex flex-col items-center justify-center bg-black font-mono text-white relative overflow-hidden">
+                    <div className="min-h-screen flex flex-col items-center justify-center bg-black font-mono text-white relative overflow-hidden p-4">
                         <Fireworks onComplete={() => setShowVictoryCard(true)} />
-                        
-                        <div className={`z-10 text-center p-12 bg-gray-900/90 backdrop-blur rounded-2xl border-4 border-yellow-500 shadow-[0_0_100px_rgba(234,179,8,0.3)] transition-all duration-1000 ${showVictoryCard ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
-                            <h1 className="text-6xl title-font text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 mb-6">MASTER ENGINEER</h1>
-                            <p className="text-2xl mb-4 text-gray-300">All sectors stabilized.</p>
+                        <div className={`z-10 text-center p-8 sm:p-12 bg-gray-900/90 backdrop-blur rounded-2xl border-4 border-yellow-500 shadow-[0_0_100px_rgba(234,179,8,0.3)] transition-all duration-1000 max-w-xl w-full ${showVictoryCard ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+                            <h1 className="text-4xl sm:text-5xl title-font text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 mb-4">{rank}</h1>
+                            <p className="text-xl mb-6 text-gray-300">All 3 production lines complete.</p>
+                            <div className="grid grid-cols-3 gap-3 mb-6 text-sm">
+                                <div className="bg-gray-800 rounded p-3"><div className="text-gray-400 text-xs">First-try</div><div className="text-2xl font-bold text-green-400">{allStats.firstTry}/{allStats.total}</div></div>
+                                <div className="bg-gray-800 rounded p-3"><div className="text-gray-400 text-xs">Mismatches</div><div className="text-2xl font-bold text-red-400">{allStats.mistakes}</div></div>
+                                <div className="bg-gray-800 rounded p-3"><div className="text-gray-400 text-xs">Hints</div><div className="text-2xl font-bold text-yellow-400">{allStats.hints}</div></div>
+                            </div>
                             <div className="text-5xl font-bold text-green-400 mb-8">${cash}</div>
-                            <button 
-                                onClick={() => window.location.reload()}
-                                className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded border border-gray-500 transition-colors"
-                            >
+                            <button onClick={restart} className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded border border-gray-500 transition-colors">
                                 Accept New Contract
                             </button>
                         </div>
@@ -680,204 +1151,187 @@
                 );
             }
 
-            if (!currentLevel) return <div className="text-white">Loading...</div>;
+            if (!q) return <div className="text-white p-8 font-mono">Loading…</div>;
+
+            const proto = PROTOCOLS[q.test];
+            const msgTone = {
+                info: 'border-blue-500/50 bg-blue-950/40 text-blue-200',
+                hint: 'border-yellow-500/60 bg-yellow-950/40 text-yellow-200',
+                warn: 'border-yellow-500/60 bg-yellow-950/40 text-yellow-200',
+                error: 'border-red-500/60 bg-red-950/40 text-red-200',
+                success: 'border-green-500/60 bg-green-950/40 text-green-200'
+            };
+            // the clone is drawn bigger for enlargements and smaller for reductions
+            const protoBox = q.shrink ? 'max-w-[400px]' : 'max-w-[300px]';
+            const cloneBox = q.shrink ? 'max-w-[300px]' : 'max-w-[440px]';
 
             return (
-                <div className="min-h-screen bg-gray-900 flex flex-col items-center p-2 relative font-mono text-white overflow-x-hidden">
-                    
-                    <div className="crt-scanline absolute inset-0 z-50 opacity-10 pointer-events-none"></div>
-                    
-                    {/* HUD - Compact */}
-                    <header className="w-full max-w-5xl flex justify-between items-end border-b border-gray-700 pb-2 mb-2 mt-2">
-                        <div>
-                            <div className="flex items-center gap-3">
-                                <span className={`px-2 py-1 rounded text-xs font-bold ${currentRound === 1 ? 'bg-green-900 text-green-300' : currentRound === 2 ? 'bg-yellow-900 text-yellow-300' : 'bg-red-900 text-red-300'}`}>
-                                    R{currentRound}
-                                </span>
-                                <span className="text-xs text-gray-500 uppercase tracking-widest">#{currentQuestionIdx + 1}/{roundData.length}</span>
+                <div className="min-h-screen flex flex-col items-center p-2 sm:p-3 relative font-mono text-white overflow-x-hidden">
+                    <div className="crt-scanline fixed inset-0 z-50 opacity-10 pointer-events-none"></div>
+
+                    {/* ---------- HUD ---------- */}
+                    <header className="w-full max-w-6xl flex flex-wrap gap-3 justify-between items-center border-b border-gray-700 pb-2 mb-3 mt-1">
+                        <div className="flex items-center gap-3">
+                            <span className={`px-2 py-1 rounded text-xs font-bold ${currentRound === 1 ? 'bg-green-900 text-green-300' : currentRound === 2 ? 'bg-yellow-900 text-yellow-300' : 'bg-red-900 text-red-300'}`}>
+                                ROUND {currentRound}
+                            </span>
+                            <span className="text-xs text-gray-400 hidden sm:inline">{ROUND_INFO[currentRound].name}</span>
+                            <div className="flex gap-1 ml-1" title="Parts in this round">
+                                {roundData.map((_, i) => (
+                                    <span key={i} className={`w-3 h-3 rounded-sm border ${i < qIdx || (i === qIdx && success) ? 'bg-green-500 border-green-300' : i === qIdx ? 'bg-yellow-400/60 border-yellow-300 animate-pulse' : 'bg-gray-700 border-gray-600'}`} />
+                                ))}
                             </div>
                         </div>
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-4">
                             <div className="text-right">
-                                <div className="text-xs text-gray-500">Protocol</div>
-                                <div className="text-lg font-bold text-blue-400">{currentLevel.test}</div>
+                                <div className="text-[10px] text-gray-500 uppercase">Test</div>
+                                <div className="text-lg font-bold text-blue-400 leading-none">{proto.name}</div>
                             </div>
-                            <div className="text-right min-w-[100px]">
-                                <div className="text-xs text-gray-500">Earnings</div>
-                                <div className={`text-lg font-bold text-green-400 transition-transform ${animateCash ? 'scale-125 text-white' : ''}`}>
-                                    ${cash}
-                                </div>
+                            <div className="text-right min-w-[90px] relative">
+                                <div className="text-[10px] text-gray-500 uppercase">Earnings</div>
+                                <div className="text-lg font-bold text-green-400 leading-none">${cash}</div>
+                                {cashFlash && (
+                                    <div key={cashFlash.id} className={`absolute -bottom-5 right-0 text-sm font-bold slide-in ${cashFlash.amount > 0 ? 'text-green-300' : 'text-red-400'}`}>
+                                        {cashFlash.amount > 0 ? `+$${cashFlash.amount}` : `−$${Math.abs(cashFlash.amount)}`}
+                                    </div>
+                                )}
                             </div>
+                            <button onClick={() => setShowRules(s => !s)} className="w-8 h-8 rounded bg-gray-800 border border-gray-600 hover:bg-gray-700 text-sm" title="Similarity rules">?</button>
+                            <button onClick={() => setMuted(m => !m)} className="w-8 h-8 rounded bg-gray-800 border border-gray-600 hover:bg-gray-700 text-sm" title={muted ? 'Sound off' : 'Sound on'}>{muted ? '🔇' : '🔊'}</button>
                         </div>
                     </header>
 
-                    {/* Game Board - Compact Gap */}
-                    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        
-                        {/* PROTOTYPE (Left) - Reduced padding and min-height */}
-                        <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700 relative group flex flex-col items-center justify-center min-h-[200px]">
-                            <div className="absolute top-2 left-4 text-xs text-gray-500 font-bold tracking-wider flex items-center gap-2">
-                                PROTOTYPE <span className="text-lg">{currentLevel.emoji}</span>
+                    {showRules && (
+                        <div className="w-full max-w-6xl mb-3 bg-gray-800 border border-blue-700 rounded-lg p-3 slide-in">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-sm font-bold text-blue-300">ENGINEER'S MANUAL</span>
+                                <button onClick={() => setShowRules(false)} className="text-gray-400 hover:text-white text-sm">close ✕</button>
                             </div>
-                            {/* Constrained wrapper for SVG */}
-                            <div className="h-48 w-48 flex items-center justify-center">
-                                <TriangleSVG 
-                                    sides={currentLevel.proto} 
-                                    angle={currentLevel.proto.angle}
-                                    labels={currentLevel.proto} 
-                                    shapeType={currentLevel.shape}
-                                    color="#60a5fa" 
-                                />
+                            <RulesCard />
+                        </div>
+                    )}
+
+                    {/* ---------- Work order ---------- */}
+                    <div className="w-full max-w-6xl mb-3 bg-gray-800/70 border-l-4 border-blue-500 rounded px-3 py-2 text-sm flex flex-wrap gap-x-3 gap-y-1 items-baseline">
+                        <span className="text-blue-300 font-bold">WORK ORDER #{qIdx + 1}</span>
+                        <span className="text-gray-200"><b>{proto.name}</b> ({proto.full}): {proto.rule}</span>
+                        <span className="text-gray-400 text-xs w-full sm:w-auto">{q.brief}</span>
+                    </div>
+
+                    {/* ---------- Board ---------- */}
+                    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[1fr_1.25fr] gap-3">
+                        {/* PROTOTYPE */}
+                        <div className="blueprint-bg rounded-xl border border-blue-800 relative flex flex-col items-center justify-between p-3 overflow-hidden shadow-inner">
+                            <div className="w-full flex justify-between items-start text-[11px] text-blue-200/80 font-bold tracking-wider">
+                                <span>PROTOTYPE · BLUEPRINT</span>
+                                <span className="text-blue-200/60">{q.serial}</span>
                             </div>
-                            <div className="mt-2 text-center bg-black/30 px-6 py-2 rounded border border-blue-900/50 shadow-inner">
-                                <p className="text-blue-300 font-bold text-lg tracking-wide"><MathText text={currentLevel.scaleFactor} /></p>
+                            <div className={`w-full ${protoBox} mx-auto`}>
+                                <TrianglePlate q={q} mode="proto" selectedSlot={selectedSlot} />
+                            </div>
+                            <div className="w-full flex flex-col items-center gap-1">
+                                <div className="bg-black/40 px-5 py-2 rounded border border-blue-400/40 text-center">
+                                    <div className="text-[10px] text-blue-200/70 uppercase tracking-widest">Scale factor</div>
+                                    <div className="text-blue-100 font-bold text-2xl">k = <MathText text={q.scaleText} /></div>
+                                </div>
+                                <div className="text-[11px] text-blue-200/70 text-center">
+                                    {q.shrink ? 'The clone is a smaller copy' : 'Clone = prototype enlarged by k'} · matching arcs = equal angles
+                                </div>
                             </div>
                         </div>
 
-                        {/* FABRICATION (Right) - Reduced Padding and SVG size */}
-                        <div className="bg-gray-800 p-4 rounded-xl border-2 border-dashed border-gray-600 relative flex flex-col items-center justify-center min-h-[200px]">
-                            <div className="absolute top-2 left-4 w-full flex justify-between px-4">
-                                <span className="text-xs text-gray-400 font-bold tracking-wider">FABRICATION</span>
-                                <div className="flex gap-2">
-                                    {getRequiredSpecs(currentLevel).map(spec => (
-                                        <span key={spec} className={`text-[10px] font-bold px-2 py-0.5 rounded ${spec === 'ANGLE' ? 'bg-yellow-900 text-yellow-200' : spec === 'AREA' ? 'bg-purple-900 text-purple-200' : 'bg-blue-900 text-blue-200'}`}>
-                                            {spec}
+                        {/* FABRICATION BAY */}
+                        <div key={`${currentRound}-${qIdx}`} className="bay-bg rounded-xl border-2 border-gray-600 relative flex flex-col items-center overflow-hidden slide-in">
+                            <div className="hazard h-2 w-full opacity-80" />
+                            <div className="w-full flex justify-between items-center px-3 pt-2">
+                                <span className="text-[11px] text-gray-300 font-bold tracking-wider">FABRICATION BAY · CLONE</span>
+                                <div className="flex gap-1">
+                                    {[...new Set(q.slots.map(slotType))].map(t => (
+                                        <span key={t} className={`text-[10px] font-bold px-2 py-0.5 rounded ${t === 'ang' ? 'bg-yellow-900 text-yellow-200' : t === 'area' ? 'bg-purple-900 text-purple-200' : 'bg-blue-900 text-blue-200'}`}>
+                                            {t === 'ang' ? 'ANGLE' : t === 'area' ? 'AREA' : 'SIDES'}
                                         </span>
                                     ))}
                                 </div>
                             </div>
-                            
-                            {/* Reduced canvas size to w-64 h-64 (256px) */}
-                            <div className="relative w-64 h-64 mx-auto transition-all duration-500">
-                                {/* Interactive SVG Overlay - Expanded ViewBox and Size */}
-                                <svg viewBox="-20 -20 140 140" className="w-full h-full drop-shadow-lg">
-                                     {/* Background Shape (Ghost) */}
-                                    <path 
-                                        d={
-                                            currentLevel.shape === 'right' ? "M 15 85 L 85 85 L 15 15 Z" : 
-                                            currentLevel.shape === 'obtuse' ? "M 5 85 L 95 85 L 30 20 Z" : 
-                                            "M 10 85 L 90 85 L 50 10 Z"
-                                        } 
-                                        fill="none" 
-                                        stroke="#4ade80" 
-                                        strokeWidth="2" 
-                                        strokeDasharray="5,5"
-                                    />
 
-                                    {/* Helper to position buttons based on shape */}
-                                    {(() => {
-                                        const isRight = currentLevel.shape === 'right';
-                                        const isObtuse = currentLevel.shape === 'obtuse';
-                                        
-                                        // Updated Button Positions for new coordinates and smaller visual footprint
-                                        const pos = isRight 
-                                            ? { bottom: {x: 35, y: 90}, left: {x: -25, y: 45}, right: {x: 55, y: 45}, angle: {x: 20, y: 70} }
-                                            : isObtuse
-                                            ? { bottom: {x: 35, y: 90}, left: {x: -15, y: 45}, right: {x: 65, y: 40}, angle: {x: 20, y: 70} }
-                                            : { bottom: {x: 35, y: 90}, left: {x: -5, y: 45}, right: {x: 75, y: 45}, angle: {x: 35, y: 70} };
-
-                                        const getButtonClass = (slotName) => {
-                                            const isSelected = selectedSlot === slotName;
-                                            if (isSelected) return 'border-yellow-400 bg-yellow-400/20 text-yellow-200';
-                                            if (slotName === 'angle') {
-                                                return 'border-orange-500/50 bg-orange-900/20 text-orange-200 hover:bg-orange-500/20 hover:text-white';
-                                            }
-                                            return 'border-green-500/50 bg-black/60 text-gray-300 hover:bg-green-500/20 hover:text-white';
-                                        };
-
-                                        return (
-                                            <>
-                                                {/* Slot: Bottom */}
-                                                {currentLevel.slots.includes('bottom') && (
-                                                    <foreignObject x={pos.bottom.x} y={pos.bottom.y} width="60" height="30">
-                                                        <button 
-                                                            onClick={() => handleSlotClick('bottom')}
-                                                            className={`w-full h-full text-xs border rounded transition-colors font-bold ${getButtonClass('bottom')}`}
-                                                        >
-                                                            {placedParts.bottom ? <MathText text={placedParts.bottom} className="text-green-400"/> : "?"}
-                                                        </button>
-                                                    </foreignObject>
-                                                )}
-                                                {/* Slot: Left */}
-                                                {currentLevel.slots.includes('left') && (
-                                                    <foreignObject x={pos.left.x} y={pos.left.y} width="60" height="30">
-                                                        <button 
-                                                            onClick={() => handleSlotClick('left')}
-                                                            className={`w-full h-full text-xs border rounded transition-colors font-bold ${getButtonClass('left')}`}
-                                                        >
-                                                            {placedParts.left ? <MathText text={placedParts.left} className="text-green-400"/> : "?"}
-                                                        </button>
-                                                    </foreignObject>
-                                                )}
-                                                {/* Slot: Right */}
-                                                {currentLevel.slots.includes('right') && (
-                                                    <foreignObject x={pos.right.x} y={pos.right.y} width="60" height="30">
-                                                        <button 
-                                                            onClick={() => handleSlotClick('right')}
-                                                            className={`w-full h-full text-xs border rounded transition-colors font-bold ${getButtonClass('right')}`}
-                                                        >
-                                                            {placedParts.right ? <MathText text={placedParts.right} className="text-green-400"/> : "?"}
-                                                        </button>
-                                                    </foreignObject>
-                                                )}
-                                                {/* Slot: Angle */}
-                                                {currentLevel.slots.includes('angle') && (
-                                                    <foreignObject x={pos.angle.x} y={pos.angle.y} width="60" height="30">
-                                                        <button 
-                                                            onClick={() => handleSlotClick('angle')}
-                                                            className={`w-full h-full text-xs border rounded transition-colors font-bold ${getButtonClass('angle')}`}
-                                                        >
-                                                            {placedParts.angle ? <MathText text={placedParts.angle} className="text-orange-400"/> : "∠?"}
-                                                        </button>
-                                                    </foreignObject>
-                                                )}
-                                            </>
-                                        );
-                                    })()}
-                                </svg>
+                            <div key={shakeKey} className={`w-full ${cloneBox} mx-auto px-2 relative ${status === 'error' ? 'shake' : ''}`}>
+                                <TrianglePlate q={q} mode="clone" values={values} selectedSlot={selectedSlot}
+                                               wrongSlots={wrongSlots} success={success} onSlot={handleSlotClick} />
+                                {success && (
+                                    <div className="absolute top-2 right-2 stamp border-4 border-green-400 text-green-300 rounded px-2 py-1 font-bold text-sm bg-black/50 pointer-events-none">
+                                        QC ✓ PASSED
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="mt-2 flex gap-4 items-center">
-                                <button 
-                                    onClick={checkSimilarity}
-                                    disabled={feedback === 'success'}
-                                    className={`px-6 py-2 font-bold rounded shadow-lg transition-transform ${feedback === 'success' ? 'bg-gray-600 cursor-not-allowed opacity-50' : 'bg-green-600 hover:bg-green-500 text-white hover:scale-105'}`}
-                                >
-                                    {feedback === 'success' ? 'FABRICATED' : 'FABRICATE'}
-                                </button>
-                                <div className="h-8 flex items-center">
-                                    {feedback === 'error' && <span className="text-red-400 font-bold animate-bounce">⚠ MISMATCH ⚠</span>}
-                                    {feedback === 'success' && <span className="text-green-400 font-bold animate-pulse">✓ STABLE CLONE</span>}
-                                    {feedback === 'incomplete' && <span className="text-yellow-400 font-bold">INCOMPLETE</span>}
-                                </div>
-                            </div>
+                            <div className="w-full"><div className={`conveyor ${success ? 'fast' : ''}`} /></div>
 
+                            <div className="w-full px-3 py-3 flex flex-wrap gap-3 items-center justify-center bg-gray-900/60">
+                                {!success ? (
+                                    <>
+                                        <button onClick={checkSimilarity}
+                                            className="px-6 py-2 font-bold rounded shadow-lg transition-transform bg-green-600 hover:bg-green-500 text-white hover:scale-105 border-b-4 border-green-800 active:border-b-0 active:translate-y-1">
+                                            ⚙ FABRICATE
+                                        </button>
+                                        <button onClick={giveHint}
+                                            className="px-4 py-2 font-bold rounded bg-gray-700 hover:bg-gray-600 border border-yellow-600/60 text-yellow-200 text-sm">
+                                            💡 HINT (−${HINT_COST})
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button onClick={nextPart}
+                                        className="px-6 py-2 font-bold rounded shadow-lg bg-blue-600 hover:bg-blue-500 text-white hover:scale-105 transition-transform border-b-4 border-blue-800">
+                                        {qIdx < roundData.length - 1 ? 'NEXT WORK ORDER →' : currentRound < 3 ? 'FINISH ROUND →' : 'COMPLETE SHIFT →'}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Inventory - Compact */}
-                    <div className="w-full max-w-4xl mt-4 bg-gray-800/80 border-t-4 border-blue-500 p-3 rounded-xl">
-                        <h3 className="text-gray-400 text-xs font-bold mb-2 tracking-widest uppercase">Inventory</h3>
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            {currentLevel.inventory.map((item, idx) => (
-                                <button 
-                                    key={idx}
-                                    onClick={() => handlePartClick(item)}
-                                    disabled={!selectedSlot}
-                                    className={`px-3 py-2 bg-gray-700 border border-gray-600 rounded hover:bg-gray-600 hover:border-blue-400 transition-all min-w-[60px] font-bold text-base shadow-md ${!selectedSlot ? 'opacity-50 cursor-not-allowed' : 'hover:-translate-y-1'}`}
-                                >
-                                    <MathText text={item} />
-                                </button>
+                    {/* ---------- Supervisor panel / QC report ---------- */}
+                    <div className="w-full max-w-6xl mt-3 min-h-[44px]">
+                        {message && (
+                            <div className={`border rounded-lg px-3 py-2 text-sm slide-in ${msgTone[message.tone]}`}>
+                                <span className="font-bold mr-2">{message.tone === 'success' ? 'QC REPORT' : message.tone === 'error' ? 'INSPECTION' : message.tone === 'hint' ? 'SUPERVISOR' : 'NOTE'}:</span>
+                                <MathText text={message.text} wrap />
+                                {success && (
+                                    <div className="mt-2 grid sm:grid-cols-2 gap-1">
+                                        {q.slots.map(s => (
+                                            <div key={s} className="bg-black/30 rounded px-2 py-1 text-green-100">
+                                                <span className="text-green-400 font-bold">{SLOT_NAMES[s]}: </span>
+                                                <MathText text={q.working[s]} wrap />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        {!message && (
+                            <div className="text-center text-xs text-gray-500 pt-3">
+                                {selectedSlot ? <span className="text-yellow-300">Installing into {SLOT_NAMES[selectedSlot]} – it matches {PROTO_NAMES[selectedSlot]} on the prototype. Pick a part below.</span>
+                                    : selectedPart !== null ? <span className="text-yellow-300">Part picked up – now tap a socket on the clone.</span>
+                                    : 'Tap a socket on the clone or a part in the bin to begin.'}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ---------- Parts bin ---------- */}
+                    <div className="w-full max-w-6xl mt-2 mb-4 rounded-xl overflow-hidden border border-gray-700 bg-gray-800/90">
+                        <div className="flex justify-between items-center px-3 py-1.5 bg-gray-900 border-b border-gray-700">
+                            <h3 className="text-gray-300 text-xs font-bold tracking-widest uppercase">Parts bin</h3>
+                            <span className="text-[10px] text-gray-500">Tap a part in a socket to remove it</span>
+                        </div>
+                        <div className="flex flex-wrap gap-3 justify-center p-4"
+                             style={{ backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 12px)' }}>
+                            {q.inventory.map((item, idx) => (
+                                <PartChip key={idx} value={item}
+                                          used={usedIdx.includes(idx)}
+                                          selected={selectedPart === idx}
+                                          disabled={success || usedIdx.includes(idx)}
+                                          onClick={() => handlePartClick(idx)} />
                             ))}
                         </div>
-                        {!selectedSlot && (
-                            <p className="text-center text-[10px] text-gray-500 mt-2 italic">Select a yellow slot above to enable parts.</p>
-                        )}
-                        {selectedSlot && (
-                            <p className="text-center text-[10px] text-yellow-400 mt-2 animate-pulse">Installing into slot: {selectedSlot.toUpperCase()}</p>
-                        )}
                     </div>
-
                 </div>
             );
         }
@@ -887,4 +1341,3 @@
     </script>
 </body>
 </html>
-

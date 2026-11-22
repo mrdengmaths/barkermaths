@@ -326,11 +326,14 @@
             </div>
 
             <!-- Quick Filter Actions -->
-            <div class="pt-3 border-t border-slate-100 flex gap-2">
-                <button onclick="selectAllFiltered()" class="flex-1 py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition text-center">
+            <div class="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2">
+                <button onclick="openBatchModal()" class="col-span-2 py-2 px-3 bg-barker-700 hover:bg-barker-800 text-white text-xs font-bold rounded-lg transition text-center shadow-sm">
+                    + Batch Add by Subtopic
+                </button>
+                <button onclick="selectAllFiltered()" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition text-center">
                     + Add All Filtered
                 </button>
-                <button onclick="clearSelectedTray()" class="flex-1 py-1.5 px-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 text-xs font-semibold rounded-lg transition text-center">
+                <button onclick="clearSelectedTray()" class="py-1.5 px-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 text-xs font-semibold rounded-lg transition text-center">
                     Clear Tray
                 </button>
             </div>
@@ -446,6 +449,44 @@
             <div class="p-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
                 <span id="topicPickerSelectionCount" class="text-xs text-slate-500"></span>
                 <button onclick="closeTopicPicker()" class="px-4 py-2 text-xs font-bold text-white bg-barker-700 rounded-lg hover:bg-barker-800">Apply filters</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= BATCH RANDOM QUESTION MODAL ================= -->
+    <div id="batchModal" class="fixed inset-0 bg-slate-900/60 z-[1150] hidden items-center justify-center p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="batchModalTitle">
+        <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex items-start justify-between gap-4 bg-slate-50">
+                <div>
+                    <h3 id="batchModalTitle" class="font-bold text-base text-slate-900">Batch add random questions</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Choose subtopics, then control how many questions come from each one.</p>
+                </div>
+                <button type="button" onclick="closeBatchModal()" aria-label="Close batch add" class="text-slate-400 hover:text-slate-700 font-bold p-1 text-lg">✕</button>
+            </div>
+
+            <div class="p-4 border-b border-slate-200 bg-white space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <label for="batchTotalInput" class="text-xs font-bold text-slate-700">Total questions</label>
+                        <input id="batchTotalInput" type="number" min="1" max="500" value="10" oninput="setBatchTotal(this.value)" class="w-20 px-2.5 py-1.5 text-sm font-bold bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-barker-700">
+                    </div>
+                    <div class="flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200" role="group" aria-label="Distribution mode">
+                        <button id="batchEvenMode" type="button" onclick="setBatchMode('even')" class="px-3 py-1.5 text-xs font-bold rounded-md text-white bg-barker-700 shadow-sm">Even split</button>
+                        <button id="batchCustomMode" type="button" onclick="setBatchMode('custom')" class="px-3 py-1.5 text-xs font-bold rounded-md text-slate-600">Custom counts</button>
+                    </div>
+                </div>
+                <div id="batchDistributionBar" class="h-10 w-full overflow-hidden rounded-lg bg-slate-100 flex" aria-label="Question distribution preview"></div>
+                <div id="batchDistributionSummary" class="text-[11px] text-slate-500"></div>
+            </div>
+
+            <div id="batchTopicSections" class="flex-1 overflow-y-auto p-4 bg-slate-50"></div>
+
+            <div class="p-4 border-t border-slate-200 bg-white flex flex-wrap items-center justify-between gap-3">
+                <div id="batchStatus" class="text-xs text-slate-500" role="status" aria-live="polite"></div>
+                <div class="flex gap-2 ml-auto">
+                    <button type="button" onclick="closeBatchModal()" class="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100">Cancel</button>
+                    <button id="batchAddButton" type="button" onclick="addBatchQuestions()" class="px-4 py-2 text-xs font-bold text-white bg-barker-700 rounded-lg hover:bg-barker-800 shadow disabled:opacity-40 disabled:cursor-not-allowed">Add random questions</button>
+                </div>
             </div>
         </div>
     </div>
@@ -819,6 +860,9 @@
         let selectedTopicFilters = new Map();
         let excludedTopicFilters = new Map();
         let expandedTopicIds = new Set();
+        let batchSelectedKeys = new Map();
+        let batchMode = 'even';
+        let batchTotal = 10;
         const EXTRA_BANKS = ['./questions/y7-y8.json', './questions/y9-y10.json'];
         const QUESTIONS_BASE = './questions/';
 
@@ -1122,11 +1166,14 @@
         function initModalClosing() {
             const topic = document.getElementById('topicPickerModal');
             const tray = document.getElementById('trayModal');
+            const batch = document.getElementById('batchModal');
             topic.addEventListener('click', event => { if (event.target === topic) closeTopicPicker(); });
             tray.addEventListener('click', event => { if (event.target === tray) closeTrayModal(); });
+            batch.addEventListener('click', event => { if (event.target === batch) closeBatchModal(); });
             document.addEventListener('keydown', event => {
                 if (event.key !== 'Escape') return;
-                if (!topic.classList.contains('hidden')) closeTopicPicker();
+                if (!batch.classList.contains('hidden')) closeBatchModal();
+                else if (!topic.classList.contains('hidden')) closeTopicPicker();
                 else if (!tray.classList.contains('hidden')) closeTrayModal();
             });
         }
@@ -1342,6 +1389,224 @@
                     selectedQuestionIds.push(q.id);
                 }
             });
+            renderQuestionsFeed();
+            updateTrayUI();
+        }
+
+        // --- Batch random question selection ---
+        function batchKey(q) {
+            return `${q.topic}\u001f${q.subtopic}`;
+        }
+
+        function batchLabel(key) {
+            return key.split('\u001f');
+        }
+
+        function batchCandidates() {
+            const grouped = new Map();
+            filteredQuestions
+                .filter(q => !selectedQuestionIds.includes(q.id))
+                .forEach(q => {
+                    const key = batchKey(q);
+                    if (!grouped.has(key)) grouped.set(key, { key, topic: q.topic, subtopic: q.subtopic, questions: [] });
+                    grouped.get(key).questions.push(q);
+                });
+            return [...grouped.values()].sort((a, b) => {
+                const categoryA = TOPIC_CATEGORIES.findIndex(category => category.topics.some(topic => topic.name === a.topic));
+                const categoryB = TOPIC_CATEGORIES.findIndex(category => category.topics.some(topic => topic.name === b.topic));
+                return (categoryA - categoryB) || a.topic.localeCompare(b.topic) || a.subtopic.localeCompare(b.subtopic);
+            });
+        }
+
+        function selectedBatchCandidates() {
+            return batchCandidates().filter(item => batchSelectedKeys.has(item.key));
+        }
+
+        function evenBatchAllocation(items, total) {
+            const counts = new Map(items.map(item => [item.key, 0]));
+            let remaining = Math.max(0, Math.floor(total) || 0);
+            while (remaining > 0) {
+                let added = false;
+                for (const item of items) {
+                    if (!remaining) break;
+                    if (counts.get(item.key) < item.questions.length) {
+                        counts.set(item.key, counts.get(item.key) + 1);
+                        remaining--;
+                        added = true;
+                    }
+                }
+                if (!added) break;
+            }
+            return counts;
+        }
+
+        function batchAllocations(items = selectedBatchCandidates()) {
+            if (batchMode === 'even') return evenBatchAllocation(items, batchTotal);
+            return new Map(items.map(item => [item.key, Math.min(
+                Math.max(0, Math.floor(Number(batchSelectedKeys.get(item.key))) || 0),
+                item.questions.length
+            )]));
+        }
+
+        function openBatchModal() {
+            const items = batchCandidates();
+            batchSelectedKeys.clear();
+            items.forEach(item => {
+                if (selectedTopicFilters.size && topicMatches(selectedTopicFilters, item.questions[0])) {
+                    batchSelectedKeys.set(item.key, 1);
+                }
+            });
+            batchMode = 'even';
+            batchTotal = 10;
+            document.getElementById('batchTotalInput').value = batchTotal;
+            document.getElementById('batchModal').classList.remove('hidden');
+            document.getElementById('batchModal').classList.add('flex');
+            renderBatchModal();
+        }
+
+        function closeBatchModal() {
+            document.getElementById('batchModal').classList.add('hidden');
+            document.getElementById('batchModal').classList.remove('flex');
+        }
+
+        function toggleBatchSubtopic(key) {
+            if (batchSelectedKeys.has(key)) batchSelectedKeys.delete(key);
+            else batchSelectedKeys.set(key, 1);
+            if (batchMode === 'custom') {
+                const items = selectedBatchCandidates();
+                batchTotal = [...batchAllocations(items).values()].reduce((sum, count) => sum + count, 0);
+                document.getElementById('batchTotalInput').value = batchTotal;
+            }
+            renderBatchModal();
+        }
+
+        function setBatchMode(mode) {
+            if (mode === batchMode) return;
+            if (mode === 'custom') {
+                const allocations = batchAllocations();
+                batchSelectedKeys.forEach((_, key) => batchSelectedKeys.set(key, allocations.get(key) || 0));
+            }
+            batchMode = mode;
+            renderBatchModal();
+        }
+
+        function setBatchTotal(value) {
+            batchTotal = Math.min(500, Math.max(1, Math.floor(Number(value)) || 1));
+            renderBatchModal();
+        }
+
+        function setBatchCustomCount(key, value) {
+            const item = selectedBatchCandidates().find(candidate => candidate.key === key);
+            if (!item) return;
+            batchSelectedKeys.set(key, Math.min(item.questions.length, Math.max(0, Math.floor(Number(value)) || 0)));
+            batchTotal = [...batchAllocations().values()].reduce((sum, count) => sum + count, 0);
+            document.getElementById('batchTotalInput').value = batchTotal;
+            renderBatchDistribution();
+        }
+
+        function batchSegmentColor(key) {
+            const palette = ['#005b94', '#2563eb', '#7c3aed', '#059669', '#d97706', '#db2777', '#0891b2', '#4f46e5'];
+            const hash = [...key].reduce((value, char) => ((value * 31) + char.charCodeAt(0)) >>> 0, 0);
+            return palette[hash % palette.length];
+        }
+
+        function renderBatchDistribution() {
+            const items = selectedBatchCandidates();
+            const allocations = batchAllocations(items);
+            const allocated = [...allocations.values()].reduce((sum, count) => sum + count, 0);
+            const capacity = items.reduce((sum, item) => sum + item.questions.length, 0);
+            const bar = document.getElementById('batchDistributionBar');
+            if (!items.length || !allocated) {
+                bar.innerHTML = '<div class="w-full flex items-center justify-center text-xs text-slate-400">Select subtopics below to build the distribution</div>';
+            } else {
+                bar.innerHTML = items.filter(item => allocations.get(item.key) > 0).map(item => {
+                    const count = allocations.get(item.key);
+                    const percentage = Math.round(count / allocated * 100);
+                    const [topic, subtopic] = batchLabel(item.key);
+                    return `<div title="${escapeHtml(`${topic} › ${subtopic}: ${count} questions (${percentage}%)`)}" aria-label="${escapeHtml(`${subtopic}: ${count} questions`)}" class="min-w-0 h-full flex items-center justify-center overflow-hidden px-1 text-[10px] font-bold text-white border-r border-white/30 last:border-r-0" style="flex-grow:${count};background:${batchSegmentColor(item.key)}"><span class="truncate">${count}</span></div>`;
+                }).join('');
+            }
+            const targetText = batchMode === 'even'
+                ? `${allocated} of ${batchTotal} requested`
+                : `${allocated} total`;
+            let note = `${items.length} subtopic${items.length === 1 ? '' : 's'} selected • ${capacity} available`;
+            if (batchMode === 'even' && allocated < batchTotal) note += ' • Remaining slots cannot be filled without duplicates';
+            document.getElementById('batchDistributionSummary').innerText = `${targetText} • ${note}`;
+            document.getElementById('batchStatus').innerText = !filteredQuestions.length
+                ? 'No questions match the current filters. Select a course or broaden the filters first.'
+                : !items.length
+                    ? 'Select at least one subtopic.'
+                    : allocated
+                        ? `Ready to add ${allocated} random question${allocated === 1 ? '' : 's'}. Questions already in the tray are excluded.`
+                        : 'Enter at least one question in a selected subtopic.';
+            document.getElementById('batchAddButton').disabled = allocated === 0;
+        }
+
+        function batchCategoryFor(topicName) {
+            return TOPIC_CATEGORIES.find(category => category.topics.some(topic => topic.name === topicName))?.name || 'Other';
+        }
+
+        function renderBatchModal() {
+            const items = batchCandidates();
+            const allocations = batchAllocations();
+            document.getElementById('batchEvenMode').className = `px-3 py-1.5 text-xs font-bold rounded-md ${batchMode === 'even' ? 'text-white bg-barker-700 shadow-sm' : 'text-slate-600'}`;
+            document.getElementById('batchCustomMode').className = `px-3 py-1.5 text-xs font-bold rounded-md ${batchMode === 'custom' ? 'text-white bg-barker-700 shadow-sm' : 'text-slate-600'}`;
+            document.getElementById('batchTotalInput').disabled = batchMode === 'custom';
+            const content = document.getElementById('batchTopicSections');
+            if (!items.length) {
+                content.innerHTML = '<div class="py-12 text-center text-sm text-slate-500"><p class="font-semibold text-slate-700">No new questions are available.</p><p class="text-xs mt-1">Choose a course, broaden the current filters, or clear questions from the tray.</p></div>';
+                renderBatchDistribution();
+                return;
+            }
+
+            const categories = [...new Set(items.map(item => batchCategoryFor(item.topic)))];
+            content.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${categories.map(category => {
+                const categoryItems = items.filter(item => batchCategoryFor(item.topic) === category);
+                const categoryGroups = [...new Set(categoryItems.map(item => item.topic))];
+                return `<section class="min-w-0 bg-white border border-slate-200 rounded-xl overflow-hidden">
+                    <div class="px-3 py-2 bg-slate-100 border-b border-slate-200 text-xs font-bold text-slate-700">${escapeHtml(category)}</div>
+                    <div class="divide-y divide-slate-100">${categoryGroups.map(topic => `
+                        <div class="p-3">
+                            <div class="text-[11px] font-bold uppercase tracking-wide text-barker-700 mb-2">${escapeHtml(topic)}</div>
+                            <div class="space-y-1.5">${categoryItems.filter(item => item.topic === topic).map(item => {
+                                const selected = batchSelectedKeys.has(item.key);
+                                const count = allocations.get(item.key) || 0;
+                                return `<div class="flex items-center gap-2 rounded-lg px-2 py-1.5 ${selected ? 'bg-barker-50 border border-barker-200' : 'border border-transparent hover:bg-slate-50'}">
+                                    <label class="flex items-center gap-2 min-w-0 flex-1 cursor-pointer">
+                                        <input type="checkbox" ${selected ? 'checked' : ''} onchange='toggleBatchSubtopic(${escapeHtml(JSON.stringify(item.key))})' class="w-4 h-4 text-barker-700 rounded border-slate-300 focus:ring-barker-700">
+                                        <span class="min-w-0">
+                                            <span class="block text-xs font-semibold text-slate-700 truncate" title="${escapeHtml(item.subtopic)}">${escapeHtml(item.subtopic)}</span>
+                                            <span class="block text-[10px] text-slate-400">${item.questions.length} available</span>
+                                        </span>
+                                    </label>
+                                    ${selected ? `<input type="number" min="0" max="${item.questions.length}" value="${count}" ${batchMode === 'even' ? 'disabled' : ''} oninput='setBatchCustomCount(${escapeHtml(JSON.stringify(item.key))}, this.value)' aria-label="Questions from ${escapeHtml(item.subtopic)}" class="w-14 px-2 py-1 text-right text-xs font-bold border border-slate-200 rounded bg-white disabled:bg-slate-100 disabled:text-slate-500 focus:outline-none focus:ring-2 focus:ring-barker-700">` : ''}
+                                </div>`;
+                            }).join('')}</div>
+                        </div>
+                    `).join('')}</div>
+                </section>`;
+            }).join('')}</div>`;
+            renderBatchDistribution();
+        }
+
+        function shuffled(items) {
+            const result = [...items];
+            for (let i = result.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [result[i], result[j]] = [result[j], result[i]];
+            }
+            return result;
+        }
+
+        function addBatchQuestions() {
+            const items = selectedBatchCandidates();
+            const allocations = batchAllocations(items);
+            const additions = shuffled(items.flatMap(item => shuffled(item.questions).slice(0, allocations.get(item.key) || 0)));
+            additions.forEach(q => {
+                if (!selectedQuestionIds.includes(q.id)) selectedQuestionIds.push(q.id);
+            });
+            if (!additions.length) return;
+            closeBatchModal();
             renderQuestionsFeed();
             updateTrayUI();
         }
