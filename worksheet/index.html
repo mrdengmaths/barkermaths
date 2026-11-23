@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barker Maths — Question Bank & Practice</title>
+    <title>Barker Maths — Worksheet Builder</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -249,49 +249,20 @@
 
     <div id="appShell" class="no-print w-full max-w-[1700px] mx-auto px-4 pb-4 flex-1 flex flex-col gap-4">
 
-    <!-- ================= TOOLBAR (SCREEN ONLY) ================= -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
-        <div>
-            <h1 class="font-bold text-base md:text-lg leading-tight text-slate-900 flex items-center gap-2">
-                Maths Question Bank
-                <span id="courseBadge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-barker-100 text-barker-700">Year 11 Standard</span>
-            </h1>
-            <p class="text-xs text-slate-500">Barker College • Worksheet Generator &amp; Practice Lab</p>
-        </div>
-
-        <!-- Mode Navigation Tabs -->
-        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-            <button id="navTabBuilder" onclick="switchView('builder')" class="px-4 py-1.5 text-xs font-bold rounded-lg transition text-white bg-barker-700 shadow-sm flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                Worksheet Builder
-            </button>
-            <button id="navTabPractice" onclick="switchView('practice')" class="px-4 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-                Practice Mode
-            </button>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex items-center gap-2">
-            <button onclick="openTrayModal()" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition flex items-center gap-1.5">
-                <span>Tray</span>
-                <span id="topTrayBadge" class="px-1.5 py-0.2 bg-barker-700 text-white rounded-full font-bold text-[10px]">0</span>
-            </button>
-            <button onclick="openPrintModal()" class="px-4 py-1.5 text-xs font-bold text-white bg-barker-700 hover:bg-barker-800 rounded-lg shadow transition flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                Print / Export PDF
-            </button>
-        </div>
-    </div>
-
-    <!-- ================= VIEW 1: WORKSHEET BUILDER (filters | questions | preview) ================= -->
+    <!-- ================= WORKSHEET BUILDER (filters | questions | preview) ================= -->
     <div id="builderView" class="grid grid-cols-1 lg:grid-cols-[15rem_minmax(0,0.7fr)_minmax(0,1.3fr)] xl:grid-cols-[17rem_22rem_minmax(0,1fr)] gap-4 min-h-0">
         
         <!-- SIDEBAR FILTERS -->
         <aside class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4 overflow-y-auto">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Filter Question Bank</h2>
-                <button onclick="resetFilters()" class="text-xs font-medium text-barker-700 hover:underline">Reset</button>
+                <div class="flex items-center gap-2">
+                    <button onclick="openTrayModal()" class="px-2.5 py-1 text-[11px] font-bold text-barker-700 bg-barker-50 hover:bg-barker-100 border border-barker-200 rounded-lg transition flex items-center gap-1.5">
+                        <span>Tray</span>
+                        <span id="topTrayBadge" class="min-w-4 px-1 py-0.5 bg-barker-700 text-white rounded-full text-[9px] leading-none text-center">0</span>
+                    </button>
+                    <button onclick="resetFilters()" class="text-xs font-medium text-barker-700 hover:underline">Reset</button>
+                </div>
             </div>
 
             <!-- Course Selection -->
@@ -350,7 +321,7 @@
             <div class="space-y-4">
                 <div id="bankWarning" class="hidden bg-amber-50 border border-amber-200 text-amber-900 text-xs rounded-xl p-3"></div>
             </div>
-            <div class="space-y-4" id="questionsFeed">
+            <div class="space-y-2.5" id="questionsFeed">
                 <!-- Question cards injected via JavaScript -->
             </div>
         </main>
@@ -383,57 +354,6 @@
                 <div id="pvPages"></div>
             </div>
         </aside>
-    </div>
-
-    <!-- ================= VIEW 2: INTERACTIVE PRACTICE MODE ================= -->
-    <div id="practiceView" class="hidden flex-1 flex flex-col overflow-y-auto">
-        <div class="max-w-3xl mx-auto w-full flex-1 flex flex-col gap-5">
-            
-            <!-- Practice Header Bar -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <span class="px-3 py-1 bg-barker-100 text-barker-800 font-bold rounded-lg text-xs" id="practiceProgressBadge">
-                        Question 1 of 1
-                    </span>
-                    <span id="practiceTopicTag" class="text-xs font-semibold text-slate-600">
-                        Topic
-                    </span>
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <!-- Timer -->
-                    <div class="flex items-center gap-1.5 text-xs font-mono font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        <span id="practiceTimer">00:00</span>
-                    </div>
-
-                    <!-- Source Selector -->
-                    <select id="practiceSourceSelect" onchange="startPracticeSession()" class="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700">
-                        <option value="filtered">Practice: Current Filter</option>
-                        <option value="tray">Practice: Selected Tray</option>
-                        <option value="all">Practice: All Bank</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Question Card Area -->
-            <div id="practiceCardContainer" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 flex-1 flex flex-col justify-between">
-                <!-- Injected via renderPracticeCurrentQuestion() -->
-            </div>
-
-            <!-- Bottom Navigation for Practice -->
-            <div class="flex items-center justify-between gap-3">
-                <button onclick="prevPracticeQuestion()" id="practicePrevBtn" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm">
-                    ← Previous
-                </button>
-                <button onclick="toggleFlagRedo()" id="practiceFlagBtn" class="px-3.5 py-2 bg-white border border-slate-200 text-slate-600 text-xs font-semibold rounded-xl hover:bg-amber-50 hover:text-amber-700 transition flex items-center gap-1.5 shadow-sm">
-                    <span>🚩 Flag for Redo</span>
-                </button>
-                <button onclick="nextPracticeQuestion()" id="practiceNextBtn" class="px-5 py-2 bg-barker-700 text-white text-xs font-bold rounded-xl hover:bg-barker-800 transition flex items-center gap-1.5 shadow-sm">
-                    Next Question →
-                </button>
-            </div>
-        </div>
     </div>
 
     </div><!-- /appShell -->
@@ -625,15 +545,6 @@
 
         // Options chosen with the toggles above the preview
         const options = { solutions: true, space: false, criteria: false, columns: false };
-
-        // Practice State
-        let practiceQueue = [];
-        let practiceIndex = 0;
-        let practiceTimerInterval = null;
-        let practiceSeconds = 0;
-        let practiceScores = {}; // Map q.id -> score
-        let flaggedForRedo = new Set();
-        let selectedMCOption = null;
 
         // --- Course and topic configuration ---
         const COURSE_GROUPS = [
@@ -970,7 +881,6 @@
             const excludedCount = excludedCourseIds.size;
             let badge = selectedLabels.length === 0 ? (excludedCount ? 'All courses' : 'No courses') : selectedLabels.length === 1 ? selectedLabels[0] : selectedLabels.length === COURSE_GROUPS.length ? 'All courses' : `${selectedLabels.length} courses`;
             if (excludedCount) badge += ` (−${excludedCount})`;
-            document.getElementById('courseBadge').innerText = badge;
         }
 
         // --- Helper: Render Markdown to HTML without asterisks ---
@@ -1629,37 +1539,38 @@
             filteredQuestions.forEach(q => {
                 const isSelected = selectedQuestionIds.includes(q.id);
                 
-                let diffBadge = 'bg-emerald-100 text-emerald-800 border-emerald-200';
-                if (q.difficulty === 'Medium') diffBadge = 'bg-amber-100 text-amber-800 border-amber-200';
-                if (q.difficulty === 'Hard') diffBadge = 'bg-rose-100 text-rose-800 border-rose-200';
-
                 const card = document.createElement('div');
-                card.className = `bg-white rounded-2xl border transition-all duration-200 p-6 ${
+                card.className = `bg-white rounded-xl border transition-all duration-200 px-3.5 py-3 ${
                     isSelected ? 'border-barker-700 ring-2 ring-barker-100 shadow-md' : 'border-slate-200 hover:border-slate-300 shadow-sm'
                 }`;
 
                 card.innerHTML = `
-                    <div class="flex items-start justify-between gap-4 pb-3 border-b border-slate-100 mb-4">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">${q.id}</span>
-                            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">${q.topic} › ${q.subtopic}</span>
-                            ${q.enrichment ? '<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border bg-violet-100 text-violet-800 border-violet-200" title="Harder than the standard questions, but within the syllabus">⭐ Enrichment</span>' : `<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>`}
+                    <div class="flex items-start justify-between gap-2 pb-2 border-b border-slate-100 mb-2.5">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex min-w-0 items-center gap-1.5 mb-0.5">
+                                <span class="shrink-0 font-mono text-[10px] font-bold text-slate-500">${escapeHtml(q.id)}</span>
+                                <span class="shrink-0 text-slate-300">•</span>
+                                <span class="min-w-0 truncate text-[11px] font-semibold text-slate-700" title="${escapeHtml(`${q.topic} › ${q.subtopic}`)}">${escapeHtml(q.topic)} › ${escapeHtml(q.subtopic)}</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] leading-none">
+                            ${q.enrichment ? '<span class="font-bold text-violet-700" title="Harder than the standard questions, but within the syllabus">⭐ Enrichment</span>' : `<span class="font-semibold ${q.difficulty === 'Easy' ? 'text-emerald-700' : q.difficulty === 'Medium' ? 'text-amber-700' : 'text-rose-700'}">${q.difficulty}</span>`}
                             ${enrichmentBadgeHtml(q)}
-                            <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100">${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}</span>
-                            ${q.calculator ? '<span class="text-xs text-slate-400 font-medium" title="Calculator Allowed">🧮 Calc</span>' : ''}
+                            <span class="font-semibold text-blue-700">${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}</span>
+                            ${q.calculator ? '<span class="text-slate-400" title="Calculator Allowed">🧮 Calc</span>' : ''}
+                            </div>
                         </div>
 
-                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <label class="shrink-0 flex items-center gap-1.5 cursor-pointer select-none">
                             <input type="checkbox" onchange="toggleSelectQuestion('${q.id}', this.checked)" ${isSelected ? 'checked' : ''} 
-                                class="w-5 h-5 text-barker-700 rounded border-slate-300 focus:ring-barker-700 cursor-pointer">
-                            <span class="text-xs font-bold ${isSelected ? 'text-barker-700' : 'text-slate-600'}">
+                                class="w-4 h-4 text-barker-700 rounded border-slate-300 focus:ring-barker-700 cursor-pointer">
+                            <span class="text-[11px] font-bold ${isSelected ? 'text-barker-700' : 'text-slate-600'}">
                                 ${isSelected ? 'Added' : 'Add'}
                             </span>
                         </label>
                     </div>
 
                     <!-- Clean Formatted Question Body -->
-                    <div class="text-slate-800 text-sm leading-relaxed mb-4 math-content font-medium">
+                    <div class="text-slate-800 text-[13px] leading-relaxed mb-2 math-content font-medium">
                         ${formatMarkdown(q.question)}
                         ${diagramHtml(q, 320)}
                     </div>
@@ -1667,12 +1578,9 @@
                     ${sourceHtml(q)}
 
                     <!-- Solution Accordion Button -->
-                    <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between">
+                    <div class="pt-2 mt-2 border-t border-slate-100 flex items-center">
                         <button onclick="toggleSolutionView('sol-${q.id}')" class="text-xs font-bold text-slate-500 hover:text-barker-700 flex items-center gap-1 transition">
-                            <span>🔍 View Worked Solution &amp; Rubric</span>
-                        </button>
-                        <button onclick="practiceSingleQuestion('${q.id}')" class="text-xs font-semibold text-barker-700 hover:bg-barker-50 px-2.5 py-1 rounded-lg transition">
-                            ▶ Practice this
+                            <span>🔍 Solution &amp; rubric</span>
                         </button>
                     </div>
 
@@ -1787,250 +1695,6 @@
             selectedQuestionIds[newIndex] = temp;
             renderTrayModalList();
             updateTrayUI();
-        }
-
-        // --- VIEW SWITCHER: Builder vs Practice ---
-        function switchView(viewName) {
-            const builder = document.getElementById('builderView');
-            const practice = document.getElementById('practiceView');
-            const tabB = document.getElementById('navTabBuilder');
-            const tabP = document.getElementById('navTabPractice');
-
-            if (viewName === 'builder') {
-                builder.classList.remove('hidden');
-                practice.classList.add('hidden');
-                fitBuilder();
-                applyPreviewScale();
-
-                tabB.className = 'px-4 py-1.5 text-xs font-bold rounded-lg transition text-white bg-barker-700 shadow-sm flex items-center gap-1.5';
-                tabP.className = 'px-4 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition flex items-center gap-1.5';
-                clearInterval(practiceTimerInterval);
-            } else {
-                builder.classList.add('hidden');
-                practice.classList.remove('hidden');
-
-                tabP.className = 'px-4 py-1.5 text-xs font-bold rounded-lg transition text-white bg-barker-700 shadow-sm flex items-center gap-1.5';
-                tabB.className = 'px-4 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition flex items-center gap-1.5';
-                startPracticeSession();
-            }
-        }
-
-        // --- INTERACTIVE PRACTICE MODE LOGIC ---
-        function practiceSingleQuestion(id) {
-            practiceQueue = allQuestions.filter(q => q.id === id);
-            practiceIndex = 0;
-            switchView('practice');
-            renderPracticeCurrentQuestion();
-        }
-
-        function startPracticeSession() {
-            const src = document.getElementById('practiceSourceSelect').value;
-            if (src === 'tray') {
-                practiceQueue = allQuestions.filter(q => selectedQuestionIds.includes(q.id));
-            } else if (src === 'filtered') {
-                practiceQueue = [...filteredQuestions];
-            } else {
-                practiceQueue = [...bankQuestions()];
-            }
-
-            if (practiceQueue.length === 0) {
-                practiceQueue = [...bankQuestions()];
-            }
-
-            practiceIndex = 0;
-            practiceSeconds = 0;
-            selectedMCOption = null;
-            clearInterval(practiceTimerInterval);
-            practiceTimerInterval = setInterval(() => {
-                practiceSeconds++;
-                const mins = String(Math.floor(practiceSeconds / 60)).padStart(2, '0');
-                const secs = String(practiceSeconds % 60).padStart(2, '0');
-                document.getElementById('practiceTimer').innerText = `${mins}:${secs}`;
-            }, 1000);
-
-            renderPracticeCurrentQuestion();
-        }
-
-        function renderPracticeCurrentQuestion() {
-            const container = document.getElementById('practiceCardContainer');
-            if (practiceQueue.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-slate-500">No questions in practice queue.</div>`;
-                return;
-            }
-
-            const q = practiceQueue[practiceIndex];
-            const total = practiceQueue.length;
-            const isFlagged = flaggedForRedo.has(q.id);
-
-            document.getElementById('practiceProgressBadge').innerText = `Question ${practiceIndex + 1} of ${total}`;
-            document.getElementById('practiceTopicTag').innerText = `${q.topic} › ${q.subtopic} (${q.marks} Marks)`;
-            document.getElementById('practiceFlagBtn').innerHTML = isFlagged ? '🚩 <span class="text-amber-600 font-bold">Flagged</span>' : '<span>🚩 Flag for Redo</span>';
-
-            document.getElementById('practicePrevBtn').disabled = practiceIndex === 0;
-            document.getElementById('practicePrevBtn').style.opacity = practiceIndex === 0 ? '0.4' : '1';
-
-            let diffBadge = 'bg-emerald-100 text-emerald-800 border-emerald-200';
-            if (q.difficulty === 'Medium') diffBadge = 'bg-amber-100 text-amber-800 border-amber-200';
-            if (q.difficulty === 'Hard') diffBadge = 'bg-rose-100 text-rose-800 border-rose-200';
-
-            container.innerHTML = `
-                <div>
-                    <!-- Top tags -->
-                    <div class="flex items-center gap-2 pb-4 border-b border-slate-100 mb-5">
-                        <span class="font-mono text-xs font-bold px-2.5 py-1 rounded bg-slate-100 text-slate-700">${q.id}</span>
-                        ${q.enrichment ? '<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border bg-violet-100 text-violet-800 border-violet-200" title="Harder than the standard questions, but within the syllabus">⭐ Enrichment</span>' : `<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${diffBadge}">${q.difficulty}</span>`}
-                        ${enrichmentBadgeHtml(q)}
-                        ${q.calculator ? '<span class="text-xs font-medium text-slate-500">🧮 Calculator Allowed</span>' : '<span class="text-xs font-medium text-slate-400">🚫 Non-Calculator</span>'}
-                    </div>
-
-                    <!-- Question Text -->
-                    <div class="text-slate-900 text-base leading-relaxed mb-6 font-medium">
-                        ${formatMarkdown(q.question)}
-                        ${diagramHtml(q, 380)}
-                    </div>
-
-                    <!-- Multiple Choice Quick Buttons if applicable -->
-                    ${q.type === 'Multiple Choice' ? `
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
-                            ${['A', 'B', 'C', 'D'].map(opt => `
-                                <button onclick="selectPracticeOption('${opt}')" id="mc-btn-${opt}" class="p-3 text-sm font-bold rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition flex items-center justify-center gap-2">
-                                    Option ${opt}
-                                </button>
-                            `).join('')}
-                        </div>
-                    ` : `
-                        <div class="mb-6">
-                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">Scratchpad / Working Space</label>
-                            <textarea placeholder="Type your notes or working steps here..." class="w-full h-24 p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-barker-700 focus:bg-white transition"></textarea>
-                        </div>
-                    `}
-                </div>
-
-                <!-- Solution & Self-Marking -->
-                <div class="pt-4 border-t border-slate-100">
-                    <button onclick="togglePracticeSolution()" id="practiceSolBtn" class="w-full py-2.5 bg-barker-50 text-barker-700 font-bold text-xs rounded-xl hover:bg-barker-100 transition border border-barker-200 mb-3 flex items-center justify-center gap-2">
-                        <span>🔍 Reveal Worked Solution &amp; Criteria</span>
-                    </button>
-
-                    <div id="practiceSolBox" class="hidden p-5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-800 space-y-3 mb-4">
-                        <div>
-                            <strong class="text-barker-700 uppercase tracking-wide text-[11px] block mb-1">Worked Solution:</strong>
-                            <div class="leading-relaxed font-sans">${formatMarkdown(q.solution)}</div>
-                        </div>
-                        <div class="pt-2 border-t border-slate-200">
-                            <strong class="text-slate-700 uppercase tracking-wide text-[11px] block mb-1">Marking Rubric:</strong>
-                            <ul class="list-disc list-inside space-y-1 text-slate-600">
-                                ${q.criteria.map(c => `<li>${formatMarkdown(c)}</li>`).join('')}
-                            </ul>
-                            ${sourceHtml(q)}
-                        </div>
-
-                        <!-- Self-Marking Buttons -->
-                        <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
-                            <span class="font-bold text-slate-700">Self-Mark this Question:</span>
-                            <div class="flex gap-2">
-                                <button onclick="selfMarkQuestion('${q.id}', ${q.marks})" class="px-3 py-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 font-bold rounded-lg transition text-xs">
-                                    ✓ Full Marks (${q.marks}/${q.marks})
-                                </button>
-                                <button onclick="selfMarkQuestion('${q.id}', 0)" class="px-3 py-1.5 bg-rose-100 text-rose-800 hover:bg-rose-200 font-bold rounded-lg transition text-xs">
-                                    ✗ Needs Review (0/${q.marks})
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            typesetMath([container]);
-        }
-
-        function togglePracticeSolution() {
-            const el = document.getElementById('practiceSolBox');
-            if (el) el.classList.toggle('hidden');
-        }
-
-        function selectPracticeOption(opt) {
-            ['A', 'B', 'C', 'D'].forEach(o => {
-                const btn = document.getElementById(`mc-btn-${o}`);
-                if (btn) btn.className = 'p-3 text-sm font-bold rounded-xl border border-slate-200 bg-slate-50 text-slate-700';
-            });
-            const selBtn = document.getElementById(`mc-btn-${opt}`);
-            if (selBtn) selBtn.className = 'p-3 text-sm font-bold rounded-xl border-2 border-barker-700 bg-barker-50 text-barker-700 shadow-sm';
-            togglePracticeSolution();
-        }
-
-        function selfMarkQuestion(id, score) {
-            practiceScores[id] = score;
-            nextPracticeQuestion();
-        }
-
-        function toggleFlagRedo() {
-            const q = practiceQueue[practiceIndex];
-            if (!q) return;
-            if (flaggedForRedo.has(q.id)) {
-                flaggedForRedo.delete(q.id);
-            } else {
-                flaggedForRedo.add(q.id);
-            }
-            renderPracticeCurrentQuestion();
-        }
-
-        function nextPracticeQuestion() {
-            if (practiceIndex < practiceQueue.length - 1) {
-                practiceIndex++;
-                renderPracticeCurrentQuestion();
-            } else {
-                showPracticeSummary();
-            }
-        }
-
-        function prevPracticeQuestion() {
-            if (practiceIndex > 0) {
-                practiceIndex--;
-                renderPracticeCurrentQuestion();
-            }
-        }
-
-        function showPracticeSummary() {
-            clearInterval(practiceTimerInterval);
-            const container = document.getElementById('practiceCardContainer');
-            
-            let totalEarned = 0;
-            let totalPossible = 0;
-            practiceQueue.forEach(q => {
-                totalPossible += (q.marks || 1);
-                totalEarned += (practiceScores[q.id] || 0);
-            });
-
-            const percent = totalPossible > 0 ? Math.round((totalEarned / totalPossible) * 100) : 0;
-
-            container.innerHTML = `
-                <div class="text-center py-8 space-y-4">
-                    <div class="w-16 h-16 rounded-2xl bg-barker-100 text-barker-700 flex items-center justify-center font-black text-2xl mx-auto shadow-sm">
-                        ★
-                    </div>
-                    <h2 class="text-2xl font-black text-slate-900">Practice Session Complete!</h2>
-                    <p class="text-sm text-slate-500">You scored <strong>${totalEarned} / ${totalPossible} Marks</strong> (${percent}%) in ${document.getElementById('practiceTimer').innerText}</p>
-
-                    ${flaggedForRedo.size > 0 ? `
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 max-w-md mx-auto text-left">
-                            <strong>🚩 Flagged for Revision (${flaggedForRedo.size}):</strong>
-                            <div class="mt-1 flex flex-wrap gap-1.5">
-                                ${Array.from(flaggedForRedo).map(id => `<span class="bg-white px-2 py-0.5 rounded border border-amber-200 font-mono font-bold">${id}</span>`).join('')}
-                            </div>
-                        </div>
-                    ` : ''}
-
-                    <div class="pt-4 flex justify-center gap-3">
-                        <button onclick="startPracticeSession()" class="px-5 py-2.5 bg-barker-700 text-white text-xs font-bold rounded-xl hover:bg-barker-800 transition shadow">
-                            Practice Again
-                        </button>
-                        <button onclick="switchView('builder')" class="px-5 py-2.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-200 transition">
-                            Back to Worksheet Builder
-                        </button>
-                    </div>
-                </div>
-            `;
         }
 
         // --- WORKSHEET DOCUMENT (shared by the preview and the printout) ---

@@ -1,0 +1,36 @@
+body { font-family: Inter, system-ui, sans-serif; }
+
+@keyframes pop-in {
+  0% { transform: scale(0.5) translateY(20px); opacity: 0; }
+  80% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.score-animation { animation: pop-in 0.5s ease-out forwards; }
+
+@keyframes pingOnce {
+  0% { transform: scale(0.6); opacity: 0; }
+  30% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.animate-pingOnce { animation: pingOnce 0.95s ease-out forwards; }
+
+/* Graph */
+.grid line { stroke: #e2e8f0; }
+.grid path { stroke: none; }
+.axis text { font-size: 13px; }
+.axis-label { font-size: 14px; font-weight: 600; }
+.marker-label { font-size: 13px; font-weight: 600; paint-order: stroke; stroke: #f8fafc; stroke-width: 4px; }
+
+/* Home–Destination bar */
+.bar-marker {
+  position: absolute; top: 50%; width: 22px; height: 22px; border-radius: 9999px;
+  transform: translate(-50%, -50%); pointer-events: none; z-index: 20;
+}
+kbd {
+  font-family: ui-monospace, monospace; font-size: 0.75rem; padding: 0 0.3rem;
+  border: 1px solid #cbd5e1; border-bottom-width: 2px; border-radius: 4px; background: #f8fafc;
+}
+
+.car-cursor {
+  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIyNCIgdmlld0JveD0iLTUgMCA0MiAyNCI+PHBhdGggZD0iTS0xLDE2IEMtNCwxNiAtNSwxNCAtNSwxMiIgc3Ryb2tlPSJncmV5IiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1vcGFjaXR5PSIwLjciLz48cGF0aCBkPSJNMjgsMTcgTDI4LDE0IEMyOCwxMiAyNiwxMiAyNiwxMiBMMjIsMTIgTDE5LDggTDgsOCBMNSwxMiBMMCwxMiBMMCwxNyBaIiBmaWxsPSIjZWY0NDQ0IiBzdHJva2U9IiMxMTEiIHN0cm9rZS13aWR0aD0iMS41Ii8+PGNpcmNsZSBjeD0iNyIgY3k9IjE3IiByPSI0IiBmaWxsPSIjMjIyIiAvPjxjaXJjbGUgY3g9IjIzIiBjeT0iMTciIHI9IjQiIGZpbGw9IiMyMjIiIC8+PHBvbHlnb24gcG9pbnRzPSIyOCwxMyAzNSwxMCAzNSwxNiIgZmlsbD0iI2ZmZmY5OSIgZmlsbC1vcGFjaXR5PSIwLjkiLz48L3N2Zz4=') 16 12, crosshair;
+}
